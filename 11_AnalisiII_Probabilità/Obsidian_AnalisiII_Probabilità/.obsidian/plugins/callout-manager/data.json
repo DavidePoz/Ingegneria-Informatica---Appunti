@@ -1,0 +1,47 @@
+{
+  "callouts": {
+    "custom": [
+      "theorem",
+      "def",
+      "prop"
+    ],
+    "settings": {
+      "theorem": [
+        {
+          "changes": {
+            "icon": "lucide-book-type",
+            "color": "208, 181, 48"
+          }
+        }
+      ],
+      "def": [
+        {
+          "changes": {
+            "icon": "lucide-bookmark",
+            "color": "68, 207, 110"
+          }
+        }
+      ],
+      "prop": [
+        {
+          "changes": {
+            "icon": "lucide-book-text",
+            "color": "233, 151, 63"
+          }
+        }
+      ],
+      "attention": [
+        {
+          "changes": {
+            "color": "251, 70, 76"
+          }
+        }
+      ]
+    }
+  },
+  "calloutDetection": {
+    "obsidian": true,
+    "theme": true,
+    "snippet": true
+  }
+}

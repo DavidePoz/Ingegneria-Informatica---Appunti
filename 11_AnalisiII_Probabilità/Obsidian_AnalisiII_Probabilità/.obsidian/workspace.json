@@ -1,0 +1,225 @@
+{
+  "main": {
+    "id": "666d69a7f5d4ec9c",
+    "type": "split",
+    "children": [
+      {
+        "id": "e14ad472a6ea2a06",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "eec699dc1e47d116",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "P4 - TIPI DI VARIABILI CONTINUE.md",
+                "mode": "preview",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "P4 - TIPI DI VARIABILI CONTINUE"
+            }
+          },
+          {
+            "id": "9a388f5d653a1e8c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "P5 - TEOREMI LIMITE.md",
+                "mode": "preview",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "P5 - TEOREMI LIMITE"
+            }
+          },
+          {
+            "id": "073ec47ad9196daa",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "P6 - VARIABILI CONGIUNTE.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "P6 - VARIABILI CONGIUNTE"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "8dd6a7ec855717bf",
+    "type": "split",
+    "children": [
+      {
+        "id": "86bb2ba2db6fa61c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "930ab6bd62d8ceee",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "3028c31975d22b52",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "3b07eae87db87905",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "6340ed820c1d69da",
+    "type": "split",
+    "children": [
+      {
+        "id": "f33b56fb3800c6c3",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "70a9a5c8e0e4e393",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "1cfb93e799778b56",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "ee9792afef2d5ceb",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "1d29f0b99f9d6952",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false,
+      "callout-manager:Insert Callout": false
+    }
+  },
+  "active": "eec699dc1e47d116",
+  "lastOpenFiles": [
+    "P6 - VARIABILI CONGIUNTE.md",
+    "P4 - TIPI DI VARIABILI CONTINUE.md",
+    "ARGOMENTI.md",
+    "P5 - TEOREMI LIMITE.md",
+    "11 - TEOREMI DELLA DIVERGENZA E DI GREEN - STOKES.md",
+    "P2 - TIPI DI VARIABILI DISCRETE.md",
+    "P3 - VARIABILI ALEATORIE CONTINUE.md",
+    "P1 - INTRO PROBABILITA' E VARIABILI DISCRETE.md",
+    "03 - FUNZIONI DI PIU' VARIABILI.md",
+    "07 - CAMPI VETTORIALI.md",
+    "09 - COORDINATE E SOLIDI IN R3.md",
+    "08 - INTEGRALI DOPPI.md",
+    "P0 - CALCOLO COMBINATORIO.md",
+    "10 - SUPERFICI.md",
+    "02 - CURVE PARAMETRICHE.md",
+    "06 - ALTRO SULLE CURVE.md",
+    "00 - ARGOMENTI INTRODUTTIVI.md",
+    "Immagini/Dominio_stokiano.png",
+    "Immagini",
+    "05 - APPLICAZIONI DELLE DERIVATE.md",
+    "04 - LIMITI E DERIVATE DI FUNZIONI DI PIU' VARIABILI.md",
+    "01 - FUNZIONI VETTORIALI.md",
+    "PEER REVIEW QUIZ 1.md",
+    "PROBLEMA DEL GIORNO 9 OTTOBRE.md"
+  ]
+}
