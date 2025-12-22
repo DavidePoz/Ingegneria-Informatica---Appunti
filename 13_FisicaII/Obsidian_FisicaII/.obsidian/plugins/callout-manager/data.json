@@ -1,0 +1,64 @@
+{
+  "callouts": {
+    "custom": [
+      "theorem",
+      "def"
+    ],
+    "settings": {
+      "abstract": [
+        {
+          "changes": {}
+        },
+        {
+          "condition": {
+            "colorScheme": "light"
+          },
+          "changes": {}
+        },
+        {
+          "condition": {
+            "colorScheme": "dark"
+          },
+          "changes": {
+            "color": "104,\n    145,\n    181"
+          }
+        }
+      ],
+      "theorem": [
+        {
+          "changes": {
+            "icon": "lucide-book-type",
+            "color": "208, 181, 48"
+          }
+        }
+      ],
+      "warning": [
+        {
+          "changes": {
+            "color": "251, 70, 76"
+          }
+        }
+      ],
+      "important": [
+        {
+          "changes": {
+            "color": "161, 106, 73"
+          }
+        }
+      ],
+      "def": [
+        {
+          "changes": {
+            "icon": "lucide-atom",
+            "color": "233, 151, 63"
+          }
+        }
+      ]
+    }
+  },
+  "calloutDetection": {
+    "obsidian": true,
+    "theme": true,
+    "snippet": true
+  }
+}
