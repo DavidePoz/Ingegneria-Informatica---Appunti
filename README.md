@@ -4,7 +4,7 @@
 Qui sono pubblicati i miei appunti di alcuni corsi della laurea in ingegneria informatica (triennale) dell'università di Padova.
 
 Man mano che proseguirò con gli studi spero di pubblicare anche gli appunti dei corsi successivi. 
-Mon caricherò appunti relativi a corsi di laboratorio e/o singoli laboratori, visto che il focus principale è la pratica e non la teoria.
+Non caricherò appunti relativi a corsi di laboratorio e/o singoli laboratori, visto che il focus principale è la pratica e non la teoria.
 
 ### OBSIDIAN E PDF
 Gli appunti sono scritti con Obsidian, un'applicazione a mio avviso molto comoda, soprattutto grazie all'enorme quantità di plugin disponibili.
