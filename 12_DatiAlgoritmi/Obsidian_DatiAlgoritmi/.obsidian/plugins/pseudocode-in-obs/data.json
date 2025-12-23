@@ -1,0 +1,15 @@
+{
+  "blockSize": 30,
+  "preambleEnabled": false,
+  "preamblePath": "preamble.sty",
+  "preambleLoadedNotice": false,
+  "followSystemTheme": true,
+  "jsSettings": {
+    "indentSize": "1.2em",
+    "commentDelimiter": "//",
+    "lineNumber": true,
+    "lineNumberPunc": ":",
+    "noEnd": false,
+    "scopeLines": false
+  }
+}

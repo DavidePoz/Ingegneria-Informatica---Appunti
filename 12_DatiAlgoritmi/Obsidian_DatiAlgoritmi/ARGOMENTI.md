@@ -1,0 +1,7 @@
+- [ ] [[NOZIONI DI BASE]]
+- [ ] [[ALBERI GENERALI]]
+- [ ] [[ALBERI BINARI]]
+- [ ] [[PRIORITY QUEUE E HEAP]]
+- [ ] [[MAPPE E ALBERI DI RICERCA]]
+- [ ] [[GRAFI]]
+- [ ] [[ORDINAMENTO]]
