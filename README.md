@@ -39,6 +39,6 @@ Per ogni corso caricherò la relativa cartella di Obsidian e anche una cartella 
 ### SECONDO ANNO:
 **PRIMO SEMESTRE**
 - **Analisi 2 e Probabilità** (9 CFU) Testo di riferimento: Fondamenti e complementi di analisi matematica 2; a cura di Carlo Mariconda
-- Dati e Algoritmi (9 CFU) Testo di riferimento: Goodrich, Tamassia, Goldwasser Data Structures and Algorithms in Java (*Appunti WIP*)
+- **Dati e Algoritmi** (9 CFU) Testo di riferimento: Goodrich, Tamassia, Goldwasser Data Structures and Algorithms in Java
 - **Elementi di Fisica 2** (6 CFU) Testo di riferimento: Mazzoldi, Nigro, Voci Elementi di Fisica: elettromagnetismo
 - Laboratorio di Programmazione (6 CFU) : *corso di laboratorio*
