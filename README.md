@@ -4,7 +4,7 @@
 Qui sono pubblicati i miei appunti di alcuni corsi della laurea in ingegneria informatica (triennale) dell'università di Padova.
 
 Man mano che proseguirò con gli studi spero di pubblicare anche gli appunti dei corsi successivi. 
-Mon caricherò appunti relativi a corsi di laboratorio e/o singoli laboratori, visto che il focus principale è la pratica e non la teoria.
+Non caricherò appunti relativi a corsi di laboratorio e/o singoli laboratori, visto che il focus principale è la pratica e non la teoria.
 
 ### OBSIDIAN E PDF
 Gli appunti sono scritti con Obsidian, un'applicazione a mio avviso molto comoda, soprattutto grazie all'enorme quantità di plugin disponibili.
@@ -39,6 +39,6 @@ Per ogni corso caricherò la relativa cartella di Obsidian e anche una cartella 
 ### SECONDO ANNO:
 **PRIMO SEMESTRE**
 - **Analisi 2 e Probabilità** (9 CFU) Testo di riferimento: Fondamenti e complementi di analisi matematica 2; a cura di Carlo Mariconda
-- Dati e Algoritmi (9 CFU) Testo di riferimento: Goodrich, Tamassia, Goldwasser Data Structures and Algorithms in Java (*Appunti WIP*)
+- **Dati e Algoritmi** (9 CFU) Testo di riferimento: Goodrich, Tamassia, Goldwasser Data Structures and Algorithms in Java
 - **Elementi di Fisica 2** (6 CFU) Testo di riferimento: Mazzoldi, Nigro, Voci Elementi di Fisica: elettromagnetismo
 - Laboratorio di Programmazione (6 CFU) : *corso di laboratorio*
