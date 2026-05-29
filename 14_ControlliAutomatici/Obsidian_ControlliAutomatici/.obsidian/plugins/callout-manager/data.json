@@ -1,0 +1,44 @@
+{
+  "callouts": {
+    "custom": [
+      "def",
+      "th"
+    ],
+    "settings": {
+      "def": [
+        {
+          "changes": {
+            "icon": "lucide-book-open-check"
+          }
+        },
+        {
+          "condition": {
+            "colorScheme": "light"
+          },
+          "changes": {}
+        },
+        {
+          "condition": {
+            "colorScheme": "dark"
+          },
+          "changes": {
+            "color": "83, 223, 221"
+          }
+        }
+      ],
+      "th": [
+        {
+          "changes": {
+            "icon": "lucide-book-type",
+            "color": "68, 207, 110"
+          }
+        }
+      ]
+    }
+  },
+  "calloutDetection": {
+    "obsidian": true,
+    "theme": true,
+    "snippet": true
+  }
+}

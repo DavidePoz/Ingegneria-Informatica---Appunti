@@ -1,0 +1,263 @@
+{
+  "main": {
+    "id": "ec88405b889f3b96",
+    "type": "split",
+    "children": [
+      {
+        "id": "58e8c5e1b747ef95",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "424e24dc3807f089",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "ARGOMENTI.md",
+                "mode": "preview",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "ARGOMENTI"
+            }
+          },
+          {
+            "id": "d52c55763df7b172",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "22 - CONTROLLORI STANDARD.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "22 - CONTROLLORI STANDARD"
+            }
+          },
+          {
+            "id": "08174135fafbb265",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "23 - LUOGO DELLE RADICI.md",
+                "mode": "preview",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "23 - LUOGO DELLE RADICI"
+            }
+          },
+          {
+            "id": "bb76fe87859c3792",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "24 - LDR E SINTESI DEL CONTROLLORE.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "24 - LDR E SINTESI DEL CONTROLLORE"
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "14b6cd045c11c718",
+    "type": "split",
+    "children": [
+      {
+        "id": "0a7716b39a3a8386",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "50c39ea788a317f6",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "14a1155a7fcdf5d7",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "bdbb5b080aeaba2f",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "right": {
+    "id": "559bb1157649f87f",
+    "type": "split",
+    "children": [
+      {
+        "id": "2a6bfd0fe6413760",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "52d14d74a70664ff",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "LEZIONE 1.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for LEZIONE 1"
+            }
+          },
+          {
+            "id": "2dafa21f38852bd6",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "LEZIONE 1.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from LEZIONE 1"
+            }
+          },
+          {
+            "id": "293b6dcbfd6b44cc",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "6dd7e6810c586da9",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "3a10c2baa78d51d2",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "LEZIONE 1.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of LEZIONE 1"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false,
+      "callout-manager:Insert Callout": false
+    }
+  },
+  "active": "bb76fe87859c3792",
+  "lastOpenFiles": [
+    "23 - LUOGO DELLE RADICI.md",
+    "24 - LDR E SINTESI DEL CONTROLLORE.md",
+    "ARGOMENTI.md",
+    "21 - SISTEMI ELEMENTARI E RISPETTO DELLE SPECIFICHE.md",
+    "22 - CONTROLLORI STANDARD.md",
+    "25 - RETROAZIONE STATICA DALLO STATO (CENNI).md",
+    "20 - PROBLEMA DI CONTROLLO.md",
+    "15 - STABILITA' SISTEMI.md",
+    "16 - STABILITA' INTERNA ED ESTERNA.md",
+    "14 - SISTEMI LTI (TEMPO DISCRETO).md",
+    "12 - STRUMENTI MATEMATICI.md",
+    "13 - TDL E ANALISI DEI SISTEMI LTI.md",
+    "11 - SISTEMI LTI E RISPOSTA FORZATA (INTRO).md",
+    "10 - SISTEMI LTI ED EVOLUZIONE LIBERA.md",
+    "05 - SISTEMI DINAMICI NON LINEARI.md",
+    "04 - MODELLI FISICI (TEMPO CONTINUO).md",
+    "03 - MODELLI DI INFLUENZA.md",
+    "01 - MODELLI DI TRASFERIMENTO DI RISORSE (TEMPO CONTINUO).md",
+    "02 - MODELLI DI TRASFERIMENTO DI RISORSE (TEMPO DISCRETO).md",
+    "00 - INTRODUZIONE.md",
+    "Immagini/16_SISO_1.png",
+    "Immagini/16_BIBS_system.png",
+    "Immagini/16_BIBO_system.png",
+    "Immagini",
+    "02 -.md",
+    "15_ControlliAutomatici",
+    "6_SistemiOperativi/Welcome.md",
+    "6_SistemiOperativi",
+    "Welcome.md"
+  ]
+}
