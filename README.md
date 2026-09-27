@@ -48,3 +48,10 @@ Per ogni corso caricherò la relativa cartella di Obsidian e anche una cartella 
 > Sono presenti gli appunti di un solo corso; in compenso costituiscono
 > un resoconto esaustivo della materia: rispetto ai documenti degli altri corsi,
 > questi contengono molti più dettagli e minuzie.
+
+## BONUS
+- **Deep Learning** (6 CFU) - Appunti dal corso Deep Learning della magistrale.
+
+>[!NOTE]
+>Questa sezione raccoglie appunti "bonus", cioè di corsi che non rientrano
+>nel piano di studi della triennale.
