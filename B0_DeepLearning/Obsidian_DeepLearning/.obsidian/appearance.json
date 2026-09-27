@@ -1,0 +1,9 @@
+{
+  "cssTheme": "PLN",
+  "theme": "moonstone",
+  "baseFontSizeAction": false,
+  "baseFontSize": 16,
+  "enabledCssSnippets": [
+    "callout-fix"
+  ]
+}

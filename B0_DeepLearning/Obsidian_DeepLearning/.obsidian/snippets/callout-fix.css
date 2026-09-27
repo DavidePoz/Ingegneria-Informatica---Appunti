@@ -1,0 +1,9 @@
+/* Forza lo sfondo per tutti i callout */
+.callout {
+    background-color: rgba(var(--callout-color), 0.1) !important;
+}
+
+/* Puoi anche forzare uno sfondo per un tipo specifico, ad esempio "note" */
+.callout[data-callout="note"] {
+    background-color: rgba(var(--callout-color), 0.15) !important;
+}
