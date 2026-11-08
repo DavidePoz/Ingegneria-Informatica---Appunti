@@ -272,7 +272,7 @@ Cioè la funzione $\mu$ calcolata nei punti che appartengono al *sostegno* di $\
 >Anche l'area di una superficie è un integrale superficiale: la funzione $\mu$ è semplicemente $1\forall (u,v)\in S$.
 ## FLUSSO DI UN CAMPO ATTRAVERSO UNA SUPERFICIE
 >[!def] FLUSSO ATTRAVERSO UNA SUPERFICIE
->Sia $\sigma:\Sigma\to \mathbb{R}^3$ superficie parametrica *semplice e regolare* con vettore tangente unitario $\hat{\mathbf{n}}$.
+>Sia $\sigma:\Sigma\to \mathbb{R}^3$ superficie parametrica *semplice e regolare* con vettore normale unitario $\hat{\mathbf{n}}$.
 >Sia $\mathbf{F}:D\subseteq \mathbb{R}^3\to \mathbb{R}^3$ campo vettoriale continuo, con $\Sigma \subseteq D$.
 >Chiamiamo **flusso** di $\mathbf{F}$ attraverso la superficie $\sigma$:
 >$$ \Phi(\mathbf{F},\Sigma):= \int_{\Sigma}\mathbf{F}\cdot dS = \int_{\Sigma}\mathbf{F}\cdot \hat{\mathbf{n}} dS = \int_{\Sigma}\mathbf{F}(\sigma(u,v))\cdot \hat{\mathbf{n}}(u,v) dudv $$
