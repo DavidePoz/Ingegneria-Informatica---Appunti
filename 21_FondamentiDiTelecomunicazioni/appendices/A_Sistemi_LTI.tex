@@ -1,0 +1,381 @@
+% ------------------------------------------------------------------------------------
+%                              ESERCIZI SISTEMI LTI
+% ------------------------------------------------------------------------------------
+
+\chapter{Esercizi in aula - Sistemi LTI}
+
+\section{Esercizio 1}
+
+Consideriamo il sistema mostrato in figura~\ref{fig:Es_01_01_Esercizio1_Sistema}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth, % Punta delle frecce
+        thick,     % Spessore delle linee
+        node distance=2cm
+        ]
+        % --- Definizione dei nodi principali ---
+
+        % Nodo di somma (il cerchio con + e -)
+        \node[circle, draw, inner sep=1pt, minimum size=7mm] (sum) at (4.5,0) {};
+        \node at ([shift={(-0.15, 0.12)}]sum.center) {\(+\)};
+        \node at ([shift={(0, -0.15)}]sum.center) {\(-\)};
+
+        % Blocco Integratore
+        \node[draw, rectangle, minimum width=1.8cm, minimum height=1.2cm] (int) at (7.5,0) {\huge \(\int\)};
+
+        % Blocco Ritardo (RIT)
+        \node[draw, rectangle, minimum width=1.2cm, minimum height=0.8cm] (delay) at (2.5,-1.8) {RIT};
+        % Etichetta sotto il blocco ritardo
+        \node[below=0.1cm of delay] {\(T_0=1\)};
+
+        % --- Tracciamento delle linee e frecce ---
+
+        % Linea di ingresso x(t)
+        \draw[->] (0,0) node[above right] {\(x(t)\)} -- (sum);
+
+        % Nodo di derivazione (il pallino nero)
+        \fill (2.5,0) circle (1.5pt);
+
+        % Freccia dal sommatore all'integratore
+        \draw[->] (sum) -- node[above] {\(z(t)\)} (int);
+
+        % Freccia dall'integratore all'uscita
+        \draw[->] (int) -- node[above] {\(y(t)\)} (10,0);
+
+        % --- Percorso di retroazione (feedback) ---
+
+        % Freccia che scende dal nodo di derivazione al blocco ritardo
+        \draw[->] (2.5,0) -- (delay.north);
+
+        % Freccia che esce dal ritardo, va a destra e poi sale verso il sommatore
+        \draw[->] (delay.east) -| (sum.south);
+    \end{tikzpicture}
+    \caption{Sistema d'esempio}
+    \label{fig:Es_01_01_Esercizio1_Sistema}
+\end{figure}
+
+\begin{exe}
+    Vogliamo studiare il sistema per capire:
+    \begin{itemize}
+        \item Se è \textbf{LTI}.
+        \item Qual è la sua \textbf{risposta impulsiva} e la sua
+            \textbf{ripsosta in frequenza}.
+    \end{itemize}
+\end{exe}
+
+Cominciamo l'analisi considerando solamente il \textbf{primo blocco}:
+\[
+    \begin{aligned}
+        z(t) &= x(t) - x(t-T_{0}) \\ 
+             &= x(t) - x(t-1)
+    \end{aligned}
+\]
+
+Verifichiamo che il sistema sia \textbf{lineare}, considerando come
+ingresso $x(t) = \alpha x_{1}(t) + \beta x_{2}(t)$
+\[
+    \begin{aligned}
+        \alpha x_{1}(t) &\longrightarrow \alpha[ x_{1}(t) - x_{1}(t-1) ] = y_{1}(t) \\ 
+        \beta x_{2}(t) &\longrightarrow \beta[x_{2}(t) - x_{2}(t-1)] = y_{2}(t) \\
+        x(t) &\longrightarrow [\alpha x_{1}(t) + \beta x_{2}(t)] - [\alpha x_{1}(t-1) + \beta x_{2}(t-1)] \\ 
+             &= y_{1}(t) + y_{2}(t)
+    \end{aligned}
+\]
+
+Ora verifichiamo anche che il sistema sia \textbf{tempo invariante}:
+\[
+    \begin{aligned}
+        x(t) &\longrightarrow z(t) = x(t) - x(t-1) \\ 
+        x(t-t_{0}) &\longrightarrow w(t) = x(t-t_{0}) - x(t-1-t_{0}) \\ 
+                   &= x(t-t_{0}) - x(t-t_{0}-1) = z(t-t_{0})
+    \end{aligned}
+\]
+\begin{remark}
+    Per cui il primo blocco è un \textbf{sistema LTI}, e quindi possiamo 
+    rappresentarlo come un \textbf{filtro}, come mostrato in 
+    figura~\ref{fig:Es_01_02_Esercizio1_SistemaFiltro}.
+\end{remark}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth, % Punta delle frecce
+        thick,     % Spessore delle linee
+        block/.style={draw, rectangle, minimum width=2cm, minimum height=1.2cm}
+        ]
+        % --- Nodi principali ---
+
+        % Blocco Filtro con risposta h_1(t)
+        \node[block] (filt) at (3,0) {\(h_1(t)\)};
+
+        % Blocco Integratore
+        \node[block] (int) at (7.5,0) {\huge \(\int\)};
+
+        % --- Tracciamento delle linee e frecce ---
+
+        % Linea di ingresso x(t)
+        \draw[->] (0,0) -- (filt) node[midway, above] {\(x(t)\)};
+
+        % Freccia dal filtro all'integratore
+        \draw[->] (filt) -- (int) node[midway, above] {\(z(t)\)};
+
+        % Freccia dall'integratore all'uscita
+        \draw[->] (int) -- (10.5,0) node[midway, above] {\(y(t)\)};
+    \end{tikzpicture}
+    \caption{Sostituzione del primo blocco con un filtro}
+    \label{fig:Es_01_02_Esercizio1_SistemaFiltro}
+\end{figure}
+
+Calcoliamo ora la \textbf{risposta impulsiva} $h_{1}(t)$ di questo primo blocco.
+Per farlo, basta considerare l'\textbf{uscita del sistema} 
+quando l'\textbf{ingresso} è l'\textbf{impulso di Dirac}, e risulta
+banalmente:
+\[
+    h_{1}(t) = \delta(t) - \delta(t-1)
+\]
+Per cui la \textbf{risposta in frequenza} è:
+\[
+    H_{1}(f) = 1 - e^{-j 2\pi f}
+\]
+Notiamo che:
+\[
+    H_{1}(-f) = 1 - e^{j 2\pi f} = \overline{H_{1}(f)} 
+\]
+
+\begin{remark}
+    La risposta in frequenza ha \textbf{simmetria hermitiana}, esattamente
+    come ci aspettavamo visto che $h_{1}(t)$ è \textbf{reale}.
+\end{remark}
+
+Passiamo ora al \textbf{secondo blocco} del sistema:
+\[
+    y(t) = \int_{-\infty}^t z(\tau ) d \tau
+\]
+
+Come prima, vogliamo verificare se il sistema è \textbf{LTI}. 
+Per prima cosa notiamo che, essendo l'integrale un 
+\textit{operatore lineare}, il sistema è \textit{sicuramente lineare}. 
+Verifichiamo allora se è anche \textit{tempo invariante}:
+\[
+    \begin{aligned}
+        z(t) &\longrightarrow y(t) = \int_{-\infty}^t z(\tau ) d \tau \\ 
+        z(t-t_{0}) &\longrightarrow \int_{-\infty}^{t} z(\tau -t_{0}) d \tau \\
+                   & u \coloneqq \tau - t_{0} \text{ , } du = d\tau 
+                   \text{ , } \tau \in (-\infty, t] \implies u \in (-\infty, t-t_{0}] \\ 
+                   &= \int_{-\infty}^{t-t_{0}} z(u) du \\ 
+                   &= y(t-t_{0})
+    \end{aligned}
+\]
+Appurato che anche il secondo blocco è un sistema \textbf{LTI}, possiamo
+rappresentare il \textit{sistema complessivo} come una \textbf{cascata di due sistemi LTI},
+come mostrato in figura~\ref{fig:Es_01_03_Esercizio1_RappresentazioneAlternativaSistema}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth, % Punta delle frecce
+        thick,     % Spessore delle linee
+        block/.style={draw, rectangle, minimum width=2cm, minimum height=1.2cm}
+        ]
+        % --- Nodi principali ---
+
+        % Primo blocco (Filtro h1)
+        \node[block] (filt1) at (2.5,0) {\(h_1(t)\)};
+
+        % Secondo blocco (Filtro h2)
+        \node[block] (filt2) at (7,0) {\(h_2(t)\)};
+
+        % --- Tracciamento delle linee e frecce ---
+
+        % Linea di ingresso x(t) al primo blocco
+        \draw[->] (0,0) -- (filt1) node[midway, above] {\(x(t)\)};
+
+        % Freccia tra i due blocchi (segnale intermedio)
+        \draw[->] (filt1) -- (filt2) node[midway, above] {\(z(t)\)};
+
+        % Freccia in uscita dal secondo blocco
+        \draw[->] (filt2) -- (9.5,0) node[midway, above] {\(y(t)\)};
+    \end{tikzpicture}
+    \caption{Rappresentazione alternativa del sistema}
+    \label{fig:Es_01_03_Esercizio1_RappresentazioneAlternativaSistema}
+\end{figure}
+
+A questo punto, come prima, vogliamo calcolare la \textbf{risposta impulsiva}
+del blocco:
+\[
+    h_{2}(t) = \int_{-\infty}^t \delta(\tau ) d \tau 
+\]
+Notiamo che, per definizione dell'impulso, l'integrale è pari a \textit{uno} 
+se $t\ge 0$ e \textit{zero altrimenti}.
+Per cui abbiamo:
+\[
+    h_{2}(t) = \begin{cases}
+        1 & t\ge 0 \\ 
+        0 & t < 0
+    \end{cases} = \mathbf{1}(t)
+\]
+
+
+Allora che la \textbf{risposta complessiva} del sistema è:
+\[
+    \begin{aligned}
+        y(t) &= h_{2}(t) \ast z(t) \\ 
+             &= h_{2}(t) \ast [ h_{1}(t) \ast x(t)] \\ 
+             &= [h_{1}(t) \ast h_{2}(t)] \ast x(t)
+    \end{aligned}
+\]
+
+Per cui possiamo immaginare il sistema come un \textbf{filtro equivalente}
+con \textbf{risposta impulsiva}:
+\[
+    \begin{aligned}
+        h(t) &= h_{1} \ast h_{2}(t) \\ 
+             &= [\delta(t) - \delta(t-1)] \ast \mathbf{1}(t) \\ 
+             &= \mathbf{1}(t) - \mathbf{1}(t-1)
+    \end{aligned}
+\]
+
+Vediamo $h(t)$ in figura~\ref{fig:Es_01_04_Esercizio1_RispostaImpulsivaEquivalente}
+per avere un'intuizione su come riscriverla.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.75\textwidth,
+            height=5cm,
+            axis lines=middle,
+            xlabel={$t$},
+            ylabel={$h(t)$},
+            xmin=-1.5, xmax=2.5,
+            ymin=-0.2, ymax=1.2,
+            xtick={-1,0,1,2},
+            ytick={0,1},
+            grid=major,
+            grid style={dashed, gray!30},
+            xlabel style={below right},
+            ylabel style={above left},
+            ]
+
+            % Linee tratteggiate per evidenziare le discontinuità (salti)
+            \draw[dashed, gray!60] (axis cs:0,0) -- (axis cs:0,1);
+            \draw[dashed, gray!60] (axis cs:1,0) -- (axis cs:1,1);
+
+            % Tracciamento del segnale h(t)
+            \addplot[thick, nord10] coordinates {
+                    (-1.5,0) (0,0) (0,1) (1,1) (1,0) (2.5,0)
+                };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Risposta impulsiva equivalente del sistema}
+    \label{fig:Es_01_04_Esercizio1_RispostaImpulsivaEquivalente}
+\end{figure}
+
+Notiamo che possiamo quindi riscrivere $h(t)$ come segue:
+\[
+    h(t) = \text{rect} \left( t - \frac{1}{2} \right)
+\]
+
+E la \textbf{risposta in frequenza} risulta quindi essere:
+\[
+    \begin{aligned}
+        H(f) &= \text{sinc}(f) e^{-j 2\pi f \frac{1}{2}} \\ 
+             &= \text{sinc}(f) e^{-j\pi f}
+    \end{aligned}
+\]
+
+\section{Esercizio 2}
+
+Consideriamo ora un \textbf{sistema LTI} con la
+seguente \textbf{risposta in frequenza}:
+\[
+    H(f) = j = e^{j \pi /2}
+\]
+
+Consideriamo inoltre un segnale di \textbf{ingresso sinusoidale}:
+\[
+    x(t) = A \sin (2\pi f_{0} t)
+\]
+
+\begin{exe}
+    Vogliamo:
+    \begin{enumerate}
+        \item Determinare la \textbf{risposta del sistema} all'ingresso 
+            dato sopra, $\forall A,f_{0}$.
+        \item L'\textbf{energia} del segnale $y_{2}(t)$, uscita del sistema
+            per l'ingresso $x_{2} = \frac{\sin 4\pi t}{2\pi t}$.
+    \end{enumerate}
+\end{exe}
+
+Per quanto riguarda il \textbf{primo punto}, essendo il sistema \textbf{LTI},
+sappiamo che l'uscita in risposta ad un segnale sinusoidale sarà
+un \textbf{altro segnale sinosoidale} con \textbf{modulo} e 
+\textbf{fase modificati}. Abbiamo quindi:
+\[
+    y(t) = A |H(f_{0})| \sin \left( 2\pi f_{0}t + \angle H(f_{0}) \right)
+\]
+
+Dobbiamo quindi calcolare $|H(f)|$ e $\angle H(f)$:
+\[
+    \begin{aligned}
+        |H(f)| &= \left| e^{j \pi /2} \right| = 1 \text{ }\forall f \\ 
+        \angle H(f) &= \frac{\pi}{2} \text{ }\forall f
+    \end{aligned}
+\]
+
+E troviamo quindi:
+\[
+    \begin{aligned}
+        y(t) &= A \sin (2\pi f_{0} t + \pi /2) \\ 
+             &= A \cos (2 \pi f_{0}t)
+    \end{aligned}
+\]
+
+Passiamo ora al secondo punto. 
+
+\begin{remark}
+    Possiamo sfruttare il \textbf{teorema di Parseval} e
+    lavorare nel \textbf{dominio della frequenza} per
+    \textit{evitare di calcolare esplicitamente} $y_{2}(t)$.
+\end{remark}
+
+Per cominciare, ricordiamo che
+\[
+    Y_{2}(f) = H(f) \cdot X_{2}(f)
+\]
+Calcoliamo quindi $X_{2}(f)$ osservando che $x_{2}(t) = 2 \text{sinc}(2t)$:
+\[
+    X_{2}(f) = 2 \cdot \frac{1}{2}\text{rect} \left( \frac{f}{2} \right) 
+    = \text{rect} \left( \frac{f}{2} \right)
+\]
+
+Per cui:
+\[
+    Y_{2}(f) = j \cdot \text{rect} \left( \frac{f}{2} \right)
+\]
+
+A questo punto, possiamo applicare il \textbf{teorema di Parseval}
+come anticipato sopra:
+\[
+    \begin{aligned}
+        E_{y_{2}} &= \int_{-\infty}^{\infty} |y_{2}(t)|^2 dt \\
+                  &= \int_{-\infty}^{\infty} y_{2}(t) \overline{y_{2}(t)} dt \\ 
+                  &= \int_{-\infty}^{\infty} Y_{2}(f) \overline{Y_{2}(f)} df \\ 
+                  &= \int_{-\infty}^{\infty} |Y_{2}(f)|^2 df
+    \end{aligned}
+\]
+
+E troviamo infine:
+\[
+    \begin{aligned}
+        E_{y_{2}} &= \int_{-\infty}^{\infty} |j \text{rect} \left( \frac{f}{2} \right) |^2 df \\ 
+                  &= \int_{-\infty}^{\infty} |j|^2 \left| \text{rect} \left( \frac{f}{2} \right) \right|^2 \\ 
+                  &= \int_{-\infty}^{\infty} 1 \cdot \text{rect} \left( \frac{f}{2} \right) df \\
+                  &= \int_{-1}^{1} df \\ 
+                  &= 2
+    \end{aligned}
+\]
+
+\end{document}

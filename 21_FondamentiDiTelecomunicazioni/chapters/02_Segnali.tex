@@ -1,0 +1,726 @@
+% ------------------------------------------------------------------------------------
+%                               SEGNALI
+% ------------------------------------------------------------------------------------
+
+\chapter{Segnali}
+
+Nelle reti di telecomunicazione, le informazioni sono \textit{trasmesse attraverso segnali}, 
+ovvero dei \textit{modelli matematici di grandezze fisiche}.
+
+\begin{definition}[SEGNALE]
+    Un segnale è una \textbf{funzione} che associa un \textbf{valore} ad
+    ogni \textbf{istante di tempo}:
+    \[
+        s(t) : \mathbb{R} \to \mathbb{C}
+    \] 
+\end{definition}
+
+% ----- NOTA SULLA RAPPRESENTAZIONE -----
+
+\section{Note sulla rappresentazione complessa}
+
+In generale, si utilizza una \textbf{funzione complessa di variabile reale} per 
+una questione di "comodità" matematica.
+Il perchè appararirà più chiaro in futuro. Per ora ricordiamo l'uso 
+della seguente notazione (usiamo $j$ per l'unità immaginaria):
+
+\begin{itemize}
+    \item Parte reale: $\text{Re}[s(t)]=s_R(t)$
+    \item Parte immaginaria: $\text{Im}[s(t)] = s_I(t)$
+    \item Complesso coniugato: $s^*(t)=\bar{s}(t) = s_R(t) - js_I(t)$
+    \item Modulo: $|s(t)| = \sqrt{s_R^2(t) + s_I^2(t)} = \sqrt{s(t)s^*(t)}$
+    \item Fase: $\text{arg}[s(t)] = \angle s(t) = \arctan(\frac{s_I(t)}{s_R(t)})$
+\end{itemize}
+
+% ----- TIPOLOGIE SEGNALI -----
+
+\section{Tipologie di segnali}
+
+Possiamo distinguere i segnali in base a:
+\begin{itemize}
+    \item \textbf{VALORI}
+        \begin{itemize}
+            \item \textbf{DISCRETI}: $s_R(t),s_I(t)\in \mathbb{Z}$
+            \item \textbf{CONTINUI} : $s_R(t),s_I(t)\in \mathbb{R}$
+        \end{itemize}
+    \item \textbf{TEMPO}
+        \begin{itemize}
+            \item \textbf{DISCRETO}: $t\in \mathbb{Z}$
+            \item \textbf{CONTINUO} : $t\in \mathbb{R}$
+        \end{itemize}
+\end{itemize}
+
+Tale suddivisione è riassunta nella tabella~\ref{tb:01_01_tipologie_segnali}.
+
+\begin{table}[!ht]
+    \centering
+    \renewcommand{\arraystretch}{1.6} 
+    \begin{tabular}{|l|c|c|}
+        \hline
+        & Tempo discreto & Tempo continuo \\
+        \hline
+        
+        Valori discreti & \cellcolor{orange!40}DIGITALI & no nome \\
+        \hline
+        
+        Valori continui & no nome & \cellcolor{orange!40}ANALOGICI \\
+        \hline
+    \end{tabular}
+    \caption{Tipologie di Segnali}
+    \label{tb:01_01_tipologie_segnali}
+\end{table}
+
+La figura~\ref{fig:02_01_esempi_segnali} mostra un esempio di segnale analogico e di uno digitale.
+
+\begin{figure}[!ht]
+    \centering
+    % --- Primo Plot: Segnale Analogico ---
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                width=\textwidth,
+                height=5cm,
+                axis lines=middle,
+                xlabel={$t$},
+                ylabel={$s(t)$},
+                xmin=0, xmax=2.2,
+                ymin=-1.5, ymax=1.5,
+                xtick={0, 0.5, 1, 1.5, 2},
+                ytick={-1, 0, 1},
+                grid=major,
+                grid style={dashed, gray!30},
+                title={Segnale Analogico},
+                title style={font=\bfseries\small},
+                xlabel style={below right},
+                ylabel style={above left},
+            ]
+                \addplot[thick, nord10, domain=0:2, samples=200] {sin(deg(2*pi*x))};
+            \end{axis}
+        \end{tikzpicture}
+    \end{minipage}\hfill
+    % --- Secondo Plot: Segnale Digitale ---
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                width=\textwidth,
+                height=5cm,
+                axis lines=middle,
+                xlabel={$n$},
+                ylabel={$s[n]$},
+                xmin=-0.5, xmax=7.5,
+                ymin=-0.5, ymax=1.5,
+                xtick={0,1,2,3,4,5,6,7},
+                ytick={0,1},
+                grid=major,
+                grid style={dashed, gray!30},
+                title={Segnale Digitale},
+                title style={font=\bfseries\small},
+                xlabel style={below right},
+                ylabel style={above left},
+            ]
+                \addplot[
+                    ycomb, 
+                    thick, 
+                    nord11, 
+                    mark=*, 
+                    mark options={fill=nord11, scale=1.2}
+                ] coordinates {
+                    (0,1) (1,0) (2,1) (3,0) (4,0) (5,1) (6,1) (7,0)
+                };
+            \end{axis}
+        \end{tikzpicture}
+    \end{minipage}
+    \caption{Un segnale analogico e un segnale digitale.}
+    \label{fig:02_01_esempi_segnali}
+\end{figure}
+
+In particolare, per i segnali a \textbf{tempo discreto} definiamo il:
+
+\begin{definition}[PERIODO DI SEGNALE]
+    Il periodo di segnale $T_s$ è il periodo con il quale il segnale viene campionato.
+    In tal senso risulta comodo usare la notazione seguente:
+    \[
+            t = nT_s, n\in \mathbb{Z} \implies s[n]\coloneqq s(nT_s)\in \mathbb{C}
+    \] 
+\end{definition}
+
+% ----- ESEMPI SEGNALI -----
+
+\section{Esempi di segnali}
+\subsection{Impulso Rettangolare}
+
+L'impulso rettangolare è così definito:
+
+\begin{definition}[IMPULSO RETTANGOLARE]
+    \[
+        \text{rect}(t) \coloneqq \begin{cases}
+            1 & |t| \le \frac{1}{2} \\
+            0 & \text{altrimenti}
+        \end{cases} 
+    \] 
+\end{definition}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale = 0.8]
+        \begin{axis}[
+            width=0.8\textwidth,
+            height=5cm,
+            axis lines=middle,
+            xlabel={\(t\)},
+            ylabel={\(s(t)\)},
+            xmin=-1.1, xmax=1.1,
+            ymin=-0.2, ymax=1.5,           
+            xtick={-1, -0.5, 0, 0.5, 1},
+            ytick={0, 1},
+            grid=major,
+            grid style={dashed, nord3!30},       
+            axis line style={nord0},             
+            tick style={nord0},                  
+            tick label style={color=nord0},      
+            xlabel style={below right, color=nord0},
+            ylabel style={above left, color=nord0}
+        ]
+        \addplot[thick, nord10] coordinates {
+            (-0.5, 0) (-0.5, 1) (0.5, 1) (0.5, 0)
+        };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Impulso rettangolare.}
+\end{figure}
+
+\subsection{Triangolo}
+
+La funzione triangolo è definita come segue:
+
+\begin{definition}[TRIANGOLO]
+    \[
+        \text{triang}(t) \coloneqq \begin{cases}
+            1-|t| & |t| \le 1 \\
+            0 & \text{altrimenti}
+        \end{cases} 
+    \] 
+\end{definition}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale = 0.8]
+        \begin{axis}[
+            width=0.75\textwidth,
+            height=5cm,
+            axis lines=middle,
+            xlabel={$t$},
+            ylabel={$s(t)$},
+            xmin=-2.5, xmax=2.5,
+            ymin=-0.5, ymax=1.5,
+            xtick={-2,-1,0,1,2},
+            ytick={0,1},
+            grid=major,
+            grid style={dashed, gray!30},
+            xlabel style={below right},
+            ylabel style={above left},
+        ]
+            \addplot[thick, nord10] coordinates {
+                (-2.5,0) (-1,0) (0,1) (1,0) (2.5,0)
+            };
+            
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Segnale triangolo.}
+    \label{fig:02_03segnale_tri}
+\end{figure}
+
+\subsection{Esponenziale complesso}
+
+Un esponenziale complesso è un segnale del tipo:
+
+\begin{definition}[ESPONENZIALE COMPLESSO]
+    \[
+        s(t) = e^{j 2\pi f_{0}t} = \cos (2\pi f_{0}t) + j \sin (2\pi f_{0}t)
+    \] 
+\end{definition}
+
+Notiamo che:
+
+\begin{remark}
+    E' un segnale \textbf{periodico}:
+    \begin{itemize}
+        \item Di \textit{frequenza} $f_{0}$
+        \item Di periodo $T_{0} = \frac{1}{f_{0}}$
+        \item Di pulsazione $\omega_{0} = 2\pi f_{0}$
+        \item Di modulo $|e^{j 2\pi f_{0}t}|=1$
+        \item Di fase $2\pi f_{0}t$
+    \end{itemize}
+\end{remark}
+
+Un esempio di questo segnale è mostrato nella figura~\ref{fig:02_04:esponenziale_complesso}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale = 0.8]
+        \begin{axis}[
+            width=0.8\textwidth,
+            height=0.65\textwidth,
+            view={60}{30}, 
+            axis lines=middle,
+            xlabel={$t$},
+            ylabel={$\mathrm{Re}$},
+            zlabel={$\mathrm{Im}$},
+            xmin=0, xmax=4*pi,
+            ymin=-1.5, ymax=1.5,
+            zmin=-1.5, zmax=1.5,
+            xtick={0, pi, 2*pi, 3*pi, 4*pi},
+            xticklabels={$0$, $\pi$, $2\pi$, $3\pi$, $4\pi$},
+            ytick={-1,0,1},
+            ztick={-1,0,1},
+            grid=major,
+            grid style={dashed, gray!30},
+            xlabel style={below right},
+            ylabel style={above left},
+            zlabel style={above left},
+        ]
+            % Spirale principale (elica)
+            \addplot3[
+                domain=0:4*pi,
+                samples=200,
+                samples y=0, 
+                variable=\t,
+                thick,
+                nord10,
+            ] ({\t}, {cos(deg(\t))}, {sin(deg(\t))});
+            
+            % Proiezione sul piano t-Re 
+            \addplot3[
+                domain=0:4*pi,
+                samples=200,
+                samples y=0,
+                variable=\t,
+                dashed,
+                nord14,
+                opacity=0.5,
+            ] ({\t}, {cos(deg(\t))}, {-1.5});
+            
+            % Proiezione sul piano t-Im 
+            \addplot3[
+                domain=0:4*pi,
+                samples=200,
+                samples y=0,
+                variable=\t,
+                dashed,
+                nord11,
+                opacity=0.5,
+            ] ({\t}, {1.5}, {sin(deg(\t))});
+            
+            % Cerchio di proiezione sul piano Re-Im a t=0 
+            \addplot3[
+                domain=0:360,
+                samples=100,
+                samples y=0,
+                variable=\a,
+                dashed,
+                nord3,
+                opacity=0.4,
+            ] ({0}, {cos(\a)}, {sin(\a)});
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Segnale esponenziale complesso}
+    \label{fig:02_04:esponenziale_complesso}
+\end{figure}
+
+\subsection{Funzione sinc}
+
+Un altro segnale molto importante è il seguente:
+
+\begin{definition}[SINC]
+    \[
+        \text{sinc}(t) = \frac{\sin (\pi t)}{\pi t}
+    \] 
+\end{definition}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale = 0.8]
+        \begin{axis}[
+            width=0.85\textwidth,
+            height=6cm,
+            axis lines=middle,
+            xlabel={$t$},
+            ylabel={$\mathrm{sinc}(t)$},
+            xmin=-5, xmax=5,
+            ymin=-0.4, ymax=1.2,
+            xtick={-5,-4,-3,-2,-1,0,1,2,3,4,5},
+            ytick={-0.2,0,0.2,0.4,0.6,0.8,1},
+            grid=major,
+            grid style={dashed, gray!30},
+            xlabel style={below right},
+            ylabel style={above left},
+            declare function={
+                sinc(\x) = \x == 0 ? 1 : sin(deg(pi*\x))/(pi*\x);
+            },
+        ]
+            % Plot della funzione sinc
+            \addplot[
+                thick,
+                nord10,
+                domain=-5:5,
+                samples=400,
+                smooth,
+            ] {sinc(x)};
+            
+            % Evidenzia il punto in t=0 con un marker
+            \addplot[
+                only marks,
+                mark=*,
+                mark size=1.8pt,
+                nord11,
+            ] coordinates {(0,1)};
+            
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Segnale sinc}
+    \label{fig:02_05_segnale_sinc}
+\end{figure}
+
+Spesso ci si riferisce a questa funzione come "\textbf{sinc normalizzata}".
+
+E' inoltre interessante notare che:
+
+\begin{remark}
+    Note sulla funzione sinc normalizzata:
+    \begin{enumerate}
+        \item $\lim_{t\to 0} \text{sinc}(t) = 1$
+        \item La funzione si \textbf{annulla} per tutti gli 
+            \textbf{interi non nulli}: $\text{sinc}(t)=0\forall k\in \mathbb{Z}\setminus \{0\}$
+    \end{enumerate}
+\end{remark}
+
+% ----- OPERAZIONI SU SEGNALI -----
+
+\section{Operazioni sui segnali}
+
+\subsection{Ritardo/anticipo di un segnale}
+
+Dato un segnale $s(t)$, possiamo \textit{traslarlo nel tempo} come segue:
+
+\begin{definition}[TRASLAZIONE SEGNALE]
+    \[
+        \tilde{s}(t) \coloneqq s(t-t_{0})
+    \] 
+\end{definition}
+
+In particolare, abbiamo:
+\begin{itemize}
+    \item \textbf{RITARDO} se $t_{0}>0$.
+    \item \textbf{ANTICIPO} se $t_{0}<0$.
+\end{itemize}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.8\textwidth,
+            height=5cm,
+            axis lines=middle,
+            xlabel={\(t\)},
+            ylabel={\(s(t)\)},
+            xmin=-1.5, xmax=3.5,
+            ymin=-0.2, ymax=1.8, % Spazio sufficiente per le etichette
+            xtick={-0.5, 0, 0.5, 1, 1.5, 2, 2.5},
+            ytick={0, 1},
+            grid=major,
+            grid style={dashed, nord3!30},
+            axis line style={nord0},
+            tick style={nord0},
+            tick label style={color=nord0},
+            xlabel style={below right, color=nord0},
+            ylabel style={above left, color=nord0}
+        ]
+        
+        \addplot[thick, dashed, nord10] coordinates {
+            (-0.5, 0) (-0.5, 1) (0.5, 1) (0.5, 0)
+        };
+        \node[nord10, anchor=south] at (axis cs: -0.5, 1.05) {\(s(t)\)};
+
+        \addplot[thick, nord11] coordinates {
+            (1.5, 0) (1.5, 1) (2.5, 1) (2.5, 0)
+        };
+        \node[nord11, anchor=south] at (axis cs: 2, 1.05) {\(\tilde{s}(t) = s(t-2)\)};
+
+        \draw[<->, >=stealth, thick, nord3] (axis cs: 0, 0.6) -- (axis cs: 2, 0.6);
+        \node[nord3, anchor=south] at (axis cs: 1, 0.6) {\(t_0 = 2\)};
+
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Traslazione del rettangolo.}
+\end{figure}
+
+\subsection{Scalamento di un segnale}
+
+Nella trasmissione di un segnale, il ricevente ha spesso bisogno di un
+\textbf{amplificatore} che \textit{scali il segnale}. Questo perchè
+il segnale ricevuto risulta smorzato/attenuate durante la trasmissione.
+
+\begin{definition}[SCALAMENTO SEGNALE]
+    \[
+        \tilde{s}(t) \coloneqq As(t)
+    \] 
+\end{definition}
+
+Per un amplificatore, chiaramente vale $A>1$.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.8\textwidth,
+            height=5cm,
+            axis lines=middle,
+            xlabel={\(t\)},
+            ylabel={\(s(t), \tilde{s}(t)\)},
+            xmin=-1.1, xmax=1.1,
+            ymin=-0.2, ymax=2.5, % Spazio per l'ampiezza 2
+            xtick={-1, -0.5, 0, 0.5, 1},
+            ytick={0, 1, 2},
+            grid=major,
+            % Applicazione della palette Nord
+            grid style={dashed, nord3!30},
+            axis line style={nord0},
+            tick style={nord0},
+            tick label style={color=nord0},
+            xlabel style={below right, color=nord0},
+            ylabel style={above left, color=nord0}
+            ]
+
+            % Segnale originale s(t) in blu tratteggiato
+            \addplot[thick, dashed, nord10] coordinates {
+                    (-0.5, 0) (-0.5, 1) (0.5, 1) (0.5, 0)
+                };
+            \node[nord10, anchor=south] at (axis cs: -0.2, 1.05) {\(s(t)\)};
+
+            % Segnale scalato \tilde{s}(t) = 2s(t) in rosso continuo
+            \addplot[thick, nord11] coordinates {
+                    (-0.5, 0) (-0.5, 2) (0.5, 2) (0.5, 0)
+                };
+            \node[nord11, anchor=south] at (axis cs: 0.3, 2.05) {\(\tilde{s}(t) = 2s(t)\)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Scalamento dell'ampiezza di un segnale.}
+\end{figure}
+
+\begin{remark}
+    In generale, $A$ può assumere qualsiasi valore reale,
+    \textit{anche negativo} (in tal caso il segnale è riflesso
+    rispetto all'asse delle ascisse)
+\end{remark}
+
+\subsection{Scalamento nel tempo}
+
+Dato un segnale, oltre che scalarne l'ampiezza, possiamo scalarlo
+anche nel tempo:
+
+\begin{definition}[SCALEMENTO NEL TMEPO]
+    \[
+        \tilde{s}(t) \coloneqq s\left( \frac{t}{B} \right)
+    \] 
+\end{definition}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.8\textwidth,
+            height=5cm,
+            axis lines=middle,
+            xlabel={\(t\)},
+            ylabel={\(s(t), \tilde{s}(t)\)},
+            xmin=-1.8, xmax=1.8,
+            ymin=-0.2, ymax=1.8, % Spazio per le etichette
+            xtick={-1, -0.5, 0, 0.5, 1},
+            ytick={0, 1},
+            grid=major,
+            % Applicazione della palette Nord
+            grid style={dashed, nord3!30},
+            axis line style={nord0},
+            tick style={nord0},
+            tick label style={color=nord0},
+            xlabel style={below right, color=nord0},
+            ylabel style={above left, color=nord0}
+        ]
+        
+        % Segnale originale s(t) in blu tratteggiato
+        \addplot[thick, dashed, nord10] coordinates {
+            (-0.5, 0) (-0.5, 1) (0.5, 1) (0.5, 0)
+        };
+        \node[nord10, anchor=south] at (axis cs: 0.65, 0.25) {\(s(t)\)};
+
+        % Caso |B| > 1 (Allungato): \tilde{s}(t) = s(t/2) in rosso
+        \addplot[thick, nord11] coordinates {
+            (-1, 0) (-1, 1) (1, 1) (1, 0)
+        };
+        \node[nord11, anchor=south] at (axis cs: -1.4, 0.25) {\(\tilde{s}(t) = s(\frac{t}{2})\)};
+
+        % Caso |B| < 1 (Contratto): \tilde{s}(t) = s(2t) in verde
+        \addplot[thick, nord14] coordinates {
+            (-0.25, 0) (-0.25, 1) (0.25, 1) (0.25, 0)
+        };
+        \node[nord14, anchor=south] at (axis cs: -0.4, 1.05) {\(\tilde{s}(t) = s(2t)\)};
+
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Scalamento nel tempo di un segnale.}
+\end{figure}
+
+Ragionando su $B$ notiamo che:
+
+\begin{remark}
+    Distinguiamo 3 casi:
+    \begin{itemize}
+        \item Se $B<0$, il segnale è \textit{riflesso rispetto alle ordinate}.
+        \item Se $|B|>1$ il segnale è \textbf{allungato}.
+        \item Se $|B|<1$ il segnale è \textbf{contratto}.
+    \end{itemize}
+\end{remark}
+
+\subsection{Combinazione di operazioni}
+
+In generale, possiamo combinare tutte le operazioni viste sopra
+per ottenere un nuovo segnale:
+
+\begin{definition}[COMBINAZIONE DI OPERAZIONI]
+    \[
+        \tilde{s}(t) = As \left( \frac{t-t_{0}}{B} \right)
+    \] 
+\end{definition}
+
+Come procediamo in tali casi? Procediamo come mostrato sotto:
+\[
+    s(t) \mapsto s_{1}(t) = s(t-t_{0}) \mapsto s_{2}(t) = s\left( \frac{t-t_{0}}{B} \right) 
+    \mapsto s_{3} = As\left( \frac{t-t_{0}}{B} \right) = \tilde{s}(t)
+\]
+
+% ----- GRANDEZZE ASSOCIATE -----
+
+\section{Grandezze associate ad un segnale}
+
+\subsection{Valor medio}
+
+Per un segnale a \textit{tempo continuo} $s(t)$, il suo \textit{valor medio} nell'intervallo
+$[t_{1},t_{2}]$ è definito come segue:
+
+\begin{definition}[VALOR MEDIO - TC]
+    \[
+        m_s(t_{1},t_{2}) = \frac{1}{t_{2}-t_{1}} \int_{t_{1}}^{t_{2}} s(t)dt
+    \] 
+\end{definition}
+
+Se invece il segnale è a \textit{tempo discreto} abbiamo, in
+un intervallo $[n_{1},n_{2}]$:
+
+\begin{definition}[VALOR MEDIO - TD]
+    \[
+        m_s(n_{1},n_{2}) = \frac{1}{n_{2}-n_{1}} \sum_{n=n_{1}}^{n_{2}} s(nT)
+    \] 
+\end{definition}
+
+Possiamo estendere il concetto di valor medio a tutto l'asse reale:
+
+\begin{prop}[VALOR MEDIO SU TUTTO L'ASSE]
+    Valor medio su tutto l'asse a tempo continuo:
+    \[
+        m_s = \lim_{u\to\infty} \frac{1}{2u} \int_{-u}^{u} s(t)dt
+    \]
+    Valor medio su tutto l'asse a tempo discreto:
+    \[
+        m_s = \lim_{k\to\infty} \frac{1}{2k} \sum_{n=-k}^{k} s(nT)
+    \] 
+\end{prop}
+
+E' facile intuire che:
+
+\begin{remark}[VALOR MEDIO DI SEGNALI DI DURATA FINITA]
+    Se un segnale ha \textbf{durata finita} (es. $\text{rect}$), l'area
+    totale è finita e, di conseguenza, il \textbf{valor medio è nullo}.
+\end{remark}
+
+\subsection{Energia}
+
+Possiamo definire l'\textbf{energia} associata ad un segnale come segue.
+Per un segnale a tempo continuo:
+
+\begin{definition}[ENERGIA DI UN SEGNALE - TC]
+    \[
+        E_s = \int_{-\infty}^{+\infty} s(t)^2 dt
+    \] 
+\end{definition}
+
+Per un segnale a tempo discreto:
+
+\begin{definition}[ENERGIA DI UN SEGNALE - TD]
+    \[
+        E_s = T\sum_{n=-\infty}^{+\infty} s(nT)^2
+    \] 
+\end{definition}
+
+E' utile osservare che l'energia di un segnale è \textbf{invariante} rispetto
+a \textbf{traslazioni temporali}.
+
+Inoltre, essendo l'energia del segnale una quantità quadratica, bisogna
+fare attenzione all'energia trasportata dalla \textbf{somma di due segnali}.
+Consideriamo per esempio due segnali a tempo continuo $s_{1}(t)$ e $s_{2}(t)$ 
+(il caso discreto è analogo) e la loro somma $s(t)=s_{1}(t)+s_{2}(t)$:
+Cominciamo calcolando il modulo al quadrato del segnale:
+\[
+    \begin{aligned}
+        |s_{1} + s_{2}|^2 &= (s_{1}+s_{2})(s_{1}^* + s_{2}^*) \\ 
+                   &= |s_{1}|^2 + |s_{2}|^2 + s_{1}s_{2}^* + s_{2}s_{1}^* 
+                   =  |s_{1}|^2 + |s_{2}|^2 + (s_{1}s_{2}^*) + (s_{1}s_{2}^*)^* \\ 
+                   &= |s_{1}|^2 + |s_{2}|^2 + 2 \text{Re}(s_{1}s_{2}^*)
+    \end{aligned}
+\]
+Sostituendo nella definizione otteniamo allora:
+
+\begin{warning}[ENERGIA DELLA SOMMA DI DUE SEGNALI]
+    \[
+    \begin{aligned}
+        E_s &= \int_{-\infty}^{\infty} \left[ |s_{1}|^2 + |s_{2}|^2 + 2 \text{Re}(s_{1}s_{2}^*) \right] dt \\ 
+            &= E_{s_{1}} + E_{s_{2}} + 2 \text{Re} 
+            \left( \int_{-\infty}^{+\infty} s_{1}(t)s_{2}^*(t) dt\right)
+    \end{aligned}
+    \] 
+\end{warning}
+
+Possiamo quindi notare che:
+
+\begin{remark}
+    Se i due segnali hanno \textbf{supporto temporale disgiunto}, allora l'energia
+    risultante è semplicemente la somma delle due energie:
+    \[
+        D_{s_{1}} \cap D_{s_{2}} = \emptyset \implies s_{1}s_{2}^* = 0 \forall t 
+        \implies E_s = E_{s_{1}} + E_{s_{2}}
+    \] 
+\end{remark}
+
+\subsection{Potenza media}
+
+Possiamo definire anche la potenza media di un segnale in certo intervallo.
+Per un segnale a tempo continuo $s(t)$ nell'intervallo $[t_{1},t_{2}]$:
+
+\begin{definition}[POTENZA MEDIA - TC]
+    \[
+        P_s = \frac{1}{t_{2}-t_{1}} \int_{t_{1}}^{t_{2}} s^2(t)dt
+    \] 
+\end{definition}
+
+Per un segnale a tempo discreto $s(nT)$ nell'intervallo $[n_{1},n_{2}]$:
+
+\begin{definition}[POTENZA MEDIA - TD]
+    \[
+        P_s = \frac{1}{n_{1}-n_{2}} \sum_{n=n_{1}}^{n_{2}} s^2(nT)
+    \] 
+\end{definition}
+
+Chiaramente, come prima abbiamo fatto con il valor medio, possiamo estendere il concetto
+di potenza media su tutto l'asse $(-\infty,+\infty)$ semplicemente applicando il limite.
+

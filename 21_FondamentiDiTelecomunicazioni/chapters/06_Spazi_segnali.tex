@@ -1,0 +1,573 @@
+% ------------------------------------------------------------------------------------
+%                                 SPAZI DI SEGNALI
+% ------------------------------------------------------------------------------------
+\chapter{Spazi di segnali}
+
+Abbiamo fin'ora studiato i segnali trattandoli come \textit{"elementi singoli"},
+tuttavia è particolarmente utile ricorrere agli strumenti dell'\textit{algebra lineare}
+(in particolare agli \textbf{spazi vettoriali}) per definire gli \textbf{spazi di segnali},
+ovvero delle strutture che ci permettono di \textbf{studiare i segnali in relazione tra loro}.
+
+Per capire \textit{come mai} questo sia \textit{utile}, pensiamo all'interpretazione
+che avevamo dato alla trasformata di Fourier:
+
+\begin{remark}
+    Abbiamo visto che la \textbf{trasformata di Fourier} può essere interpretata
+    come una \textbf{proiezione del segnale} su una \textbf{base} (continua)
+    di \textbf{segnali} nel dominio della frequenza.
+\end{remark}
+
+Vediamo quindi come sfruttare gli spazi vettoriali per definire
+gli \textbf{spazi di segnali} di nostro interesse.
+
+\section{Spazi vettoriali - ripasso}
+
+Per cominciare, ricordiamo velocemente la definizione di \textbf{spazio vettoriale}:
+
+\begin{definition}[SPAZIO VETTORIALE]
+    Uno \textbf{spazio vattoriale} $S$ è dato da un \textbf{insieme di elementi} 
+    (un \textit{campo} $C$) sui quali sono \textbf{definite due operazioni}:
+    \begin{itemize}
+        \item \textbf{SOMMA}: Dati $\mathbf{x},\mathbf{y}\in S$, 
+            abbiamo $\mathbf{x} + \mathbf{y}\in S$.
+        \item \textbf{MOLTIPLICAZIONE PER UNO SCALARE}: Dati $\mathbf{x}\in S$ ed
+            uno \textit{scalare} $\alpha \in C$ abbiamo $\alpha \mathbf{x} \in S$. 
+    \end{itemize}
+\end{definition}
+
+Ricordiamo che per queste due operazioni valgono
+le seguenti proprietà:
+
+\begin{prop}[PROPRIETA' DELLE OPERAZIONI]
+    Valgono le seguenti proprietà:
+    \begin{enumerate}
+        \item La somma è \textbf{COMMUTATIVA}: $\mathbf{x} + \mathbf{y} = \mathbf{y} + \mathbf{x}$
+        \item La somma è \textbf{ASSOCIATIVA}: $\mathbf{x} + (\mathbf{y} + \mathbf{z}) 
+            = (\mathbf{x} + \mathbf{y}) + \mathbf{z}$
+        \item \textbf{ELEMENTO NEUTRO} per la somma: $\mathbf{x} + \mathbf{0} = \mathbf{x}$
+        \item \textbf{ELEMENTO INVERSO} per la somma: $\mathbf{x} + (-\mathbf{x}) = 0$
+        \item La moltiplicazione per scalare è \textbf{DISTRIBUTIVA} rispetto alla somma:
+            $\alpha(\mathbf{x} + \mathbf{y}) = \alpha \mathbf{x} + \alpha \mathbf{y}$
+    \end{enumerate}
+\end{prop}
+
+\section{Spazio dei segnali}
+
+Ripassati i concetti sopra e ricordando che un \textbf{segnale} $x$ 
+è una \textit{funzione complessa}:
+\[
+    \begin{aligned}
+        x(t) &\in \mathbb{C} \\ 
+        x(kT) &\in \mathbb{C}
+    \end{aligned}
+\]
+
+è facile intuire che i \textbf{segnali} hanno una \textbf{struttura di spazio vettoriale}
+definito su \textbf{campo complesso}: le operazioni di \textit{somma di segnali} e
+di \textit{moltiplicazione per scalare complesso} sono infatti \textit{ben definite}.
+
+Consideriamo per esempio:
+\[
+    \mathbf{x} = [x_{1},\ldots , x_I] \in \mathbb{C}^I
+\]
+
+\begin{remark}
+    $\mathbf{x}$ è un \textbf{elemento di uno spazio dei segnali}
+    $I$-dimensionale definito sul \textbf{campo} $\mathbb{C}^I$
+\end{remark}
+
+\subsection{Prodotto interno}
+
+Ricordiamo che su uno spazio vettoriale è possibile definire un'operazione
+di \textbf{prodotto interno} (\textit{prodotto scalare}) che 
+\textit{combina due vettori} e \textit{restituisce uno scalare}.
+
+Per \textbf{segnali discreti} la definizione di \textbf{prodotto interno}
+è estremamente \textbf{simile al prodotto scalare} visto in algebra:
+
+\begin{definition}[PRODOTTO INTERNO DI SEGNALI DISCRETI]
+    Dati due elementi $\mathbf{x},\mathbf{y}$ dello 
+    \textit{spazio dei segnali discreti} $\mathbb{C}^I$, il 
+    loro \textbf{prodotto interno} è definito come segue:
+    \[
+        \langle \mathbf{x}, \mathbf{y} \rangle = \sum_{i=1}^I x_i \overline{y}_i 
+    \] 
+\end{definition}
+
+A \textbf{tempo continuo}, invece, la definizione è quella che abbiamo visto
+quando abbiamo dato un'interpretazione alla trasformata di Fourier:
+
+\begin{definition}[PRODOTTO INTERNO DI SEGNALI CONTINUI]
+    Dati due elementi $\mathbf{x},\mathbf{y}$ dello 
+    \textit{spazio dei segnali continui} $\mathbb{C}^I$, il 
+    loro \textbf{prodotto interno} è definito come segue:
+    \[
+        \langle \mathbf{x}, \mathbf{y} \rangle = \int_{-\infty}^{+\infty} x(t) \overline{y}(t) dt 
+    \] 
+\end{definition}
+
+Ricordiamo che il \textbf{prodotto interno} può essere
+usato per calcolare la \textbf{norma di un vettore}:
+
+\begin{prop}[NORMA INDOTTA DAL PRODOTTO INTERNO]
+    \[
+        \langle \mathbf{x}, \mathbf{x} \rangle = || \mathbf{x} || ^2
+    \] 
+\end{prop}
+
+Dato che la \textbf{norma di un segnale} è anche la sua \textbf{energia},
+osserviamo che:
+
+\begin{remark}[NORMA ED ENERGIA]
+    \[
+        \langle \mathbf{x}, \mathbf{x} \rangle = || \mathbf{x} || ^2 = E_x
+    \] 
+\end{remark}
+
+In generale, valgono inoltre le seguenti proprietà:
+
+\begin{prop}[PROPRIETA']
+    Il prodotto interno soddisfa:
+    \begin{itemize}
+        \item $\langle \mathbf{x} + \mathbf{z}, \mathbf{y} \rangle 
+            = \langle \mathbf{x}, \mathbf{z} \rangle + \langle \mathbf{y}, \mathbf{z} \rangle$
+        \item $\langle \mathbf{x}, \mathbf{y} \rangle = \overline{\langle \mathbf{y}, \mathbf{x} \rangle}$
+        \item $\langle \alpha\mathbf{x}, \mathbf{y} \rangle = \alpha\langle \mathbf{x}, \mathbf{y} \rangle$
+        \item $\langle \mathbf{x}, \mathbf{x} \rangle \ge 0$
+    \end{itemize}
+\end{prop}
+
+Ciò che è di \textit{maggior interesse per noi}, tuttavia, è
+la possibilità di usare il prodotto interno per definire
+l'\textbf{ortogonalità} fra due vettori (e quindi due segnali):
+
+\begin{definition}[ORTOGONALITA' TRA SEGNALI]
+    Due \textbf{segnali} si dicono \textbf{ortogonali} se:
+    \[
+        \langle \mathbf{x}, \mathbf{y} \rangle = 0
+    \] 
+    E scriviamo $\mathbf{x} \perp \mathbf{y}$.
+\end{definition}
+
+\section{Rappresentazione discreta di segnali}
+
+Ci chiediamo adesso \textit{se sia possibile associare ad un segnale}
+una \textbf{sequenza} (\textit{possibilmente} di \textit{lunghezza finita}) di valori.
+In pratica, vogliamo \textbf{passare da un segnale} (anche continuo)
+\textbf{ad un vettore numerico}.
+
+Per farlo, dobbiamo considerare una \textbf{base ortonormale}:
+
+\begin{definition}[BASE ORTONORMALE DI SEGNALI]
+    Una \textbf{base ortonormale} di uno spazio di segnali $\mathbb{C}^I$
+    è un \textbf{insieme di segnali} $\{ \phi_i(t) \}$, $i=1,\ldots ,I$
+    tali che:
+    \[
+        \langle \phi_i, \phi_j \rangle = \begin{cases}
+            1 & i=j \\ 
+            0 & i\ne j
+        \end{cases}
+    \] 
+\end{definition}
+
+\begin{remark}
+    Per comodità, consideriamo una \textbf{base} costituita da
+    \textbf{segnali ad energia finita}.
+\end{remark}
+
+\subsection{Errore nella rappresentazione}
+
+Effettuata la \textbf{scelta della base}, vogliamo \textbf{esprimere} un
+\textbf{generico segnale} $x(t)$ come \textbf{combinazione lineare}
+degli \textbf{elementi della base}:
+\[
+    \hat{x}(t) = \sum_{i\in I} x_i \phi_i(t)
+\]
+
+\begin{remark}
+    Siccome stiamo rappresentando un \textbf{segnale potenzialmente infinito}
+    con un \textbf{numero finito di termini}, incapperemo inevitabilmente
+    in un \textbf{certo errore} (inteso come \textit{differenza} tra il 
+    \textit{segnale originale} e la \textit{sua rappresentazione}).
+\end{remark}
+
+Definiamo quindi l'\textbf{errore}:
+\[
+    e(t) = x(t) - \hat{x}(t)
+\]
+
+E' intuitivo capire che per \textbf{ridurre l'errore} dovremo \textit{scegliere i coefficienti}
+$x_i$ in modo da \textbf{minimizzare l'energia dell'errore}.
+\[
+    E_e = \langle e(t), e(t) \rangle 
+    = \langle x - \hat{x}, x - \hat{x} \rangle
+    = \langle x,x \rangle - \langle \hat{x}, x \rangle 
+    - \langle x, \hat{x} \rangle + \langle \hat{x}, \hat{x} \rangle
+\]
+
+Abbiamo quindi:
+\[
+    E_e = E_x - \left\langle \sum_{i\in I} x_i \phi_i(t), x(t) \right\rangle
+    - \left\langle x(t), \sum_{i\in I} x_i \phi_i(t) \right\rangle
+    + \left\langle \sum_{i\in I} x_i \phi_i(t), \sum_{i\in I} x_i \phi_i(t) \right\rangle
+\]
+
+Definiamo $c_i$ il \textit{prodotto interno} tra $x(t)$ e l'$i$-esimo
+\textit{elemento della base}:
+\[
+    c_i \langle x(t), \phi_i(t) \rangle = \langle x, \phi_i \rangle
+\]
+
+Troviamo allora:
+\[
+    \begin{aligned}
+        E_e &= E_x - \sum_{i\in I} x_i \overline{c}_i 
+        - \sum_{i\in I} c_i \overline{x}_i + \sum_{i\in I} x_i \overline{x}_i \\ 
+            &= E_x + \sum_{i\in I} ( -x_i \overline{c}_i - c_i \overline{x}_i + x_i \overline{x}_i ) \\ 
+            &= E_x + \sum_{i\in I} ( -x_i \overline{c}_i - c_i \overline{x}_i + x_i \overline{x}_i 
+             + c_i \overline{c}_i - c_i \overline{c}_i ) \\ 
+            &= E_x + \sum_{i\in I} | c_i - x_i |^2 - \sum_{i\in I} |c_i|^2
+    \end{aligned}
+\]
+
+\begin{remark}[MINIMO]
+    Notiamo che tale quantità è \textbf{minima} se il termine centrale 
+    è nullo, cioè se:
+    \[
+        x_i = c_i
+    \] 
+    Ovvero \textbf{ogni coefficiente} $i$-esimo deve essere la 
+    \textbf{proiezione del segnale originale} sull'$i$-esimo
+    \textbf{elemento della base}.
+\end{remark}
+
+In tal caso, l'energia dell'errore risulta essere:
+\[
+    E_e = E_x - \sum_{i\in I} |c_i|^2 = E_x - E_{\hat{x}}
+\]
+
+\subsection{Distanza, correlazione e basi complete}
+
+Dati un segnale $x(t)$ ed una base $\{\phi_i\}$, se l'\textbf{energia dell'errore} 
+è \textbf{nulla}, diciamo che la \textbf{base è completa} per $x(t)$.
+In tal caso:
+\[
+    E_x = \langle x(t), x(t) \rangle = \sum_{i\in I} |c_i|^2
+\]
+
+\begin{remark}
+    Il segnale \textbf{appartiene allo spazioe} e la sua energia 
+    \textbf{coincide} con quella del vettore con \textbf{componenti} $x_i = c_i$.
+\end{remark}
+
+In ogni caso, anche se l'errore è \textbf{non nullo}, si ha la
+\textbf{proprietà di ortogonalità}:
+
+\begin{prop}[PROPRIETA' DI ORTOGONALITA']
+    L'\textbf{errore} è \textbf{ortogonale} a 
+    \textbf{tutti gli elementi della base}:
+    \[
+        \langle e, \phi_i \rangle = \langle x - \hat{x} , \phi_i \rangle = c_i - x_i = 0
+    \] 
+\end{prop}
+
+Per cui l'\textbf{errore \textit{non} appartiene} allo \textbf{spazio} generato
+dagli \textbf{elementi della base}.
+
+In generale, possiamo definire la \textbf{distanza euclidea} tra \textbf{due segnali}
+come segue:
+
+\begin{definition}[DISTANZA EUCLIDEA TRA SEGNALI]
+    \[
+        d(x,y) = \sqrt{ E_{x-y} } = \left( 
+        \int_{-\infty}^{+\infty} | x(t) - y(t) |^2 \right)^{\frac{1}{2}} 
+    \] 
+\end{definition}
+
+Che possiamo anche esprimere come:
+\[
+    d^2 (x,y) = E_x + E_y - 2 \Re \left[ \langle x,y \rangle \right]
+\]
+
+Possiamo anche introdurre il \textbf{coefficiente di correlazione} $\rho$:
+\[
+    \rho = \frac{\langle x,y \rangle}{ \sqrt{E_x E_y} } = 
+    \frac{\langle x,y \rangle}{||x|| \text{ } ||y||}
+\]
+E scrivere:
+\[
+    d^2(x,y) = E_x + E_y - 2 \Re[ \rho ] \sqrt{ E_x E_y} 
+\]
+
+\subsection{Ortonormalizzazione di Gram-Schmidt}
+
+Abbiamo visto che per rappresentare il segnale come un vettore numerico abbiamo
+bisogno di una \textbf{base ortonormale}. Per ottenerla, possiamo semplicemente
+applicare il processo di \textbf{ortonormalizzazione di Gram-Schmidt} che
+abbiamo già visto in algebra.
+
+Dato un \textbf{insieme di segnali} $\{s_1(t),s_{2}(t),\ldots ,s_m(t)\}$, vogliamo 
+\textbf{ricavare una base ortogonale} $\{ \phi_i'(t) \}$, $i=1,\ldots ,I$, che 
+poi \textbf{normalizzeremo} per ottenere la \textbf{base ortonormale}
+\[
+    \left\{ \phi_i(t) = \frac{\phi_i'}{\sqrt{E_{\phi_i'}} } \right\}  
+\]
+
+Vediamo quindi come applicare la procedura:
+
+\begin{definition}[PROCEDURA DI GRAM-SCHMIDT]
+    La procedura segue questi passaggi:
+    \begin{enumerate}
+        \item Il \textbf{primo elemento della base} è 
+            ottenuto dal \textbf{primo segnale}:
+            \[
+                \phi_{1}'(t) \coloneqq s_{1}(t)
+            \] 
+        \item Il \textbf{secondo elemento} è ottenuto dal
+            \textbf{secondo segnale} \textit{sottraendo la sua proiezione} sul
+            \textit{primo elemento della base}:
+            \[
+                \phi_{2}'(t) \coloneqq s_{2}(t) - \langle s_{2}(t), \phi_{1}'(t) \rangle \phi_{1}'(t)
+            \] 
+        \item Gli \textbf{elementi successivi} si ottengono con lo
+            \textbf{stesso principio}, \textit{sottraendo al segnale i-esimo}
+            la sua \textit{proiezione sullo spazio generato dai precedenti elementi della base}:
+            \[
+                \phi_i'(t) = s_i(t) - \sum_{j=1}^{i-1} \langle s_i(t), \phi_j'(t) \rangle \phi_j'(t)
+            \] 
+        \item Si \textbf{ripete il procedimento} fino ad \textbf{esaurire}
+            tutti i \textbf{segnali}.
+    \end{enumerate}
+\end{definition}
+
+\begin{remark}
+    Il \textbf{numero} $I$ degli \textbf{elementi della base} \textit{può}
+    essere \textbf{potenzialmente minore} di $M$, se l'insieme
+    dei segnali di partenza conteneva \textit{segnali linearmente dipendenti}.
+\end{remark}
+
+\subsection{Ortonormalizzazione - esempio}
+
+Consideriamo i tre segnali seguenti, mostrati anche in
+figura~\ref{fig:06_01_SegnaliEsempioOrtonormalizzazione}:
+\[
+    \begin{aligned}
+        s_{1}(t) &= \begin{cases}
+            A \sin \left( 2\pi \frac{t}{T} \right) & 0 < t < \frac{T}{2} \\ 
+            0 & \text{altrove}
+        \end{cases} \\ \\ 
+        s_{1}(t) &= \begin{cases}
+            A \sin \left( 2\pi \frac{t}{T} \right) & 0 < t < T \\ 
+            0 & \text{altrove}
+        \end{cases} \\ \\ 
+        s_{1}(t) &= \begin{cases}
+            A \sin \left( 2\pi \frac{t}{T} \right) & \frac{T}{2} < t < T \\ 
+            0 & \text{altrove}
+        \end{cases}
+    \end{aligned}
+\]
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}
+
+        % --- Segnale s1(t) ---
+        \begin{axis}[
+            name=plot1,
+            width=8cm,
+            height=3.5cm,
+            axis lines=middle,
+            xmin=-1, xmax=3,
+            ymin=-1.5, ymax=1.5,
+            xtick={1, 2},
+            xticklabels={\(T/2\), \(T\)},
+            ytick=\empty,
+            xlabel={\(t\)},
+            ylabel={\(s_1\)},
+            xlabel style={at={(1,0.5)}, anchor=west},
+            ylabel style={at={(0.5,1)}, anchor=south},
+            axis line style={-Stealth, thick},
+            title style={font=\small},
+            ]
+            % Tratti a zero
+            \addplot[very thick, nord11, domain=-1:0] {0};
+            \addplot[very thick, nord11, domain=1:3] {0};
+            % Semi-sinusoide positiva
+            \addplot[very thick, nord11, domain=0:1, samples=100] {sin(deg(pi*x))};
+        \end{axis}
+
+        % --- Segnale s2(t) ---
+        \begin{axis}[
+            name=plot2,
+            at={(plot1.below south west)},
+            anchor=north west,
+            yshift=-0.4cm,
+            width=8cm,
+            height=3.5cm,
+            axis lines=middle,
+            xmin=-1, xmax=3,
+            ymin=-1.5, ymax=1.5,
+            xtick={1, 2},
+            xticklabels={\(T/2\), \(T\)},
+            ytick=\empty,
+            xlabel={\(t\)},
+            ylabel={\(s_2\)},
+            xlabel style={at={(1,0.5)}, anchor=west},
+            ylabel style={at={(0.5,1)}, anchor=south},
+            axis line style={-Stealth, thick},
+            ]
+            % Tratti a zero
+            \addplot[very thick, nord11, domain=-1:0] {0};
+            \addplot[very thick, nord11, domain=2:3] {0};
+            % Sinusoide completa (semi-onda positiva e negativa)
+            \addplot[very thick, nord11, domain=0:2, samples=200] {sin(deg(pi*x))};
+        \end{axis}
+
+        % --- Segnale s3(t) ---
+        \begin{axis}[
+            name=plot3,
+            at={(plot2.below south west)},
+            anchor=north west,
+            yshift=-0.4cm,
+            width=8cm,
+            height=3.5cm,
+            axis lines=middle,
+            xmin=-1, xmax=3,
+            ymin=-1.5, ymax=1.5,
+            xtick={1, 2},
+            xticklabels={\(T/2\), \(T\)},
+            ytick=\empty,
+            xlabel={\(t\)},
+            ylabel={\(s_3\)},
+            xlabel style={at={(1,0.5)}, anchor=west},
+            ylabel style={at={(0.5,1)}, anchor=south},
+            axis line style={-Stealth, thick},
+            ]
+            % Tratti a zero
+            \addplot[very thick, nord11, domain=-1:1] {0};
+            \addplot[very thick, nord11, domain=2:3] {0};
+            % Semi-sinusoide negativa
+            \addplot[very thick, nord11, domain=1:2, samples=100] {sin(deg(pi*x))};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Tre segnali di esempio}
+    \label{fig:06_01_SegnaliEsempioOrtonormalizzazione}
+\end{figure}
+
+\begin{remark}
+    Osserviamo subito che $s_{2}$ è la \textbf{somma} di $s_{1}$ ed $s_{3}$, quindi
+    ci aspettiamo una \textbf{dimensione della base minore di 3}.
+\end{remark}
+
+In particolare, è facile notare che $s_{1}$ ed $s_{3}$ sono
+\textbf{ortogonali}, infatti
+\[
+    \begin{aligned}
+        \langle s_{1}(t), s_{3}(t) \rangle &= \int_{-\infty}^{+\infty} s_{1}(t) \overline{s_{3}}(t) dt \\ 
+                                           &= \int_{0}^{T} s_{1}(t) s_{3}(t) dt = 0
+    \end{aligned}
+\]
+
+Per cui:
+\[
+    \{s_{1}(t), s_{3}(t)\}  
+\] 
+costituisce una \textbf{base ortogonale} che possiamo \textbf{normalizzare}
+per ottenere la \textbf{base ortonormale desiderata}.
+
+Per prima cosa scegliamo quindi:
+\[
+    \phi_{1}'(t) \coloneqq s_{1}(t)
+\]
+E \textbf{normalizziamolo}:
+\[
+    \begin{aligned}
+        E_{s_{1}} &= \int_0^{T/2} |s_{1}(t)|^2 dt = 
+        \int_{0}^{T/2} A^2 \sin^2 \left( 2\pi \frac{t}{T} \right) dt \\ 
+                  &= A^2 \int_{0}^{T/2} \left( \frac{1}{2} - \frac{1}{2}\cos 4\pi\frac{t}{T} \right)dt \\ 
+                  &= A^2 \left( \frac{T}{4} - 
+                  \frac{1}{2} \frac{T}{4\pi} \sin 2\pi \frac{2t}{T} \bigg|_0^{T/2} \right) = A^2 \frac{T}{4}
+    \end{aligned}
+\]
+
+Troviamo allora il \textbf{primo elemento della base}:
+\[
+    \phi_{1}(t) = \frac{\phi_{1}'(t)}{\sqrt{E_{\phi_{1}'(t)}}} = 
+    \begin{cases}
+        \frac{2}{\sqrt{T} } \sin \left( 2\pi \frac{t}{T} \right) & 0 < t < \frac{T}{2} \\ 
+        0 & \text{altrove}
+    \end{cases}
+\]
+
+Ripetendo lo stesso processo con $s_{3}(t)$ troviamo il
+\textbf{secondo} (e \textit{ultimo} elemento):
+\[
+    \phi_{2}(t) = \begin{cases}
+        \frac{2}{\sqrt{T} } \sin \left( 2\pi \frac{t}{T} \right) & \frac{T}{2} < t < T \\ 
+        0 & \text{altrove}
+    \end{cases}
+\]
+
+Abbiamo quindi:
+\[
+    \begin{aligned}
+        s_{1}(t) &= \frac{A\sqrt{T}}{2} \phi_{1}(t) \\ 
+        s_{3}(t) &= \frac{A\sqrt{T}}{2} \phi_{2}(t) \\ 
+        s_{2}(t) &= s_{1}(t) + s_{3}(t) = \frac{A\sqrt{T}}{2} \phi_{1}(t) + \frac{A\sqrt{T}}{2} \phi_{2}(t)
+    \end{aligned}
+\]
+
+Siccome abbiamo ottenuto una \textbf{base bi-dimensionale}, la 
+\textbf{rappresentazione vettoriale} dei tre segnali 
+\textit{rispetto alla base ortonormale} $\{\phi_{1}, \phi_{2}\}$ sarà, come mostrato anche in 
+figura~\ref{fig:06_02_RappresentazioneVettorialeEsempio}:
+\[
+    \begin{aligned}
+        s_{1} &= \begin{bmatrix} \frac{A\sqrt{T} }{2} & 0 \end{bmatrix} \\ 
+        s_{2} &= \begin{bmatrix} \frac{A\sqrt{T} }{2} & \frac{A\sqrt{T} }{2} \end{bmatrix} \\ 
+        s_{3} &= \begin{bmatrix} 0 & \frac{A\sqrt{T} }{2} \end{bmatrix}
+    \end{aligned}
+\]
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth, 
+        thick,
+        point/.style={circle, draw=black, fill=nord14!60, inner sep=2.5pt}
+        ]
+        % --- Assi Cartesiani ---
+        \draw[->] (-1, 0) -- (5, 0) node[right] {\(\phi_1\)};
+        \draw[->] (0, -1) -- (0, 3.5) node[above] {\(\phi_2\)};
+
+        % --- Definizione delle coordinate ---
+        % Distanza dal centro (per comodità uso 3 unità)
+        \def\dist{3} 
+
+        % --- Punti (Segnali) ---
+
+        % s1 sull'asse phi_1
+        \node[point] (s1) at (\dist, 0) {};
+        \node[above right=0.1cm and 0.1cm] at (s1) {\(s_1\)};
+        % Etichetta distanza
+        \node[below=0.2cm] at (\dist, 0) {\(\frac{A\sqrt{T}}{2}\)};
+
+        % s3 sull'asse phi_2
+        \node[point] (s3) at (0, \dist) {};
+        \node[right=0.1cm] at (s3) {\(s_3\)};
+        % Etichetta distanza
+        \node[left=0.2cm, align=center] at (0, \dist) {\(\frac{A\sqrt{T}}{2}\)};
+
+        % s2 nel primo quadrante
+        \node[point] (s2) at (\dist, \dist) {};
+        \node[right=0.1cm] at (s2) {\(s_2\)};
+
+    \end{tikzpicture}
+    \caption{Rappresentazione vettoriale dei segnali}
+    \label{fig:06_02_RappresentazioneVettorialeEsempio}
+\end{figure}
+
+\begin{remark}[COSTELLAZIONE]
+    La \textbf{rappresentazione vettoriale} dei segnali come quella in figura
+    è spesso chiamata \textbf{costellazione}.
+\end{remark}

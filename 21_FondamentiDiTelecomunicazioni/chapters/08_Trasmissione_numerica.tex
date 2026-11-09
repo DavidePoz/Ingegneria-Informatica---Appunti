@@ -1,0 +1,984 @@
+% ------------------------------------------------------------------------------------
+%                               TRASMISSIONE NUMERICA
+% ------------------------------------------------------------------------------------
+\chapter{Trasmissione numerica}
+
+Ricordiamo che avevamo accennato al fatto che un \textbf{sistema di telecomunicazioni}
+può essere schematizzato come mostrato in figura~\ref{fig:08_01_SchemaSistemaTelecom}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+            >=Stealth, 
+            thick,
+            scale = 0.67,
+            block/.style={
+                draw=nord0, 
+                fill=nord14!20, 
+                rectangle, 
+                minimum height=1.2cm, 
+                minimum width=2.2cm, 
+                align=center, 
+                font=\small,
+                text=nord0
+            },
+            sum/.style={
+                draw=nord0, 
+                circle, 
+                inner sep=0pt, 
+                minimum size=0.6cm, 
+                fill=white
+            },
+            % Stile per i riquadri tratteggiati (Tx e Rx)
+            container/.style={
+                draw=nord3, 
+                dashed, 
+                thick, 
+                inner sep=8pt
+            }
+            ]
+
+            % --- Nodi Principali ---
+            \node[block] (mod) {modulatore\\numerico};
+            \node[block, right=1.4cm of mod] (canale) {canale};
+            \node[sum, right=1.4cm of canale] (somma) {};
+            \node[block, right=1.4cm of somma] (demod) {demodulatore\\numerico};
+
+            % --- Riquadri Tratteggiati per Tx e Rx ---
+            \node[container, fit=(mod), 
+                label={[font=\bfseries\scriptsize, text=nord3]above:Trasmettitore (Tx)}] (tx_box) {};
+            \node[container, fit=(demod), 
+                label={[font=\bfseries\scriptsize, text=nord3]above:Ricevitore (Rx)}] (rx_box) {};
+
+            % --- Etichette e Frecce ---
+            \node at (somma) {\(+\)}; 
+
+            \draw[->, nord0] ([xshift=-2cm]tx_box.west) -- (tx_box.west) 
+                node[midway, above, text=nord0] {simboli};
+            \draw[->, nord0] (tx_box) -- (canale);
+            \draw[->, nord0] (canale) -- (somma);
+            \draw[->, nord0] (somma) -- (rx_box);
+            \draw[->, nord0] (rx_box.east) -- ([xshift=2cm]rx_box.east) 
+                node[midway, above, text=nord0] {simboli};
+
+            % Rumore
+            \draw[->, nord0] ([yshift=-1cm]somma.south) node[below, text=nord0] {\(w(t)\)} -- (somma.south);
+        \end{tikzpicture}
+    \caption{Schetizzazione di un sistema di telecomunicazioni}
+    \label{fig:08_01_SchemaSistemaTelecom}
+\end{figure}
+
+Facciamo alcune osservazioni su ciascun componente del sistema:
+
+\begin{remark}[OSSERVAZIONI SULLO SCHEMA]
+    Lo schema in figura mette in evidenza il fatto che:
+    \begin{itemize}
+        \item Lo \textbf{scopo} di un sistema di telecomunicazioni è quello di
+            \textbf{trasmettere dei messaggi}, che possono essere modellati come
+            delle \textbf{sequenze di simboli}.
+        \item La trasmissione avviene attraverso un \textbf{canale di trasmissione}
+            (e.g. cavi in rame, cavi in fibra ottica, aria ...), il quale è
+            tuttavia una \textbf{fonte di disturbi} ($w(t)$).
+        \item Il segnale deve essere \textit{"convertito"} in una \textbf{forma tale}
+            da \textbf{poter essere trasmesso} attraverso il \textbf{canale}.
+            Questa operazione è svolta da un \textbf{modulatore} (parte del blocco
+            \textit{trasmettitore}), mentre in \textit{fase di ricezione} un 
+            \textbf{demodulatore} (parte del blocco \textit{ricevitore}) effettua
+            la \textit{trasformazione inversa} per \textit{"riconvertire"}
+            il segnale nella \textit{forma desiderata}.
+    \end{itemize}
+\end{remark}
+
+Per quanto riguarda i \textbf{simboli di ingresso} $a_k$, questi possono 
+essere modellati come delle \textbf{variabili aleatorie discrete} 
+che assumono i valori in:
+\[
+    \mathcal{A} = \{1,\ldots , M\}  
+\]
+
+\begin{definition}[ALFABETO]
+    L'\textbf{insieme di valori} $\mathcal{A}$ che i simboli possono assumere
+    è detto \textbf{alfabeto}.
+\end{definition}
+
+In particolare, possiamo immaginare che la \textbf{sorgente emetta dei simboli}
+ad \textit{intervalli regolari} con \textbf{periodo di simbolo} $T_s$ (e frequenza $R_s$, detta
+\textbf{symbol rate}): la sequenza di ingresso è pertanto assimilabile ad 
+un \textbf{processo aleatorio discreto}.
+
+\begin{definition}[PERIODO DI SIMBOLO]
+    Il \textbf{periodo di simbolo} è l'\textit{intervallo di tempo} che
+    intercorre tra \textbf{due emessioni} di simboli \textit{consecutive}.
+\end{definition}
+
+\section{Modulatore}
+
+Concentriamoci ora sul \textbf{trasmettitore} e, in particolare, sul
+\textbf{modulatore}.
+
+Lo scopo del \textbf{modulatore} è \textbf{associare una forma d'onda} 
+ad \textbf{ogni simbolo di ingresso} in modo che possa \textbf{essere compatibile}
+per la \textbf{trasmisisone} attraverso il \textbf{canale}:
+\[
+    a_k = n\in \mathcal{A} \longrightarrow s_n(t)
+\]
+
+\begin{definition}[MODULAZIONE M-ARIA]
+    Il modulatore impiega un insieme di $M$ \textbf{forme d'onda}.
+    \begin{itemize}
+        \item $M=2$: si parla di \textbf{modulazione binaria}.
+        \item $M>2$: si parla di \textbf{modulazione M-aria}.
+    \end{itemize}
+\end{definition}
+
+\subsection{Mappatura dei simboli}
+
+Prima di poter \textit{generare le forme d'onda da trasmettere}, è spesso 
+necessario effettuare una \textbf{mappatura} tra i \textbf{simboli emessi dalla sorgente}
+e quelli da \textbf{trasmettere attraverso il canale}.
+
+Per capire meglio cosa intendiamo, consideriamo il caso della \textbf{trasmissione digitale}.
+Analogamente a quanto detto sopra, la sorgente emette \textit{valori binari} 
+con \textbf{periodo di bit} $T_b$ (quindi con frequenza $R_b = 1 /T_b$, detta 
+comunemente \textbf{bit rate}). 
+
+\begin{remark}[TRASMISSIONE DIGITALE]
+    Anzichè \textbf{inviare i singoli bit}, questi vengono
+    \textbf{raggruppati} in \textbf{blocchi} di $L$ bit ciascuno
+    \textbf{prima} di \textbf{passare attraverso} al \textbf{modulatore}.
+\end{remark}
+
+Con $L$ bit abbiamo $2^L$ \textbf{possibili simboli}, per cui necessiteremo di
+\[
+    M = 2^L
+\]
+\textbf{forme d'onda}. 
+
+Vale la pena considerare anche il ragionamento inverso: se abbiamo un 
+\textbf{modulatore} in grado di produrre $M$ \textbf{forme diverse}, allora 
+significa che \textbf{ciascun blocco} dovrà essere \textbf{costituito} da 
+$L= \log_{2}M$ \textbf{bit}.
+
+\begin{remark}[PERIODO DI SIMBOLO E DI BIT]
+    Siccome un \textbf{simbolo trasporta $L$ bit}, dovrà essere:
+    \[
+        T_s = L\cdot T_b
+    \] 
+    Ma $L=\log_{2}M$, per cui abbiamo $T_s = \log_{2}(M) \cdot T_b$.
+    
+    Quindi risulta:
+    \[
+        R_b = \frac{1}{T_b} = \frac{\log_{2}M}{T_s} = R_s\cdot \log_{2}M
+    \] 
+\end{remark}
+
+
+Una volta \textit{stabilita la corrispondenza}, il \textbf{modulatore} si
+occuperà di \textbf{associare} una \textbf{forma d'onda} a \textbf{ciascun simbolo}.
+
+Alla luce di ciò, possiamo \textit{schematizzare il trasmettitore} come mostrato
+in figura~\ref{fig:08_02_TxMapMod}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth, % Punta delle frecce
+        thick,     % Spessore delle linee
+        % Stile per i blocchi interni
+        block/.style={
+            draw=nord0, 
+            fill=nord14!20, % Verde Nord chiarissimo
+            rectangle, 
+            minimum height=1.2cm, 
+            minimum width=2.2cm, 
+            align=center, 
+            font=\small,
+            text=nord0
+        },
+        % Stile per il contenitore esterno
+        container/.style={
+            draw=nord3, % Grigio Nord scuro
+            dashed, 
+            thick, 
+            inner sep=12pt
+        }
+        ]
+
+        % --- Blocchi interni ---
+        \node[block] (map) {MAP};
+        \node[block, right=1.5cm of map] (mod) {Modulatore};
+
+        % --- Contenitore esterno (Tx) ---
+        \node[container, fit=(map) (mod), 
+            label={[font=\bfseries\small, text=nord0]above:Trasmettitore (Tx)}] (tx) {};
+
+        % --- Frecce e segnali ---
+
+        % Ingresso
+        \draw[->, nord0] (-2.5,0) -- (map.west) node[left=1, above] {\(a_k\)};
+
+        % Segnale intermedio (dal MAP al Modulatore)
+        \draw[->, nord0] (map) -- (mod) node[midway, above] {\(s_k\)};
+
+        % Uscita
+        \draw[->, nord0] (mod.east) -- (6,0) node[right, above] {\(S_{Tx}(t)\)};
+    \end{tikzpicture}
+    \caption{Schematizzazione del blocco trasmettitore}
+    \label{fig:08_02_TxMapMod}
+\end{figure}
+
+\begin{remark}["PIPELINE" TX]
+    A partire da un \textbf{blocco} di $L$ \textbf{bit} $a_k$ un
+    \textbf{mappatore} produce un \textbf{simbolo} $s_k$ a
+    cui il \textbf{modulatore} associa la \textbf{forma d'onda da trasmettere}.
+\end{remark}
+
+\subsection{Esempio}
+
+Per capire meglio quanto spiegato sopra, consideriamo un esempio.
+Immaginiamo di avere una \textbf{fonte di bit} ed un \textbf{modulatore}
+con $M=4$ forme d'onda disponibili.
+Per cui:
+\begin{itemize}
+    \item Abbiamo \textbf{4 simboli possibili}: $\mathcal{A}= \{1,2,3,4\}$.
+    \item Ciascun simbolo codificherà $L=\log_{2}4 = 2$ \textbf{bit}.
+\end{itemize}
+
+La \textbf{corrispondenza} da stabilire tra simboli e bit
+può quindi essere (per esempio):
+\[
+    \begin{aligned}
+        00 &\to 1 = s_{1}(t) \\ 
+        01 &\to 2 = s_{2}(t)\\ 
+        10 &\to 3 = s_{3}(t)\\ 
+        11 &\to 4 = s_{4}(t)
+    \end{aligned}
+\]
+Delle possibili \textbf{forme d'onda} da \textit{associare ai simboli} sono
+mostrate in figura~\ref{fig:08_03_FormeOndaM4} (in figura usiamo $T$ per indicare $T_s$).
+
+\begin{figure}[!ht]
+    \centering
+    \pgfplotsset{
+        axisStyle/.style={
+            width=6.5cm,
+            height=4.5cm,
+            axis lines=middle,
+            xmin=-0.2, xmax=1.2,
+            ymin=-1.5, ymax=1.5,
+            xtick={0, 0.5, 1},
+            xticklabels={\(0\), \(T/2\), \(T\)},
+            ytick={-1, 0, 1},
+            yticklabels=\empty,
+            xlabel={\(t\)},
+            xlabel style={at={(1.1,0.5)}, anchor=west},
+            ylabel style={at={(0.5,1)}, anchor=south},
+            grid=major,
+            grid style={dashed, gray!20},
+            axis line style={-Stealth, thick},
+        }
+    }
+    \begin{tikzpicture}
+        % --- s1(t): Impulso positivo da 0 a T/2 ---
+        \begin{axis}[
+            name=plot1,
+            at={(0, 0)},
+            axisStyle,
+            ylabel={\(s_1(t)\)},
+            ]
+            \addplot[very thick, nord10] coordinates {(-0.2,0) (0,0) (0,1) (0.5,1) (0.5,0) (1.2,0)};
+            \draw[dashed, nord3] (axis cs:0,0) -- (axis cs:0,1);
+        \end{axis}
+
+        % --- s2(t): Impulso positivo da T/2 a T ---
+        \begin{axis}[
+            name=plot2,
+            at={(plot1.east)},
+            anchor=west,
+            xshift=1cm,
+            axisStyle,
+            ylabel={\(s_2(t)\)},
+            ]
+            \addplot[very thick, nord10] coordinates {(-0.2,0) (0.5,0) (0.5,1) (1,1) (1,0) (1.2,0)};
+            \draw[dashed, nord3] (axis cs:0.5,0) -- (axis cs:0.5,1);
+        \end{axis}
+
+        % --- s3(t): Impulso negativo da 0 a T/2 ---
+        \begin{axis}[
+            name=plot3,
+            at={(plot1.below south west)},
+            anchor=north west,
+            yshift=-1cm,
+            axisStyle,
+            ylabel={\(s_3(t)\)},
+            ]
+            \addplot[very thick, nord11] coordinates {(-0.2,0) (0,0) (0,-1) (0.5,-1) (0.5,0) (1.2,0)};
+            \draw[dashed, nord3] (axis cs:0,0) -- (axis cs:0,-1);
+        \end{axis}
+
+        % --- s4(t): Impulso negativo da T/2 a T ---
+        \begin{axis}[
+            name=plot4,
+            at={(plot2.below south west)},
+            anchor=north west,
+            yshift=-1cm,
+            axisStyle,
+            ylabel={\(s_4(t)\)},
+            ]
+            \addplot[very thick, nord11] coordinates {(-0.2,0) (0.5,0) (0.5,-1) (1,-1) (1,0) (1.2,0)};
+            \draw[dashed, nord3] (axis cs:0.5,0) -- (axis cs:0.5,-1);
+        \end{axis}
+
+    \end{tikzpicture}
+    \caption{Possibili forme d'onda per il caso d'esempio}
+    \label{fig:08_03_FormeOndaM4}
+\end{figure}
+
+Immaginiamo ora che la sorgente emetta la seguente \textbf{sequenza di bit}:
+\[
+    010010110101
+\]
+
+Il \textbf{mappatore} li raggrupperà a \textbf{gruppi di due} per 
+effettuare l'\textbf{associazione dei simboli}:
+\[
+    \begin{matrix}
+        [01] & [00] & [10] & [11] & [01] & [01] \\ 
+        \downarrow &\downarrow &\downarrow &\downarrow &\downarrow &\downarrow \\ 
+        2 & 1 & 3 & 4 & 2 & 2 \\ 
+        \downarrow &\downarrow &\downarrow &\downarrow &\downarrow &\downarrow \\ 
+        s_{2}(t) & s_{1}(t) & s_{3}(t) & s_{4}(t) & s_{2}(t) & s_{2}(t)
+    \end{matrix}
+\]
+
+E il \textbf{segnale trasmesso} sarà quindi la \textit{sequenza di forme d'onda}
+mostrata in figura~\ref{fig:08_04_EsempioSegnaleModulato}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.95\textwidth,
+            height=6cm,
+            axis lines=middle,
+            xlabel={\(t\)},
+            ylabel={\(s_{Tx}(t)\)},
+            xmin=-0.5, xmax=12.5, % Asse x da 0 a 6T (dove T=2)
+            ymin=-1.5, ymax=1.5,
+            xtick={0, 2, 4, 6, 8, 10, 12},
+            xticklabels={\(0\), \(T\), \(2T\), \(3T\), \(4T\), \(5T\), \(6T\)},
+            ytick={-1, 0, 1},
+            yticklabels={\(-A\), \(0\), \(A\)}, % Etichette simboliche per l'ampiezza
+            xlabel style={at={(1,0.5)}, anchor=west},
+            ylabel style={at={(0.5,1)}, anchor=south},
+            grid=major,
+            grid style={dashed, gray!20},
+            axis line style={-Stealth, thick},
+            ]
+
+            % --- Tracciamento del segnale continuo s_Tx(t) ---
+            \addplot[very thick, nord10] coordinates {
+                    (0,0) (1,0) (1,1) (3,1) (3,0) (4,0) 
+                    (4,-1) (5,-1) (5,0) (7,0) (7,-1) (8,-1) 
+                    (8,0) (9,0) (9,1) (10,1) (10,0) (11,0) 
+                    (11,1) (12,1) (12,0)
+                };
+
+            % Linee verticali tratteggiate per separare i simboli (ogni T=2)
+            \pgfplotsinvokeforeach{2, 4, 6, 8, 10}{
+                \draw[dashed, gray!50] (axis cs:#1,-1.5) -- (axis cs:#1,1.5);
+            }
+
+            % Etichette dei bit raggruppati (sopra)
+            \node[above, font=\small] at (axis cs:1,1.2) {01};
+            \node[above, font=\small] at (axis cs:3,1.2) {00};
+            \node[above, font=\small] at (axis cs:5,1.2) {10};
+            \node[above, font=\small] at (axis cs:7,1.2) {11};
+            \node[above, font=\small] at (axis cs:9,1.2) {01};
+            \node[above, font=\small] at (axis cs:11,1.2) {01};
+
+            % Etichette dei simboli (sotto)
+            \node[below, font=\small, text=nord11] at (axis cs:1,-1.2) {2};
+            \node[below, font=\small, text=nord11] at (axis cs:3,-1.2) {1};
+            \node[below, font=\small, text=nord11] at (axis cs:5,-1.2) {3};
+            \node[below, font=\small, text=nord11] at (axis cs:7,-1.2) {4};
+            \node[below, font=\small, text=nord11] at (axis cs:9,-1.2) {2};
+            \node[below, font=\small, text=nord11] at (axis cs:11,-1.2) {2};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Segnale trasmesso}
+    \label{fig:08_04_EsempioSegnaleModulato}
+\end{figure}
+
+\subsection{PWM}
+
+Vediamo ora un esempio di modulazione di
+tipo \textbf{PWM}: \textbf{Pulse Width Modulation}.
+
+\begin{remark}[PWM]
+    In questo tipo di modulazione si utilizzano \textbf{onde quadre} con
+    \textbf{diverse larghezze degli impulsi}.
+
+    E' ampiementa utilizzata in \textbf{elettronica digitale} perchè
+    permette di \textit{controllare la potenza di motori elettrici}
+    usando \textit{segnali digitali}.
+\end{remark}
+
+Usiamo per esempio $M=4$ con i segnali seguenti, mostrati 
+anche in figura~\ref{fig:08_05_EsempioPWM}.
+\[
+    \begin{aligned}
+        s_{1}(t) &= \begin{cases}
+            A & 0 < t <\frac{T}{4} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        s_{2}(t) &= \begin{cases}
+            A & 0 < t <\frac{T}{2} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        s_{3}(t) &= \begin{cases}
+            A & 0 < t <\frac{3T}{4} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        s_{4}(t) &= \begin{cases}
+            A & 0 < t < T \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+    \end{aligned}
+\]
+
+\begin{figure}[!ht]
+    \centering
+    \pgfplotsset{
+        pwmStyle/.style={
+            width=6.5cm,
+            height=3.5cm,
+            axis lines=middle,
+            xmin=-0.05, xmax=1.15,
+            ymin=-0.1, ymax=1.3,
+            xtick={0, 0.25, 0.5, 0.75, 1},
+            xticklabels={\(0\), \(\frac{T}{4}\), \(\frac{T}{2}\), \(\frac{3T}{4}\), \(T\)},
+            ytick={0, 1},
+            yticklabels={\(0\), \(A\)},
+            ylabel style={at={(0,1)}, anchor=south east},
+            grid=major,
+            grid style={dashed, gray!20},
+            axis line style={-Stealth, thick},
+        }
+    }
+
+    \begin{tikzpicture}
+
+        % --- s1(t) ---
+        \begin{axis}[name=ax1, pwmStyle, ylabel={\(s_1(t)\)}]
+            \addplot[very thick, nord10] coordinates {(0,0) (0,1) (0.25,1) (0.25,0) (1,0)};
+        \end{axis}
+
+        % --- s2(t) ---
+        \begin{axis}[name=ax2, pwmStyle, at={(ax1.east)}, anchor=west, xshift=1cm, ylabel={\(s_2(t)\)}]
+            \addplot[very thick, nord10] coordinates {(0,0) (0,1) (0.5,1) (0.5,0) (1,0)};
+        \end{axis}
+
+        % --- s3(t) ---
+        \begin{axis}[name=ax3, pwmStyle, at={(ax1.south west)}, 
+            anchor=north west, yshift=-1cm, ylabel={\(s_3(t)\)}]
+            \addplot[very thick, nord10] coordinates {(0,0) (0,1) (0.75,1) (0.75,0) (1,0)};
+        \end{axis}
+
+        % --- s4(t) ---
+        \begin{axis}[name=ax4, pwmStyle, at={(ax2.south west)}, 
+            anchor=north west, yshift=-1cm, ylabel={\(s_4(t)\)}]
+            \addplot[very thick, nord10] coordinates {(0,0) (0,1) (1,1) (1,0)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Esempio di forme d'onda per modulazione PWM}
+    \label{fig:08_05_EsempioPWM}
+\end{figure}
+
+Supponiamo di voler \textit{ricavare una base ortonormale} per questi segnali.
+Notiamo subito che:
+
+\begin{remark}
+    I segnali sono tutti \textbf{linearmente indipendenti} (non siamo 
+    in grado di scrivere uno come combinazione lineare degli altri), 
+    tuttavia \textbf{non sono ortogonali}.
+\end{remark}
+
+Per ottenere una \textbf{base ortonormale} potremmo usare il
+procedimento di Gram-Schmidt, tuttavia risulta spesso particolarmente
+laborioso. Possiamo invece \textbf{scegliere intelligentemente} una base
+del tipo:
+\[
+    \begin{aligned}
+        \phi_{1}(t) &= \begin{cases}
+            A' & 0 < t <\frac{T}{4} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        \phi_{2}(t) &= \begin{cases}
+            A' & \frac{T}{4} < t <\frac{T}{2} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        \phi_{3}(t) &= \begin{cases}
+            A' & \frac{T}{2} < t <\frac{3T}{4} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        \phi_{4}(t) &= \begin{cases}
+            A' & \frac{3T}{4} < t < T \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+    \end{aligned}
+\]
+
+I segnali di questa base sono mostrati in figura~\ref{fig:08_06_EsempioPWMBaseOrto}.
+
+\begin{figure}[!ht]
+    \centering
+    \pgfplotsset{
+        basisStyle/.style={
+            width=6.5cm,
+            height=3.5cm,
+            axis lines=middle,
+            xmin=-0.05, xmax=1.05,
+            ymin=-0.1, ymax=1.3,
+            xtick={0, 0.25, 0.5, 0.75, 1},
+            xticklabels={\(0\), \(\frac{T}{4}\), \(\frac{T}{2}\), \(\frac{3T}{4}\), \(T\)},
+            ytick={0, 1},
+            yticklabels={\(0\), \(A'\)},
+            ylabel style={at={(0,1)}, anchor=south east},
+            grid=major,
+            grid style={dashed, gray!20},
+            axis line style={-Stealth, thick},
+        }
+    }
+
+    \begin{tikzpicture}
+
+        % --- phi_1(t) ---
+        \begin{axis}[name=ax5, basisStyle, ylabel={\(\phi_1(t)\)}]
+            \addplot[very thick, nord14] coordinates {(0,0) (0,1) (0.25,1) (0.25,0) (1,0)};
+        \end{axis}
+
+        % --- phi_2(t) ---
+        \begin{axis}[name=ax6, basisStyle, at={(ax5.east)}, anchor=west, xshift=1cm, ylabel={\(\phi_2(t)\)}]
+            \addplot[very thick, nord14] coordinates {(0,0) (0.25,0) (0.25,1) (0.5,1) (0.5,0) (1,0)};
+        \end{axis}
+
+        % --- phi_3(t) ---
+        \begin{axis}[name=ax7, basisStyle, at={(ax5.south west)}, 
+            anchor=north west, yshift=-1cm, ylabel={\(\phi_3(t)\)}]
+            \addplot[very thick, nord14] coordinates {(0,0) (0.5,0) (0.5,1) (0.75,1) (0.75,0) (1,0)};
+        \end{axis}
+
+        % --- phi_4(t) ---
+        \begin{axis}[name=ax8, basisStyle, at={(ax6.south west)}, 
+            anchor=north west, yshift=-1cm, ylabel={\(\phi_4(t)\)}]
+            \addplot[very thick, nord14] coordinates {(0,0) (0.75,0) (0.75,1) (1,1) (1,0)};
+        \end{axis}
+
+    \end{tikzpicture}
+    \caption{Base scelta per la PWM d'esempio}
+    \label{fig:08_06_EsempioPWMBaseOrto}
+\end{figure}
+
+Infine notiamo che i segnali sono tutti a \textbf{supporto disgiunto}, per cui il loro
+\textbf{prodotto interno} è \textbf{sicuramente nullo} e quindi \textbf{formano una base ortogonale}. 
+La scelta è stata intelligente perchè abbiamo banalmente:
+\[
+    \begin{aligned}
+        s_{1}(t) &= \alpha \phi_{1}(t) \\ 
+        s_{2}(t) &= \alpha \left[ \phi_{1}(t) + \phi_{2}(t) \right] \\ 
+        s_{3}(t) &= \alpha \left[ \phi_{1}(t) + \phi_{2}(t) + \phi_{3}(t) \right] \\ 
+        s_{4}(t) &= \alpha \left[ \phi_{1}(t) + \phi_{2}(t) + \phi_{3}(t) + \phi_{4}(t) \right] \\ 
+    \end{aligned}
+\]
+
+Ci resta infine solo da \textbf{determinare l'ampiezza} affinchè la norma dei vettori 
+sia unitaria. Per tutti e quattro i segnali l'energia risulta:
+\[
+    E_{\phi} = A'^2 \frac{T}{4}
+\]
+
+Per cui scegliamo:
+\[
+    A' = \frac{2}{\sqrt{T}} = \frac{2\sqrt{T}}{T}
+\]
+
+\section{Canale}
+
+Vediamo ora \textit{cosa succede al segnale} \textbf{durante la trasmissione}.
+
+Abbiamo già accennato al fatto che il \textbf{canale introduce rumore nel segnale}:
+se consideriamo un segnale simile a quello dell'esempio visto sopra (composto dalle
+\textit{stesse forme d'onda}), possiamo allora trovarci in una situazione come quella 
+illustrata in figura~\ref{fig:08_07_RumoreCanale}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        % Definiamo le funzioni per il segnale e il rumore
+        declare function={
+            % Segnale pulito a tratti (1 per i positivi, -1 per i negativi, 0 altrove)
+            sig(\x) = and(\x>0.5, \x<2)*1 + and(\x>2.5, \x<4)*(-1) + and(\x>5, \x<6)*1 + 
+            and(\x>6.5, \x<7.5)*1;
+            % Rumore simulato con una somma di sinusoidi a frequenze diverse
+            noise(\x) = 0.2*sin(deg(2*pi*0.4*\x)) + 0.15*sin(deg(2*pi*1.2*\x)) 
+            + 0.1*sin(deg(2*pi*2.7*\x)) + 0.05*sin(deg(2*pi*5.1*\x));
+        }
+        ]
+        % --- Plot 1: Segnale trasmesso ---
+        \begin{axis}[
+            name=ax1,
+            width=0.9\textwidth,
+            height=3.5cm,
+            axis lines=middle,
+            xmin=0, xmax=8,
+            ymin=-1.8, ymax=2.5,
+            xtick={1,2,3,4,5,6},
+            xticklabels={\(T\), \(2T\), \(3T\), \(4T\), \(5T\), \(6T\)},
+            ytick=\empty,
+            ylabel={\(s_{Tx}(t)\)},
+            xlabel={},
+            ]
+            % Tracciamento del segnale ideale tramite coordinate per avere spigoli netti
+            \addplot[very thick, nord0] coordinates {
+                    (0,0) (0.5,0) (0.5,1) (2,1) (2,0) (2.5,0) (2.5,-1) (4,-1) (4,0) 
+                    (5,0) (5,1) (6,1) (6,0) (6.5,0) (6.5,1) (7.5,1) (7.5,0) (8,0)
+                };
+        \end{axis}
+        % Titolo allineato a sinistra
+        \node[anchor=south west, font=\bfseries, text=nord0] 
+            at (ax1.north west) {Segnale trasmesso};
+
+        % --- Plot 2: Rumore ---
+        \begin{axis}[
+            name=ax2,
+            at={(ax1.below south west)},
+            anchor=north west,
+            yshift=-0.5cm, % Spazio tra i grafici
+            width=0.9\textwidth,
+            height=3.5cm,
+            axis lines=middle,
+            xmin=0, xmax=8,
+            ymin=-1.8, ymax=2.5,
+            xtick={1,2,3,4,5,6},
+            xticklabels={\(T\), \(2T\), \(3T\), \(4T\), \(5T\), \(6T\)},
+            ytick=\empty,
+            ylabel={\(w_{c}(t)\)},
+            xlabel={},
+            ]
+            \addplot[very thick, nord11, domain=0:8, samples=400] {noise(x)};
+        \end{axis}
+        \node[anchor=south west, font=\bfseries, text=nord0] 
+            at (ax2.north west) {Rumore};
+
+        % --- Plot 3: Segnale ricevuto ---
+        \begin{axis}[
+            name=ax3,
+            at={(ax2.below south west)},
+            anchor=north west,
+            yshift=-0.5cm,
+            width=0.9\textwidth,
+            height=3.5cm,
+            axis lines=middle,
+            xmin=0, xmax=8,
+            ymin=-1.8, ymax=2.5,
+            xtick={1,2,3,4,5,6},
+            xticklabels={\(T\), \(2T\), \(3T\), \(4T\), \(5T\), \(6T\)},
+            ytick=\empty,
+            ylabel={\(s_{Rx}(t)\)},
+            xlabel={},
+            ]
+            % 1. Contorno nero del segnale originale (per riferimento)
+            \addplot[thick, nord0] coordinates {
+                    (0,0) (0.5,0) (0.5,1) (2,1) (2,0) (2.5,0) (2.5,-1) (4,-1) (4,0) 
+                    (5,0) (5,1) (6,1) (6,0) (6.5,0) (6.5,1) (7.5,1) (7.5,0) (8,0)
+                };
+            % 2. Segnale ricevuto (Segnale + Rumore) in verde
+            \addplot[very thick, nord14, domain=0:8, samples=400] {sig(x) + noise(x)};
+        \end{axis}
+        \node[anchor=south west, font=\bfseries, text=nord0] 
+            at (ax3.north west) {Segnale ricevuto dopo il canale};
+
+    \end{tikzpicture}
+    \caption{Introduzione di rumore nel segnale durante la trasmissione}
+    \label{fig:08_07_RumoreCanale}
+\end{figure}
+
+E' facile intuire che il rumore mostrato in figura è 
+assimilabile ad un \textbf{processo aleatorio continuo}.
+
+\begin{remark}[CANALE COME FILTRO]
+    In generale, è possibile che il canale, \textit{oltre ad introdurre del rumore},
+    applichi \textbf{anche una trasformazione} $h_c(t)$ al segnale.
+    Pensiamo banalmente alla \textbf{perdita di potenza} (\textit{riduzione dell'ampiezza}
+    del segnale) nella trasmissione sulle \textbf{lunghe distanze}
+\end{remark}
+
+\subsection{Rappresentazione vettoriale}
+
+Ciascuna \textit{forma d'onda} $s_n(t)$ ($n\in \{1,2,3,4\}$) giunge a destinazione 
+\textbf{corrotta dal rumore} $w(t)$, per cui il \textbf{ricevitore} legge 
+un segnale $r(t)$ dato da:
+\[
+    r(t) = s_n(t) + w(t)
+\]
+
+Ora vogliamo analizzare meglio la situazione e, in particolare, vogliamo studiare 
+le  \textbf{rappresentazioni vettoriali} del \textbf{segnale originale}, 
+del \textbf{rumore} e del \textbf{segnale ricevuto}. 
+
+Per farlo, abbiamo bisogno di \textbf{scegliere una base ortonormale adeguata}.
+
+\begin{remark}[SCELTA DELLA BASE]
+    E' intuitivo capire che conviene scegliere una base che 
+    \textbf{contenga le forme d'onda del modulatore}, visto che queste
+    sono quelle che siamo interessati a ricevere.
+\end{remark}
+
+E' facile notare che i quattro segnali \textit{non sono linearmente indipendenti}, infatti:
+\[
+    \begin{aligned}
+        s_{3}(t) &= -s_{1}(t) \\ 
+        s_{4}(t) &= -s_{2}(t)
+    \end{aligned}
+\]
+Ma notiamo anche $s_{1}(t) \perp s_{2}(t)$, infatti:
+\[
+    \langle \mathbf{s_{1}} , \mathbf{s_{2}} \rangle = \int_{0}^T s_{1}(t) \overline{s_{2}}(t) dt = 0
+\]
+Per cui la \textit{nostra scelta} di \textbf{base ortonormale} sarà:
+\[
+    \mathcal{B} = \{\phi_{1}, \phi_{2}\} = 
+        \left\{ \frac{\mathbf{s_{1}}}{\sqrt{E_{s_{1}}}}, \frac{\mathbf{s_{2}}}{\sqrt{E_{s_{2}}}} \right\}
+\]
+
+Fatta questa scelta, possiamo \textit{rappresentare graficamente} i vettori $s_n(t)$ 
+e $r(t)$, come mostrato in figura~\ref{fig:08_08_CostellazioneRumore}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth,
+        thick,
+        scale = 0.8,
+        % Stile per i simboli ideali (punti neri)
+        signal/.style={circle, fill=nord0, inner sep=3pt},
+        % Stile per i segnali ricevuti (punti verdi con bordo nero)
+        noisy/.style={circle, draw=black, fill=nord11, inner sep=2.5pt, thick}
+        ]
+
+        % --- Assi Cartesiani ---
+        \draw[->] (-4.5, 0) -- (4.5, 0) node[right] {$\phi_{1}$};
+        \draw[->] (0, -4) -- (0, 4.5) node[above] {$\phi_{2}$};
+
+        % --- Simboli Ideali (Punti Neri) ---
+        \node[signal] (s1) at (3, 0) {};
+        \node[signal] (s2) at (0, 3) {};
+        \node[signal] (s3) at (-3, 0) {};
+        \node[signal] (s4) at (0, -3) {};
+
+        % Etichette dei simboli ideali
+        \node[above=0.1cm] at (s1) {\(\mathbf{s}_1\)};
+        \node[right=0.1cm] at (s2) {\(\mathbf{s}_2\)};
+        \node[above right=0.05cm and 0.1cm] at (s3) {\(\mathbf{s}_3\)};
+        \node[right=0.1cm] at (s4) {\(\mathbf{s}_4\)};
+
+        % --- Segnali Ricevuti (Punti Verdi) ---
+        % Punto vicino a s1
+        \node[noisy] at (2.2, 0.4) {};
+
+        % Due punti vicino a s2
+        \node[noisy] at (-0.4, 3.5) {};
+        \node[noisy] at (0.5, 2.4) {};
+
+        % Punto vicino a s3
+        \node[noisy] at (-3.6, 0.5) {};
+
+        % Punto vicino a s4
+        \node[noisy] at (0.5, -2.4) {};
+
+    \end{tikzpicture}
+    \caption{Segnale trasmesso e ricevuto nella rappresentazione vettoriale}
+    \label{fig:08_08_CostellazioneRumore}
+\end{figure}
+
+\begin{remark}[COSTELLAZIONE: EFFETTO DEL RUMORE]
+    A causa del rumore, le \textbf{forme d'onda ricevute} si
+    \textbf{discostano} dai \textbf{valori "puri"} $\mathbf{s}_n$.
+\end{remark}
+
+Ne consegue che il \textbf{ricevitore} dovrà adottare delle \textbf{strategie}
+per \textbf{determinare la forma d'onda corretta} da associare
+a ciascuna \textbf{osservazione} $r(t)$.
+
+Si tratta cioè di formulare $M$ (nel nostro caso $4$) \textbf{ipotesi}:
+\[
+    H_n : r(t) = s_n(t) + w(t) \text{ , } n = 1,2,\ldots ,M
+\]
+Che in \textit{forma vettoriale} diventano:
+\[
+    H_n : \mathbf{r} = \mathbf{s_n} + \mathbf{w} \text{ , } n = 1,2,\ldots ,M
+\]
+
+E determinare \textbf{quale è la più plausibile}.
+Vedremo più avanti come implementare tali strategie.
+
+\subsection{Caratterizzazione del rumore e canale AWGN}
+
+Abbiamo già detto che il rumore è un \textbf{processo aleatorio}, ma
+aggiungiamo ora alcune \textbf{assunzioni} che ci permettano di 
+\textbf{caratterizzare} meglio il rumore.
+
+\begin{remark}[ASSUNZIONI SUL RUMORE]
+    E' ragionevole assumere che:
+    \begin{enumerate}
+        \item Il rumore \textbf{contenga tutte le frequenze} possibili 
+            (cioè ha banda \textit{illimitata} $[0,+\infty)$).
+        \item Il rumore abbia la \textbf{stessa potenza} su \textbf{ogni frequenza} 
+            (cioè \textit{non c'è una frequenza predominante}).
+        \item Fissato un istante di tempo $t$ arbitrario, il rumore sia 
+            \textbf{distribuito normalmente} con \textbf{media nulla}.
+        \item Dati \textbf{due istanti} di tempo $t_{1}$ e $t_{2}$, i
+            valori $w(t_{1})$ e $w(t_{2})$ siano \textbf{indipendenti}.
+    \end{enumerate}
+\end{remark}
+
+Sotto queste ipotesi, il rumore è detto \textbf{WGN}: \textbf{White Gaussian Noise}.
+Inoltre, essendo il rumore \textbf{additivo}, nel senso che 
+\textit{si somma al segnale} (\textit{non} introduce \textit{distorsioni moltiplicative}),
+si parla di \textbf{Additive White Gaussian Noise}.
+
+\begin{definition}[CANALE AWGN]
+    Si parla di \textbf{modello} di \textbf{canale AWGN} quando
+    si assumono vere le ipotesi fatte sopra.
+\end{definition}
+
+Abbiamo assunto che la \textbf{media sia nulla}: è infatti ragionevole 
+ipotizzare che \textit{variazioni additive} e \textit{variazioni sottrattive} 
+siano \textit{egualmente probabili}.
+Per concludere la caratterizzazione dobbiamo quindi solo dare una \textbf{stima} della
+\textbf{varianza del rumore}. In generale, si pone:
+
+\begin{definition}[VARIANZA DEL RUMORE]
+    \[
+        \sigma^2_{w} = \frac{N_{0}}{2}
+    \] 
+    Dove $N_{0}$ è la \textbf{densità spettrale di potenza} del rumore.
+\end{definition}
+
+In generale, $N_{0}$ \textit{dipende dal tipo di rumore}. Per il rumore termico, per
+esempio, abbiamo $N_{0} = k\cdot T$, dove $k$ è la \textit{costante di Boltzmann} e 
+$T$ è la \textit{temperatura} del mezzo in Kelvin.
+
+\subsection{Signal to Noise Ratio}
+
+Per \textbf{quantificare l'effetto del rumore} sul \textbf{segnale ricevuto}
+si definisce il \textbf{rapporto segnale-rumore}:
+
+\begin{definition}[SIGNAL TO NOISE RATIO - SNR]
+    Dati un \textit{segnale} $s(t)$ e del \textit{rumore} $n(t)$, si
+    definisce il \textbf{rapporto segnale-rumore} come il \textbf{rapporto} tra
+    la \textbf{potenza del segnale} e la \textbf{potenza del rumore}:
+    \[
+        \text{SNR} \coloneqq \frac{P_s}{P_n}
+    \] 
+\end{definition}
+
+Dato che noi considereremo \textbf{canali AWGN}, è utile tenere a mente che:
+
+\begin{prop}[POTENZA RUMORE BIANCO]
+    La \textbf{potenza media} di un \textbf{rumore gaussiano} a
+    \textbf{media nulla} è:
+    \[
+        P_s = P_{w} = \sigma^2_{w}
+    \] 
+\end{prop}
+
+In ogni caso, è chiaro che \textbf{maggiore} è il valore di \textbf{SNR} e
+\textbf{più pulito è il segnale}, come mostrato in figura~\ref{fig:08_09_EsempiSNR}.
+
+\begin{figure}[!ht]
+    \centering
+    \pgfplotsset{
+        axisLeft/.style={
+            width=6.5cm,
+            height=3.5cm,
+            axis lines=middle,
+            xmin=0, xmax=1.1,
+            ymin=-2, ymax=2,
+            xtick={0, 0.2, 0.4, 0.6, 0.8, 1},
+            ytick={-2, -1, 0, 1, 2},
+            yticklabels=\empty,
+            grid=major,
+            grid style={dashed, gray!30},
+            axis line style={-Stealth, thick},
+        },
+        axisRight/.style={
+            width=6.5cm,
+            height=3.5cm,
+            axis lines=box,
+            xmin=0, xmax=1.1,
+            ymin=-2, ymax=2,
+            xtick={0, 0.2, 0.4, 0.6, 0.8, 1},
+            ytick={-2, -1, 0, 1, 2},
+            yticklabels=\empty,
+            grid=major,
+            grid style={dashed, gray!30},
+            axis line style={thick},
+        }
+    }
+    \begin{tikzpicture}[
+        declare function={
+            % Segnale sinusoidale (4 cicli in t=[0,1])
+            sig(\x) = cos(deg(2*pi*4*\x));
+            % Rumore simulato (somma di sinusoidi ad alta frequenza)
+            noise(\x) = 0.3*sin(deg(2*pi*43*\x)) + 0.2*sin(deg(2*pi*71*\x)) 
+            + 0.15*sin(deg(2*pi*113*\x)) + 0.1*sin(deg(2*pi*151*\x)) + 0.1*sin(deg(2*pi*193*\x));
+        },
+        % Stile per il riquadro giallo (questo è un normale stile TikZ, va bene qui)
+        snrBox/.style={
+            fill=nord10!20,
+            draw=black, 
+            thick, 
+            inner sep=4pt, 
+            font=\bfseries, 
+            anchor=south west
+        }
+        ]
+
+        % ==========================================
+        % RIGA 1: SNR = 10 dB (Rumore molto alto)
+        % ==========================================
+        \begin{axis}[name=ax11, at={(0,0)}, anchor=north west, axisLeft]
+            \addplot[thick, nord12, domain=0:1, samples=100] {sig(x)};
+            \addplot[thin, nord10, domain=0:1, samples=400] {sig(x) + 1.0*noise(x)};
+        \end{axis}
+        \node[snrBox] (t1) at ([xshift=1cm, yshift=0.2cm]ax11.north west) {SNR = 10dB};
+
+        % ==========================================
+        % RIGA 2: SNR = 13 dB (Rumore medio)
+        % ==========================================
+        \begin{axis}[name=ax21, at={(ax11.south west)}, anchor=north west, yshift=-1cm, axisLeft]
+            \addplot[thick, nord12, domain=0:1, samples=100] {sig(x)};
+            \addplot[thin, nord10, domain=0:1, samples=400] {sig(x) + 0.6*noise(x)};
+        \end{axis}
+        \node[snrBox] (t2) at ([xshift=1cm, yshift=0.2cm]ax21.north west) {SNR = 13dB};
+
+        % ==========================================
+        % RIGA 3: SNR = 20 dB (Rumore basso)
+        % ==========================================
+        \begin{axis}[name=ax31, at={(ax21.south west)}, anchor=north west, yshift=-1cm, axisLeft]
+            \addplot[thick, nord12, domain=0:1, samples=100] {sig(x)};
+            \addplot[thin, nord10, domain=0:1, samples=400] {sig(x) + 0.25*noise(x)};
+        \end{axis}
+        \node[snrBox] (t3) at ([xshift=1cm, yshift=0.2cm]ax31.north west) {SNR = 20dB};
+    \end{tikzpicture}
+    \caption{Confronto tra diversi livelli di Signal-to-Noise Ratio (SNR)}
+    \label{fig:08_09_EsempiSNR}
+\end{figure}
+
+\begin{remark}
+    Dato che la \textbf{potenza} del \textbf{segnale} può essere 
+    \textbf{diversi ordini di grandezza} più grande del \textbf{rumore},
+    il valore di SNR è \textbf{spesso espresso in decibel}.
+\end{remark}

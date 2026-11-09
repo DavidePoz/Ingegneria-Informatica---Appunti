@@ -1,0 +1,31 @@
+\documentclass[12pt, a4paper]{report}
+
+% --- Impostazioni di stile
+\usepackage{document_style}
+
+% --- Tikz externalize
+\usetikzlibrary{external}
+\tikzexternalize[prefix=build_tikzexternal/]
+
+\begin{document}
+\pagestyle{fancy}
+
+% --- Inizio documento
+\input{document_intro/0_Frontespizio}   % Frontespizio
+\input{document_intro/1_Colophon}       % Pagina introduttiva
+
+\tableofcontents                        % Indice
+
+% --- Capitoli principali ---
+\input{chapters/01_Introduzione}
+\input{chapters/02_Segnali}
+\input{chapters/03_Sistemi_trasformazioni_su_segnali}
+\input{chapters/04_Trasformata_Fourier}
+\input{chapters/05_Campionamento}
+\input{chapters/06_Spazi_segnali}
+\input{chapters/07_Ripasso_probabilità}
+\input{chapters/08_Trasmissione_numerica}
+
+% --- Appendici (Esercisi svolti in aula) ---
+\appendix 
+\input{appendices/A_Sistemi_LTI}

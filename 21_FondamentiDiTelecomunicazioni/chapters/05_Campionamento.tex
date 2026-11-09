@@ -1,0 +1,720 @@
+% ------------------------------------------------------------------------------------
+%                               CAMPIONAMENTO
+% ------------------------------------------------------------------------------------
+\chapter{Campionamento}
+
+Abbiamo fin'ora considerato sistemi  in cui \textbf{ingresso} e \textbf{uscita}
+sono \textbf{entrambi} a \textbf{tempo continuo} (o \textit{entrambi a tempo discreto}).
+
+Consideriamo ora invece dei sistemi in cui l'\textbf{ingresso} è un
+\textbf{segnale a tempo continuo}, mentre l'\textbf{uscita} è un
+\textbf{segnale a tempo discreto}, come in figura:
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[>=latex, font=\small, scale=0.9]
+
+        % Blocco principale (leggermente ingrandito per far stare l'interruttore)
+        \node[draw, thick, nord0, minimum width=3.5cm, minimum height=1.8cm] (lti) at (0,0) {};
+
+        % Fili interni al blocco
+        \draw[thick, nord0] (-1.3, 0) -- (-0.4, 0); % Filo sinistro
+        \draw[thick, nord0] (0.4, 0) -- (1.3, 0);   % Filo destro
+
+        % Punti di contatto dell'interruttore
+        \fill[nord10] (-0.4, 0) circle (1.8pt);
+        \fill[nord10] (0.4, 0) circle (1.8pt);
+
+        % Braccio dell'interruttore (aperto)
+        \draw[thick, nord10] (-0.4, 0) -- (0.2, 0.45);
+
+        % Freccia di controllo (segnale di clock di campionamento)
+        \draw[->, thick, nord3] (0, -1.2) -- (0, -0.2);
+
+        % Etichetta del periodo di campionamento
+        \node[below, nord3] at (0, -1.2) {\(T_c\)};
+
+        % Frecce di ingresso e uscita
+        \draw[->, thick, nord0] (-2.5, 0) -- (lti.west);
+        \node[anchor=east, nord0] at (-2.6, 0) {\(x(t)\)};
+
+        \draw[->, thick, nord0] (lti.east) -- (2.5, 0);
+        \node[anchor=west, nord0] at (2.6, 0) {\(y(nT_c)\)};
+    \end{tikzpicture}
+    \caption{Esempio di sistema TC - TD}
+    \label{fig:05_01_SistemaTC-TD}
+\end{figure}
+
+La figura~\ref{fig:05_01_SistemaTC-TD} mostra il sistema identificato da un \textbf{interruttore}
+che \textit{si chiude e si apre} con periodo $T_c$.
+Questo ci aiuta a capire meglio come funzionano i \textbf{campionatori} ovvero sistemi 
+del tipo descritto sopra, in cui:
+\[
+    y(nT) = x(nT)
+\]
+
+\begin{figure}[!ht]
+    \centering 
+    \begin{tikzpicture}[x=1.8cm, y=1cm, >=stealth]
+        % Assi
+        \draw[->, thick, nord0] (-1.5, 0) -- (4.5, 0) node[below] {$t$};
+        \draw[->, thick, nord0] (0, -0.8) -- (0, 3) node[right] {$x(t)$};
+
+        % Etichetta origine
+        \node[above right] at (0, 0) {$0$};
+
+        % Curva del segnale analogico x(t)
+        \draw[thick, nord10, smooth, tension=0.7] plot coordinates {
+                (-1.2, 1.2)
+                (-1, 2.2)
+                (-0.5, 0.4)
+                (0, -0.6)
+                (0.5, 0.4)
+                (1, 1.8)
+                (1.5, -0.2)
+                (2, -1.4)
+                (2.5, 0.8)
+                (3, 0.6)
+                (4, 0.1)
+            };
+
+        % Stili personalizzati per i campioni (stems)
+        \tikzset{
+            sample line/.style={line width=2pt, nord3},
+            sample head/.style={draw, thick, nord3, fill=white, circle, inner sep=1.5pt}
+        }
+
+        % Campione a -T
+        \draw[sample line] (-1, 0) -- (-1, 2.2);
+        \node[sample head] at (-1, 2.2) {};
+        \node[below=0.1cm] at (-1, 0) {$-T$};
+
+        % Campione a 0
+        \draw[sample line] (0, 0) -- (0, -0.6);
+        \node[sample head] at (0, -0.6) {};
+
+        % Campione a T
+        \draw[sample line] (1, 0) -- (1, 1.8);
+        \node[sample head] at (1, 1.8) {};
+        \node[below=0.1cm] at (1, 0) {$T$};
+
+        % Campione a 2T (Simbolo ambiguo interpretato logicamente)
+        \draw[sample line] (2, 0) -- (2, -1.4);
+        \node[sample head] at (2, -1.4) {};
+        \node[above=0.1cm] at (2, 0) {$2T$};
+
+        % Campione a 3T
+        \draw[sample line] (3, 0) -- (3, 0.6);
+        \node[sample head] at (3, 0.6) {};
+        \node[below=0.1cm] at (3, 0) {$3T$};
+    \end{tikzpicture}
+    \caption{Campionamento di un segnale con periodo $T$}
+    \label{fig:05_02_EsempioCampionamento}
+\end{figure}
+
+La figura~\ref{fig:05_02_EsempioCampionamento} mostra cosa significa
+\textit{campionare un segnale}. Notiamo anche che:
+
+\begin{definition}[PERIODO DI CAMPIONAMENTO]
+    Il segnale è \textbf{campionato}, cioè \textit{"misurato" ad intervalli regolari},
+    con un \textbf{periodo di campionamento} $T$, (spesso indicato con $T_c$ o $T_s$)
+    e quindi con \textbf{frequenza} $f_c = \frac{1}{T_c}$.
+\end{definition}
+
+\begin{remark}[CONVERTITORI ADC]
+    Tali sistemi sono impiegati per \textbf{convertire} segnali 
+    \textbf{analogici in digitali} (e sono spesso indicati con \textbf{ADC}: 
+    \textit{analog-digital converter}).
+
+    In un ADC, un \textbf{campionatore} è affiancato da un \textbf{blocco quantizzatore} 
+    che \textit{converte le ampiezze campionate nei valori ammissibili} (e.g. $\{0,1\}$ 
+    per segnali digitali).
+\end{remark}
+
+\section{Analisi in frequenza}
+
+Nel dominio della frequenza, le cose sono leggermente diverse rispetto a 
+quanto visto per i sistemi LTI.
+
+In particolare, vale:
+
+\begin{prop}[USCITA DI UN CAMPIONATORE]
+    \[
+        Y(f) = \text{rep}_{\frac{1}{T}} X(f)
+    \] 
+\end{prop}
+
+Ovvero, l'uscita del sistema è data dalla \textbf{ripetizione} di $X(f)$
+con \textbf{periodo} $\frac{1}{T}$:
+\[
+    \begin{aligned}
+        Y(f) &= \sum_{k=-\infty}^{+\infty} X \left( f - k \frac{1}{T} \right) \\ 
+             &= \ldots + X \left( f + \frac{2}{T} \right) + X \left( f + \frac{1}{T} \right) + X(f) 
+             + X \left( f - \frac{1}{T} \right) + X \left( f - \frac{2}{T} \right) + \ldots 
+    \end{aligned}
+\]
+
+La figura~\ref{fig:05_03_SpettroCampionato} ci mostra un esempio di ciò: lo
+\textit{spettro centrale} è \textit{ripetuto a destra e a sinistra}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[x=0.8cm, y=0.8cm, >=stealth, scale = 0.9]
+        % Assi
+        \draw[->, thick, nord0] (-10, 0) -- (10, 0) node[below] {$f$};
+        \draw[->, thick, nord0] (0, -0.5) -- (0, 3.5) node[right] {$Y(f)$};
+
+        % Spettro k = -1 (Replica a sinistra)
+        \draw[thick, nord8, smooth, domain=-9.5:-4, samples=50] plot (\x, {2.5*exp(-0.2*(\x+8)^2)});
+        \draw[thin] (-4, 2.5) -- (-4, -0.1);
+        \draw[thin] (-8, -0.1) -- (-8, 0.1) node[below] at (-8,0) {$-F_c$};
+        \node[below=0.4cm] at (-8, 0) {$k=-1$};
+
+        % Spettro k = 0 (Banda base)
+        \draw[thick, nord14, smooth, domain=-4:4, samples=100] plot (\x, {2.5*exp(-0.2*(\x)^2)});
+        \node[below=0.4cm] at (0, 0) {$k=0$};
+
+        % Spettro k = 1 (Replica a destra)
+        \draw[thick, nord8, smooth, domain=4:9.5, samples=50] plot (\x, {2.5*exp(-0.2*(\x-8)^2)});
+        \draw[thin] (4, 2.5) -- (4, -0.1);
+        \draw[thin] (8, -0.1) -- (8, 0.1) node[below] at (8,0) {$F_c$};
+        \node[below=0.4cm] at (8, 0) {$k=1$};
+    \end{tikzpicture}
+    \caption{Spettro delle frequenze di un segnale campionato}
+    \label{fig:05_03_SpettroCampionato}
+\end{figure}
+
+A questo punto viene spontaneo chiedersi cosa succede se queste ripetizioni dello 
+spettro si \textbf{sovrappongono}:
+
+\begin{definition}[ALIASING]
+    L'\textbf{aliasing} è un fenomeno che si verifica quando le
+    \textbf{repliche dello spettro si sovrappongono}.
+\end{definition}
+
+Un esempio di aliasing è illustrato nella figura~\ref{fig:05_04_EsempioAliasing}: le ripetizioni
+\textit{evidenziate in rosso si sovrappongono a quelle adiacenti}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[x=0.8cm, y=0.8cm, >=stealth]
+        % Assi
+        \draw[->, thick, nord0] (-5, 0) -- (10, 0) node[below] {$f$};
+        \draw[->, thick, nord0] (0, -0.5) -- (0, 3.5) node[right] {$Y(f)$};
+
+        % Spettro k = -1 (Replica a sinistra)
+        \draw[thick, nord11, smooth, domain=-5:0, samples=50] plot (\x, {2.5*exp(-0.2*(\x+4)^2)});
+        \draw[thin] (-4, 2.6) -- (-4, -0.1) node[below] {$-F_c$};
+        \node[below=0.4cm] at (-4, 0) {$k=-1$};
+
+        % Spettro k = 0 (Banda base)
+        \draw[thick, nord14, smooth, domain=-4:4, samples=100] plot (\x, {2.5*exp(-0.2*(\x)^2)});
+        \node[below=0.4cm] at (0, 0) {$k=0$};
+
+        % Spettro k = 1 (Prima replica a destra)
+        \draw[thick, nord11, smooth, domain=0:8, samples=100] plot (\x, {2.5*exp(-0.2*(\x-4)^2)});
+        \draw[thin] (4, 2.6) -- (4, -0.1) node[below] {$F_c$};
+        \node[below=0.4cm] at (4, 0) {$k=1$};
+
+        % Spettro k = 2 (Seconda replica a destra)
+        \draw[thick, nord8, smooth, domain=4:9.5, samples=50] plot (\x, {2.5*exp(-0.2*(\x-8)^2)});
+        \draw[thin] (8, 2.5) -- (8, 0) node[below] {$2F_c$};
+        \node[below=0.4cm] at (8, 0) {$k=2$};
+    \end{tikzpicture}
+    \caption{Illustrazione del fenomeno di aliasing}
+    \label{fig:05_04_EsempioAliasing}
+\end{figure}
+
+\begin{remark}[PROBLEMA]
+    Quando si verifica l'\textbf{aliasing}, le \textbf{basse frequenze} dello
+    spettro si \textbf{confondono con quelle alte}.
+\end{remark}
+
+\section{Teorema di Shannon sul campionamento}
+
+Ora ci domandiamo se sia \textbf{possibile ricostruire il segnale originale} a
+\textbf{partire dai campioni}. La risposta è affermativa, a patto che
+\textit{siano rispettate le condizioni} date dal \textbf{teorema di Shannon}
+sul campionamento:
+
+\begin{theorem}[TEOREMA DI SHANNON SUL CAMPIONAMENTO]
+    Un segnale $x(t)$ può essere \textbf{ricostruito} a partire dalla sua
+    \textbf{campionatura} $x(nT)$ se:
+    \begin{enumerate}
+        \item Il segnale ha \textbf{banda limitata} $B_x\in \mathbb{R}$.
+        \item La \textbf{frequenza di campionamento} soddisfa:
+            \[
+                F_c \ge 2 B_x
+            \] 
+    \end{enumerate}
+\end{theorem}
+
+Diamo una spiegazione alle condizioni richieste:
+\begin{itemize}
+    \item \textbf{Banda limitata}: se il segnale ha \textit{banda illimitata},
+        \textbf{non} siamo in grado di \textit{ricostruirlo dai suoi campioni} perchè 
+        ha \textit{velocità di variazione infinita}).
+    \item \textbf{Frequenza di campionamento}: questa deve essere \textbf{abbastanza alta}
+    da \textbf{evitare} il fenomeno dell'\textbf{aliasing}.
+\end{itemize}
+
+Il fatto che la frequenza minima per evitare l'aliasing sia $2B_x$ 
+(nota come \textbf{frequenza di Nyquist}) è facilmente intuibile dalla
+figura~\ref{fig:05_04_EsempioAliasing}.
+
+\subsection{Interpolazione e ricostruzione del segnale}
+
+Ora che abbiamo visto il \textbf{teorema di Shannon} sul \textbf{campionamento}, vediamo 
+\textbf{come} possiamo effettivamente \textbf{ricostruire il segnale} di partenza
+dai suoi campioni.
+
+In pratica, abbiamo bisogno di un tipo di sistema che \textit{faccia l'opposto di un campionatore},
+ovvero un \textbf{filtro interpolatore}. Questi sistemi, a partire da un \textit{segnale
+a tempo discreto}, producono in uscita un \textit{segnale a tempo continuo}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[>=Stealth, font=\small, node distance=1.5cm]
+        % Ingresso (Segnale discreto)
+        \node (in) at (0,0) {\(x(nT)\)};
+
+        % Blocco Interpolatore con freccia in su
+        \node[draw=nord0, thick, fill=nord5, minimum width=2cm, 
+            minimum height=1.5cm, rounded corners=3pt] (interp) 
+            at (3,0) {\Large \(\uparrow\) \(g(t)\)};
+
+        % Uscita (Segnale continuo)
+        \node (out) at (6,0) {\(y(t)\)};
+
+        % Frecce di collegamento
+        \draw[->, thick, nord0] (in) -- (interp);
+        \draw[->, thick, nord0] (interp) -- (out);
+    \end{tikzpicture}
+    \caption{Filtro interpolatore}
+    \label{fig:05_05_FiltroInterpolatore}
+\end{figure}
+
+La figura~\ref{fig:05_05_FiltroInterpolatore} mostra il \textit{diagramma} di
+un \textbf{filtro interpolatore}: notiamo che è \textit{indicato da una freccia in su}
+(in inglese tali sistemi sono spesso chiamati \textit{upsamplers}).
+
+L'uscita sarà poi data da:
+
+\begin{prop}[USCITA FILTRO INTERPOLATORE]
+    \[
+        y(t) = \sum_{k=-\infty}^{+\infty} T x(kT) g(t - kT)
+    \] 
+\end{prop}
+
+Notiamo che l'operazione è una \textit{convoluzione}, ed
+in effetti vale (nel \textit{dominio della frequenza}):
+\[
+    Y(f) = G(f)\cdot X_r (f)
+\]
+Dove $X_r(f)$ è l'\textit{uscita (in frequenza) del campionatore} (quindi
+$\text{rep}_{\frac{1}{T}} X(f)$).
+
+A questo punto capiamo che, per ricostruire il segnale originale $x(t)$ 
+(con trasformata $X(f)$), abbiamo bisogno di un \textbf{filtro interpolatore} 
+la cui \textbf{risposta in frequenza} sia:
+
+\begin{definition}[FILTRO PER RICOSTRUIRE IL SEGNALE]
+    \[
+        G(f) = \text{rect} \left( \frac{f}{F_c} \right)
+    \] 
+\end{definition}
+
+Infatti in tal caso abbiamo:
+\[
+    Y(f) = \text{rect} \left( \frac{f}{F_c} \right) X_r(f) = X(f)
+\]
+
+Dato che $\text{rect} ( f /F_c )=1$ all'interno della \textbf{banda base} ed è 
+\textbf{nullo altrove}.
+
+\begin{remark}
+    Notiamo che si tratta di un \textbf{filtro passa-basso ideale}, cioè un
+    filtro che \textbf{lascia passare solo le basse frequenze}, con un
+    \textit{cutoff} (a frequenza $F_c /2$) \textit{netto}.
+\end{remark}
+
+\subsection{Esempio limite}
+
+Vediamo ora un esempio in cui scegliere di campionare un segnale
+\textbf{esattamente alla frequenza di Nyquist} crea \textbf{problemi} nella
+sua \textbf{ricostruzione}. 
+
+Consideriamo il segnale $x(t)= A\sin(2\pi f_{0}t)$, la cui trasformata è:
+\[
+    X(f) = \frac{A}{2j}\delta(f-f_{0}) - \frac{A}{2j}\delta(f+f_{0})
+\]
+Quindi la banda del segnale è $\mathcal{B}_x = \{f_{0}\}$, e \textbf{contiene una sola frequenza}.
+Allora, secondo il teorema, dobbiamo scegliere una \textbf{frequenza di campionamento}
+$F_c \ge 2f_{0}$.
+Immaginiamo di scegliere \textit{esattamente}
+\[
+    F_c = 2f_{0} \implies T_c = \frac{1}{2f_{0}}
+\]
+Vediamo ora \textit{cosa succede}: il segnale campionato sarà
+\[
+    \begin{aligned}
+        x(nT) &= A \sin (2\pi f_{0} \cdot nT_c) \\ 
+              &= A \sin \left( 2\pi f_{0} \cdot \frac{n}{2f_{0}} \right) \\ 
+              &= A \sin (\pi n) = 0 \text{ } \forall n\in \mathbb{Z}
+    \end{aligned}
+\]
+
+\begin{remark}
+    Campionando a $F_c = 2f_{0}$ otteniamo \textbf{solo campioni nulli}.
+\end{remark}
+
+Approfondiamo la questione considerando lo \textbf{spettro in frequenza} 
+del segnale e le \textbf{sue ripetizioni}. Per farlo, riscriviamo 
+la trasformata del segnale come segue:
+\[
+    \begin{aligned}
+        X(f) &= \frac{A}{2j} [ \delta(f-f_{0}) - \delta(f+f_{0}) ] \\ 
+             &= -\frac{A}{2}j [ \delta(f-f_{0}) - \delta(f+f_{0}) ] \\ 
+             &= j\cdot \frac{A}{2}[\delta(f+f_{0}) - \delta(f-f_{0})]
+    \end{aligned}
+\]
+Per cui consideriamo la \textit{parte immaginaria della trasformata} e facciamo
+attenzione a \textbf{cosa succede alle ripetizioni dello spettro}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[xscale=1.5, yscale=2, >=Stealth, font=\small]
+        % Assi cartesiani
+        \draw[->, thick, nord0] (-4, 0) -- (4, 0) node[right, font=\bfseries] {\(f\)};
+        \draw[->, thick, nord0] (0, -1.4) -- (0, 1.4) node[above, font=\bfseries] {\( \Im [X_r(f)]\)};
+        \draw[nord3, thick] (-0.1, 1.2) -- (0.1, 1.2)
+            node[right, font=\bfseries] {$\frac{A}{2}$};
+
+        % --- SEGNALE ORIGINALE (Banda Base) ---
+        % Impulso a -f0
+        \draw[->, line width=1.5pt, nord10] (-1, 0) -- (-1, 1.2);
+        % Impulso a +f0
+        \draw[->, line width=1.5pt, nord10] (1, 0) -- (1, -1.2);
+
+        % Etichette frequenze
+        \draw[dashed, nord3, thick] (-1, 0) -- (-1, -0.2);
+        \draw[dashed, nord3, thick] (1, 0) -- (1, -0.2);
+        \node[below left, nord0] at (-1, -0.2) {\(-f_0\)};
+        \node[below left, nord0] at (1, -0.2) {\(f_0\)};
+        \node[below right, nord0] at (0, 0) {\(0\)};
+        \node[below right, nord11] at (3, 0) {\(3f_0\)};
+        \node[below left, nord11] at (-3, 0) {\(-3f_0\)};
+
+        % --- REPLICHE DOVUTE AL CAMPIONAMENTO (Fc = 2f0) ---
+        % Replica k=1 (traslata di +2f0)
+        \draw[->, line width=1.5pt, dashed, nord11] (1, 0) -- (1, 1.2);
+        \draw[->, line width=1.5pt, dashed, nord11] (3, 0) -- (3, -1.2);
+
+        % Replica k=-1 (traslata di -2f0)
+        \draw[->, line width=1.5pt, dashed, nord11] (-1, 0) -- (-1, -1.2);
+        \draw[->, line width=1.5pt, dashed, nord11] (-3, 0) -- (-3, 1.2);
+
+        % Replica k=+-2 
+        \draw[->, line width=1.5pt, dashed, nord14] (3, 0) -- (3, 1.2);
+        \draw[->, line width=1.5pt, dashed, nord14] (-3, 0) -- (-3, -1.2);
+
+        % Legenda
+        \begin{scope}[shift={(3.3, 1)}]
+            \draw[line width=2pt, nord10] (0, 0.2) -- (0.5, 0.2) 
+                node[right, nord0] {\(X(f)\) Originale};
+            \draw[line width=1.5pt, dashed, nord11] (0, -0.1) -- (0.5, -0.1) 
+                node[right, nord0] {Repliche $k= \pm 1$};
+            \draw[line width=1.5pt, dashed, nord14] (0, -0.4) -- (0.5, -0.4) 
+                node[right, nord0] {Repliche $k= \pm 2$};
+        \end{scope}
+    \end{tikzpicture}
+    \caption{Campionamento di una sinusoide alla frequenza di Nyquist}
+    \label{fig:05_06_CampionamentoLimite}
+\end{figure}
+
+Come mostrato dalla figura~\ref{fig:05_06_CampionamentoLimite}, le 
+\textbf{ripetizioni} dello spettro si \textbf{cancellano a vicenda}
+(sommano a zero), risultando in uno \textbf{spettro nullo}.
+Questo esempio ci insegna quindi che:
+
+\begin{remark}[CASO LIMITE TH. CAMPIONAMENTO]
+    Il caso di \textbf{uguaglianza} $F_c = 2B_x$ \textbf{può risultare problematico}
+    in determinati casi; di conseguenza, per \textit{non perdere il segnale},
+    si deve scegliere:
+    \[
+        F_c > 2B_x
+    \] 
+    Nella pratica, si sceglie spesso $F_c \ge 2.5 B_x$.
+\end{remark}
+
+\subsection{Altri esempi}
+
+Consideriamo il segnale $x(t) = \text{sinc}^2 (10t)$ inviato attraverso un 
+\textbf{campionatore} ed un \textbf{filtro interpolatore} 
+(figura~\ref{fig:05_07_EsempioPratico1_Sistemi}) con $F_c = 18 \text{ Hz}$.
+
+Nel \textit{dominio della frequenza}, il segnale attraversa pertanto 
+le seguenti trasformazioni:
+\[
+    X(f) \longrightarrow X_c(f) = \text{rep}_{F_c} X(f) \longrightarrow Y(f) = G(f)\cdot X_c(f)
+\]
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[>=Stealth, font=\small, node distance=2.5cm]
+        % --- NODI ---
+        % Ingresso
+        \node (in) {\(x(t)\)};
+
+        % Blocco Campionatore (con interruttore interno)
+        \node[draw=nord0, thick, fill=nord6, minimum width=2.8cm, 
+            minimum height=1.6cm, rounded corners=3pt, right=of in] (sampler) {};
+
+        % Simbolo dell'interruttore dentro il campionatore
+        \draw[thick, nord0] ($(sampler.west)+(0.3,0)$) -- ($(sampler.west)+(0.9,0)$);
+        \fill[nord0] ($(sampler.west)+(0.9,0)$) circle (1.2pt);
+        \draw[thick, nord0] ($(sampler.west)+(0.9,0)$) -- ($(sampler.west)+(1.7,0.3)$);
+        \fill[nord0] ($(sampler.west)+(1.9,0)$) circle (1.2pt);
+        \draw[thick, nord0] ($(sampler.west)+(1.9,0)$) -- ($(sampler.east)+(-0.3,0)$);
+        \draw[->, thick, nord0] ($(sampler.west)+(1.4,-0.6)$) -- ($(sampler.west)+(1.4,-0.1)$);
+
+        % Etichetta del campionatore
+        \node[above=2pt of sampler, font=\footnotesize, nord3, align=center] {Campionatore};
+        \node[below=2pt of sampler, font=\footnotesize, nord3] {\(T_c\)};
+
+        % Blocco Interpolatore (freccia in su + g(t))
+        \node[draw=nord0, thick, fill=nord5, minimum width=2.5cm, 
+            minimum height=1.5cm, rounded corners=3pt, right=of sampler] 
+            (interp) {\Large \(\uparrow\) \large \(g(t)\)};
+
+        % Etichetta dell'interpolatore
+        \node[below=2pt of interp, font=\footnotesize, nord3, align=center] {Filtro\\Interpolatore};
+
+        % Uscita
+        \node[right=of interp] (out) {\(y(t)\)};
+
+        % --- FRECCE DI COLLEGAMENTO ---
+        \draw[->, thick, nord0] (in) -- (sampler);
+        \draw[->, thick, nord0] (sampler) -- node[above, font=\footnotesize] {\(x(nT)\)} (interp);
+        \draw[->, thick, nord0] (interp) -- (out);
+    \end{tikzpicture}
+    \caption{Illustrazione del sistema considerato nell'esempio}
+    \label{fig:05_07_EsempioPratico1_Sistemi}
+\end{figure}
+
+Per cominciare, calcoliamo $X(f)$:
+\[
+    x(t) = \text{sinc}(10t) \cdot \text{sinc}(10t)
+\]
+Che nel dominio della trasformata diventa:
+\[
+    \begin{aligned}
+        X(f) &= \frac{1}{10}\text{rect} \left( \frac{f}{10} \right) \ast 
+        \frac{1}{10}\text{rect} \left( \frac{f}{10} \right) \\ 
+             &= \frac{1}{10} \text{triang} \left( \frac{f}{10} \right)
+    \end{aligned}
+\]
+
+\begin{remark}
+    Applicando la trasformata una \textbf{convoluzione diventa
+    una moltiplicazione}. E' \textbf{vero anche il viceversa} (\textit{moltiplicazione 
+    diventa convoluzione}).
+\end{remark}
+
+A questo punto notiamo che il \textbf{segnale ha banda limitata} $\mathcal{B}_x = [0,10]$
+($B_x = 10 \text{ Hz}$), ma la \textbf{condizione sulla frequenza di campionamento non è soddisfatta}:
+\[
+    F_c = 18 \text{ Hz} < 2B_x = 20 \text{ Hz}
+\]
+
+E infatti notiamo che le \textbf{ripetizioni dello spettro si sovrappongono}, come
+mostrato nella figura~\ref{fig:05_08_EsempioPratico1_SovrapposizioneSpettro}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[xscale=0.25, yscale=20, >=Stealth, font=\small]
+        % Spettro Originale (k=0)
+        \draw[thick, nord10, fill=nord8!20] (-10, 0) -- (0, 0.1) -- (10, 0) -- cycle;
+
+        % Replica Destra (k=1)
+        \draw[thick, dashed, nord11, fill=nord11!10] (8, 0) -- (18, 0.1) -- (28, 0) -- cycle;
+        \node[above, nord11] at (18, 0.11) {\(X(f - F_c)\)};
+
+        % Replica Sinistra (k=-1)
+        \draw[thick, dashed, nord12, fill=nord12!10] (-28, 0) -- (-18, 0.1) -- (-8, 0) -- cycle;
+        \node[above, nord12] at (-18, 0.11) {\(X(f + F_c)\)};
+
+        % Indicatori Frequenze
+        \draw[dashed, nord3, thick] (9, 0) -- (9, 0.12) 
+            node[above, nord3, font=\footnotesize] {\(F_c/2 = 9\)};
+        \draw[dashed, nord3, thick] (-9, 0) -- (-9, 0.12) 
+            node[above, nord3, font=\footnotesize] {\(-F_c/2 = -9\)};
+        \draw[dashed, nord3, thick] (18, 0) -- (18, 0.11);
+        \draw[dashed, nord3, thick] (-18, 0) -- (-18, 0.11);
+
+        % Assi
+        \draw[->, thick, nord0] (-28, 0) -- (28, 0) node[right, font=\bfseries] {\(f\)};
+        \draw[->, thick, nord0] (0, -0.01) -- (0, 0.13) node[above, font=\bfseries] {\(X_c(f)\)};
+
+        % Etichette sull'asse x
+        \foreach \x in {-18, -10, -8, 0, 8, 10, 18} {
+            \draw[nord0, thick] (\x, 0) -- (\x, -0.005) node[below, nord0] {\(\x\)};
+        }
+    \end{tikzpicture}
+    \caption{Sovrapposizioni delle ripetizioni dello spettro nel campionatore in esempio}
+    \label{fig:05_08_EsempioPratico1_SovrapposizioneSpettro}
+\end{figure}
+
+Lo \textit{spettro base} 
+\[
+    X_b(f) \text{ , } f\in \left[ -\frac{F_c}{2}, + \frac{F_c}{2} \right] = [-9,9]
+\]
+che viene ripetuto risulta quindi essere:
+\[
+    X_b(f) = \frac{1}{10} \text{triang} \left( \frac{f}{10} \right) +
+             \frac{1}{10} \text{triang} \left( \frac{f-18}{10} \right) +
+             \frac{1}{10} \text{triang} \left( \frac{f+18}{10} \right)
+             \text{ , } f\in [-9,9]
+\]
+
+Il filtro \textbf{interpolatore selezionerà questo spettro base}
+producendo l'uscita $Y(f)$:
+\[
+    \begin{aligned}
+        Y(f) &= G(f)\cdot X_c(f) \\
+             &= X_b(f)
+    \end{aligned}
+\]
+
+La figura~\ref{fig:05_09_EsempioPratico1_SpettroBase} ne mostra la forma.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[xscale=0.6, yscale=25, >=Stealth, font=\small]
+        % Disegno del trapezio (Spettro Base)
+        \draw[line width=1.5pt, nord10, fill=nord8!20] 
+            (-9,0) -- (-9,0.02) -- (-8,0.02) -- (0,0.1) -- (8,0.02) -- (9,0.02) -- (9,0) -- cycle;
+
+        % Etichette asse x
+        \foreach \x in {-9, -8, 0, 8, 9} {
+            \draw[nord0, thick] (\x, 0) -- (\x, -0.003) node[below, nord0] {\(\x\)};
+        }
+
+        % Assi cartesiani
+        \draw[->, thick, nord0] (-10, 0) -- (10, 0) node[right, font=\bfseries] {\(f\)};
+        \draw[->, thick, nord0] (0, -0.005) -- (0, 0.12) node[above, font=\bfseries] {\(X_b(f)\)};
+
+        % Etichette asse y
+        \draw[nord0, thick] (0.2, 0.1) -- (-0.2, 0.1) node[left = 2pt, nord0] {\(0.1\)};
+        \draw[nord0, thick] (0.2, 0.02) -- (-0.2, 0.02) node[left = 2pt, nord0] {\(0.02\)};
+    \end{tikzpicture}
+    \caption{Spettro base selezionato dall'interpolatore}
+    \label{fig:05_09_EsempioPratico1_SpettroBase}
+\end{figure}
+
+Ora, per ottenere il segnale corrispondente nel \textbf{dominio del tempo}, 
+ci conviene scomporre lo spettro base in una \textbf{somma} di un 
+\textbf{rettangolo} e di un \textbf{triangolo}, come segue:
+\[
+    X_b(f) = \frac{1}{50} \text{rect} \left( \frac{f}{18} \right) +
+             \frac{2}{25} \text{triang} \left( \frac{f}{8} \right)
+\]
+A questo punto, antitrasformando, troviamo un segnale che è \textbf{diverso dall'originale} 
+da cui eravamo partiti:
+\[
+    y(t) = \frac{9}{25} \text{sinc}(18t) + \frac{16}{25} \text{sinc}^2(8t) \ne x(t)
+\]
+
+Vediamo ora anche un altro esempio in cui consideriamo il seguente \textbf{segnale composto}:
+\[
+    x(t) = x_{1}(t) + x_{2}(t) = \cos (16\pi t) + \text{sinc}(30t)
+\]
+che, come prima, viene inviato attraverso un sistema costituito da un 
+\textbf{campionatore} (stavolta con $F_c = 20 \text{ Hz}$) e da un \textbf{interpolatore} 
+con $G(f) = \text{rect}(f /F_c)$.
+
+Siccome stiamo lavorando con \textbf{sistemi LTI}, possiamo \textbf{studiare 
+separatamente le due componenti} sfruttando la \textit{sovrapposizione degli effetti}. 
+
+Partiamo allora con la componente $x_{1}(t) = \cos (16\pi t) = \cos (2\pi \cdot 8t)$. 
+
+\begin{remark}[PRIMA COMPONENTE: COSENO]
+    Notiamo che si tratta di un segnale a \textbf{frequenza (singola)} 
+    $f_{0}=8 \text{ Hz} < F_c$, per cui le \textbf{condizioni del teorema del campionamento} 
+    sono \textbf{verificate}.
+    
+    Concludiamo allora che questa componente verrà \textbf{ricostruita correttamente}.
+\end{remark}
+
+Passiamo ora alla componente $x_{2}(t) = \text{sinc}(30t)$. La sua trasformata è
+\[
+    X_{2}(f) = \frac{1}{30} \text{rect} \left( \frac{f}{30} \right)
+\]
+
+Questo $\text{rect}$ è definito per $f\in[-15,15]$, per cui osserviamo che:
+
+\begin{remark}[SECONDA COMPONENTE: SINC]
+    La \textbf{banda di questa componente} è $\mathcal{B}_{x_{2}}=[0,15]$ 
+    (e quindi $B_{x_{2}}=15$). 
+
+    Notiamo allora che \textbf{condizioni richieste} dal 
+    \textbf{teorema del campionamento non sono più rispettate}: abbiamo
+    infatti $F_c = 20 \text{ Hz} < 2B_{x_{2}} = 30 \text{ Hz}$.
+\end{remark}
+
+Siccome stiamo ripetendo un segnale $\text{rect}$ di \textit{"durata" 30 ogni 20 unità},
+avremo delle \textbf{sovrapposizioni nelle sue ripetizioni} per $f\in [5,15]$.
+Allora lo \textbf{spettro base} 
+\[
+    X_{2b}(f) \text{ , } f\in \left[ -\frac{F_c}{2} , +\frac{F_c}{2} \right] = [-10,10] 
+\]
+risulta essere il seguente:
+\[
+    X_{2b}(f) = \frac{1}{30} \text{rect} \left( \frac{f}{20} \right) + 
+    \frac{1}{30} \text{rect} \left( \frac{f-15/2}{5} \right) +
+    \frac{1}{30} \text{rect} \left( \frac{f + 15/2}{5} \right) \text{ , }f\in[-10,10]
+\]
+
+La forma di questo spettro è mostrata nella figura~\ref{fig:05_12_EsempioPratico2_SpettroBaseSecondaParte}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[xscale=0.5, yscale=12, >=stealth]
+        % Assi
+        \draw[->, thick, nord0] (-12, 0) -- (12, 0);
+        \draw[->, thick, nord0] (0, -0.1) -- (0, 0.3) node[right] {$X_{2b}(f)$};
+
+        % Spettro base
+        \draw[line width=1.5pt, nord10] (-5, 0.1) -- (5, 0.1);
+        \node[above left] at (0, 0.1) {$\frac{1}{30}$};
+
+        \draw[line width=1.5pt, nord10] (-10, 0) -- (-10, 0.2) -- (-5, 0.2) -- (-5, 0.1);
+        \draw[line width=1.5pt, nord10] (5, 0.1) -- (5, 0.2) -- (10, 0.2) -- (10, 0);
+        \node[above] at (-7.5, 0.2) {$\frac{1}{15}$};
+
+        % Ticks asse x
+        \foreach \x in {-10, -5, 5, 10} {
+            \draw[thick] (\x, 0.01) -- (\x, -0.01) node[below] {$\x$};
+        }
+    \end{tikzpicture}
+    \caption{Spettro base risultante dal campionamento di $x_{2}(t)$}
+    \label{fig:05_12_EsempioPratico2_SpettroBaseSecondaParte}
+\end{figure}
+
+Come già visto negli esempi precedenti, queste ripetizioni faranno si che 
+\textbf{la componente \textit{non} sia ricostruita correttamente}.
+L'\textbf{interpolatore}, infatti, produrrà la seguente uscita:
+\[
+    \begin{aligned}
+        Y(f) &= G(f)\cdot X_{2c}(f) \\ 
+             &= X_{2b}(f)
+    \end{aligned}
+\]
+
+A questo punto, antitrasformando, concludiamo che il \textbf{segnale ricostruito} sarà:
+\[
+    y(t) = \frac{2}{3} \text{sinc}(20t) + 
+           \frac{1}{6} \text{sinc}(5t) e^{j 2\pi \cdot \frac{15}{2}t} +
+           \frac{1}{6} \text{sinc}(5t) \cdot e^{-j 2\pi\cdot \frac{15}{2}t} \ne x_{2}(t)
+\]
+Che infatti è \textbf{diverso dall'originale} $x_{2}(t)$.

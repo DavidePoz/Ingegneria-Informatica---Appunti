@@ -1,0 +1,215 @@
+\ProvidesPackage{document_style}
+
+% ------------------------------------------------------------------------------------
+%                               PACCHETTI DI BASE
+% ------------------------------------------------------------------------------------
+
+% --- Pacchetti di base e lingua ---
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{textcomp}
+\RequirePackage[italian]{babel}
+\RequirePackage{url}
+
+% --- Impaginazione e font ---
+\RequirePackage[margin=2.8cm]{geometry}
+\RequirePackage{libertinus}
+\RequirePackage{microtype}
+
+% ------------------------------------------------------------------------------------
+%                               PALETTE COLORI (NORD)
+% ------------------------------------------------------------------------------------
+\RequirePackage[dvipsnames, table]{xcolor}
+
+\definecolor{nord0}{HTML}{2E3440}  
+\definecolor{nord1}{HTML}{3B4252}
+\definecolor{nord2}{HTML}{434C5E}
+\definecolor{nord3}{HTML}{4C566A}
+\definecolor{nord4}{HTML}{D8DEE9}  
+\definecolor{nord5}{HTML}{E5E9F0}
+\definecolor{nord6}{HTML}{ECEFF4}
+\definecolor{nord7}{HTML}{8FBCBB}  
+\definecolor{nord8}{HTML}{88C0D0}  
+\definecolor{nord9}{HTML}{81A1C1}  
+\definecolor{nord10}{HTML}{5E81AC} 
+\definecolor{nord11}{HTML}{BF616A} 
+\definecolor{nord12}{HTML}{D08770} 
+\definecolor{nord13}{HTML}{EBCB8B} 
+\definecolor{nord14}{HTML}{A3BE8C} 
+\definecolor{nord15}{HTML}{B48EAD} 
+
+% ------------------------------------------------------------------------------------
+%                               MIGLIORAMENTI TIPOGRAFICI
+% ------------------------------------------------------------------------------------
+
+% --- Numeri di pagina
+\RequirePackage{fancyhdr}
+\setlength{\headheight}{14pt}
+\addtolength{\topmargin}{-2pt}
+\pagestyle{fancy}
+\fancyhf{}                                                      % Pulisce tutti i campi
+\fancyhead[L]{\small\sffamily\textcolor{nord3}{\leftmark}}      % Nome capitolo a sinistra
+\fancyhead[R]{\small\sffamily\textcolor{nord3}{\thepage}}       % Numero pagina a destra
+\renewcommand{\headrulewidth}{0.4pt}                            % Linea sotto l'header
+% Rende la linea dell'header colorata (opzionale)
+\renewcommand{\headrule}{\color{nord4}\hrule width\headwidth height\headrulewidth \vskip-\headrulewidth}
+
+% --- Capitoli, sezioni e sottosezioni
+\RequirePackage{titlesec}
+
+% Capitoli
+\titleformat{\chapter}[block]                           
+  {\normalfont\sffamily}                                        % Font base sans-serif
+  {\fontsize{60}{72}\selectfont\color{nord11}\thechapter}       % Numero capitolo
+  {1em}                                                         % Spazio tra numero e linea
+  {\textcolor{nord3}{\rule[-2ex]{1.5pt}{11ex}}\hspace{1.5em}\fontsize{30}{36}\selectfont\color{black}\MakeUppercase}                                                             % Linea, spazio e testo
+  [\vspace{10pt}]                                               % Spazio extra sotto il titolo
+
+% Sezioni
+\titleformat{\section}
+    {\normalfont\Large\bfseries\sffamily\color{nord0}}
+    {\thesection}{1em}{}
+  
+% Sottosezioni
+\titleformat{\subsection}
+    {\normalfont\large\bfseries\sffamily\color{nord0}}
+    {\thesubsection}{1em}{}
+
+% --- Stile per didascalie ---
+\RequirePackage{caption}
+\captionsetup{
+    font=small,
+    labelfont={bf,sf,color=nord10},     % Etichetta in grassetto, sans-serif e blu
+    format=hang,                        % Allinea il testo della didascalia sotto l'etichetta
+    justification=justified
+}
+
+% ------------------------------------------------------------------------------------
+%                               MATEMATICA E TIKZ
+% ------------------------------------------------------------------------------------
+
+% --- Matematica e simboli ---
+\RequirePackage{amsmath, amsfonts, mathtools, amsthm, amssymb}
+\RequirePackage{mathrsfs}
+\RequirePackage{bm}
+\RequirePackage{braket}
+\RequirePackage{cancel}
+\RequirePackage{systeme}
+\RequirePackage{stmaryrd}
+
+% --- Tabelle, liste e float ---
+\RequirePackage{array}
+\RequirePackage{booktabs}
+\RequirePackage{enumitem}
+\RequirePackage{multicol}
+\RequirePackage{float}
+
+% --- Grafica e TikZ ---
+\RequirePackage{graphicx}
+\graphicspath{{images/}}
+\RequirePackage{tikz}
+\usetikzlibrary{positioning, calc, fit}
+\RequirePackage{tikz-cd}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=1.16}
+
+% --- Link e Hyperref ---
+\RequirePackage{hyperref}
+\hypersetup{
+    colorlinks,
+    linkcolor={black},
+    citecolor={black},
+    urlcolor={blue!80!black},
+    % --- Metadati PDF ---
+    pdftitle={Fondamenti di Telecomunicazioni - Appunti},
+    pdfauthor={Davide Pozzebon},
+    pdfsubject={Ingegneria Informatica UniPD}
+}
+
+% ------------------------------------------------------------------------------------
+%                               STILE AMBIENTI
+% ------------------------------------------------------------------------------------
+
+% --- Box colorati e Teoremi ---
+\RequirePackage{etoolbox}
+\RequirePackage[framemethod=TikZ]{mdframed}
+\RequirePackage{thmtools}
+
+\AtBeginEnvironment{mdframed}{\tikzexternaldisable}
+\AtEndEnvironment{mdframed}{\tikzexternalenable}
+\mdfsetup{skipabove=1em, skipbelow=0em, innertopmargin=5pt, innerbottommargin=6pt}
+\theoremstyle{definition}
+
+% Stile Verde
+\declaretheoremstyle[
+    headfont=\bfseries\sffamily\color{nord14!70!black},
+    bodyfont=\normalfont,
+    mdframed={
+        linewidth=2pt,
+        rightline=false, topline=false, bottomline=false,
+        linecolor=nord14,
+        backgroundcolor=nord14!5,
+    }
+]{thmgreenbox}
+
+% Stile Rosso
+\declaretheoremstyle[
+    headfont=\bfseries\sffamily\color{nord11!70!black},
+    bodyfont=\normalfont,
+    mdframed={
+        linewidth=2pt,
+        rightline=false, topline=false, bottomline=false,
+        linecolor=nord11,
+        backgroundcolor=nord11!5,
+    }
+]{thmredbox}
+
+% Stile Blu
+\declaretheoremstyle[
+    headfont=\bfseries\sffamily\color{nord9!70!black},
+    bodyfont=\normalfont,
+    mdframed={
+        linewidth=2pt,
+        rightline=false, topline=false, bottomline=false,
+        linecolor=nord9,
+        backgroundcolor=nord9!5,
+    }
+]{thmbluebox}
+
+% Stile Arancione (Warning)
+\declaretheoremstyle[
+    headfont=\bfseries\sffamily\color{nord12!70!black},
+    bodyfont=\normalfont,
+    numbered=no,
+    mdframed={
+        linewidth=2pt,
+        rightline=false, topline=false, bottomline=false,
+        linecolor=nord12,
+        backgroundcolor=nord12!5,
+    },
+]{thmwarningbox}
+
+% Stile Blu chiaro (Nota)
+\declaretheoremstyle[
+    headfont=\bfseries\sffamily\color{nord8!70!black},
+    bodyfont=\normalfont,
+    numbered=no,
+    mdframed={
+        linewidth=2pt,
+        rightline=false, topline=false, bottomline=false,
+        linecolor=nord8,
+        backgroundcolor=nord8!5,
+    },
+]{thmexplanationbox}
+
+% --- Dichiarazione degli ambienti ---
+\declaretheorem[style=thmgreenbox, numbered=no, name=Definizione]{definition}      % Definizioni
+\declaretheorem[style=thmbluebox, numbered=no, name=Esempio]{exa}                  % Esempio
+\declaretheorem[style=thmbluebox, numbered=no, name=Esercizio]{exe}                % Esercizio
+\declaretheorem[style=thmredbox, numbered=no, name=Proposizione]{prop}             % Proposizione
+\declaretheorem[style=thmredbox, numbered=no, name=Teorema]{theorem}               % Teorema
+\declaretheorem[style=thmwarningbox, numbered=no, name=Attenzione]{warning}        % Attenzione
+\declaretheorem[style=thmexplanationbox, numbered=no, name=Nota]{remark}           % Osservazione
+
+% --- Fine pacchetto ---
+\endinput

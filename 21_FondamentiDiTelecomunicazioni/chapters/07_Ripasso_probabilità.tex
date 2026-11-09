@@ -1,0 +1,533 @@
+% ------------------------------------------------------------------------------------
+%                           PROBABILITA' E PROCESSI ALEATORI
+% ------------------------------------------------------------------------------------
+\chapter{Ripasso probabilità e processi aleatori}
+
+Abbiamo fin'ora trattato lo \textbf{studio dei segnali} e dei \textbf{sistemi}
+da un \textbf{punto di vista deterministico}, che rappresenta tuttavia
+una \textbf{semplificazione}: nella \textbf{realtà} i segnali
+sono \textbf{strettamenti legati} alle \textbf{variabili aleatorie} ed
+ai \textbf{processi aleatori}.
+
+Questi strumenti ci permettono infatti di \textbf{modellare i disturbi}
+(e.g. \textit{interferenze}, \textit{rumore}), che \textbf{non possono} 
+essere \textbf{descritti deterministicamente}, rendendo quindi
+l'\textbf{intero segnale} assimilabile ad un \textbf{processo aleatorio}.
+Questo concetto è mostrato in figura~\ref{fig:07_01_Rumore}.
+
+\begin{figure}[!ht]
+    \centering
+    % --- Primo Plot: Segnale Pulito ---
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                width=\textwidth,
+                height=4.5cm,
+                axis lines=middle,
+                xlabel={$t$},
+                ylabel={$s(t)$},
+                xmin=0, xmax=2,
+                ymin=-1.5, ymax=1.5,
+                xtick={0,1,2},
+                ytick={-1,0,1},
+                grid=major,
+                grid style={dashed, gray!30},
+                title={Segnale Pulito},
+                title style={font=\bfseries\small},
+                xlabel style={below right},
+                ylabel style={above left},
+                ]
+                % Segnale sinusoidale ideale
+                \addplot[thick, nord10, domain=0:2, samples=200] {sin(deg(2*pi*x))};
+            \end{axis}
+        \end{tikzpicture}
+    \end{minipage}\hfill
+    % --- Secondo Plot: Rumore ---
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                width=\textwidth,
+                height=4.5cm,
+                axis lines=middle,
+                xlabel={$t$},
+                ylabel={$n(t)$},
+                xmin=0, xmax=2,
+                ymin=-1.5, ymax=1.5,
+                xtick={0,1,2},
+                ytick={-1,0,1},
+                grid=major,
+                grid style={dashed, gray!30},
+                title={Rumore},
+                title style={font=\bfseries\small},
+                xlabel style={below right},
+                ylabel style={above left},
+                ]
+                % Rumore simulato (somma di sinusoidi ad alta frequenza)
+                \addplot[thick, nord11, domain=0:2, samples=150] 
+                    {0.3*sin(deg(2*pi*x*17)) + 0.2*sin(deg(2*pi*x*31)) + 0.15*sin(deg(2*pi*x*47))};
+            \end{axis}
+        \end{tikzpicture}
+    \end{minipage}\hfill
+    % --- Terzo Plot: Segnale + Rumore ---
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                width=\textwidth,
+                height=4.5cm,
+                axis lines=middle,
+                xlabel={$t$},
+                ylabel={$y(t)$},
+                xmin=0, xmax=2,
+                ymin=-1.5, ymax=1.5,
+                xtick={0,1,2},
+                ytick={-1,0,1},
+                grid=major,
+                grid style={dashed, gray!30},
+                title={Segnale + Rumore},
+                title style={font=\bfseries\small},
+                xlabel style={below right},
+                ylabel style={above left},
+                ]
+                % Somma del segnale pulito e del rumore
+                \addplot[thick, nord15, domain=0:2, samples=200] 
+                    {sin(deg(2*pi*x)) + 0.3*sin(deg(2*pi*x*17)) + 0.2*sin(deg(2*pi*x*31)) 
+                    + 0.15*sin(deg(2*pi*x*47))};
+            \end{axis}
+        \end{tikzpicture}
+    \end{minipage}
+    \caption{Distorsione di un segnale a causa del rumore}
+    \label{fig:07_01_Rumore}
+\end{figure}
+
+Un classico esempio è dato dal \textbf{rumore termico}:
+
+\begin{remark}[RUMORE TERMICO]
+    Il \textbf{rumore termico} è un esempio di rumore, dovuto
+    all'\textit{agitazione termica} delle \textit{particelle}
+    nel \textit{mezzo di trasmissione} del segnale.
+\end{remark}
+
+Vale allora la pena fare un richiamo veloce dei concetti fondamentali
+della probabilità, delle variabili e dei processi aleatori.
+
+\section{Variabili aleatorie}
+
+Ricordiamo la definizione di \textbf{variabile aleatoria}:
+
+\begin{definition}[VARIABILE ALEATORIA]
+    Una \textbf{variabile aleatoria} $X$ è una \textbf{funzione}
+    \[
+        X: \Omega \to E
+    \] 
+    Dove $\Omega $ è uno \textbf{spazio campionario}.
+\end{definition}
+
+Dove per \textbf{spazio campionario} intendiamo 
+un \textbf{insieme di possibili eventi}. 
+
+Ricordiamo anche la definizione di \textbf{evento} 
+e di \textbf{probabilità di un evento}:
+
+\begin{definition}[EVENTI E LORO PROBABILITA']
+    Si dice \textbf{evento} $\omega $ un 
+    \textbf{sottoinsieme dello spazio campionario} $\Omega $:
+    \[
+        \omega \subseteq \Omega 
+    \]
+    E indichiamo con $P(\omega)$ la \textbf{funzione}:
+    \[
+        \begin{aligned}
+            P: &\Omega \to [0,1] \\ 
+               &\omega \mapsto P(\omega ) \in [0,1]
+        \end{aligned}
+    \]
+    Deve \textbf{sempre valere} $P(\Omega) = 1$
+\end{definition}
+
+Ricordiamo che $P$ è la \textbf{probabilità} che si 
+verifichi l'evento $\omega$, ed è anche chiamata funzione
+di \textbf{densità di probabilità}, visto che ci dice
+\textit{come la probabilità degli eventi è distribuita nello spazio campionario}.
+
+\begin{remark}
+    Se $\omega $ è un \textbf{singolo elemento} di $\Omega $, si
+    parla di \textbf{evento elementare}.
+\end{remark}
+
+Ricordiamo inoltre che le variabili aleatorie possono essere:
+\begin{itemize}
+    \item \textbf{CONTINUE} se $\Omega  = [a,b] \subseteq \mathbb{R}$.
+    \item \textbf{DISCRETE} se $\Omega  \subseteq \mathbb{Z}$.
+\end{itemize}
+
+\subsection{V.A. Continue}
+
+Data una \textbf{v.a. continua} $X$ definita su uno \textit{spazio campionario} $\Omega $, 
+la sua \textbf{densità di probabilità} è spesso indicata con $p_X$.
+Per la condizione di normalizzazione, deve valere inoltre:
+\[
+    \int_{x\in \Omega} p_X(x) dx = 1
+\]
+
+Si definisce inoltre la \textbf{distribuzione cumulativa} (o \textbf{riparitizione}) 
+di $X$ come:
+
+\begin{definition}[FUNZIONE DI DISTRIBUZIONE CUMULATIVA]
+    \[
+        F_x (u) \coloneqq  P[X \le u] = \int_{-\infty}^u p_X(x) dx
+    \] 
+\end{definition}
+
+Per come è definita, $F_x$ è \textbf{non decrescente} e abbiamo:
+\[
+    \begin{aligned}
+        \lim_{u \to -\infty} F_x(u) &= 0 \\ 
+        \lim_{u \to +\infty} F_x(u) &= 1 \\ 
+    \end{aligned}
+\]
+
+E' inoltre utile ricordare che valgono:
+
+\begin{prop}
+    \[
+        \begin{aligned}
+            P[x \in [a,b]] &= F_x(b) - F_x(a) \\ 
+            p_X(x) &= \frac{d}{dx} F_x (x)
+        \end{aligned}
+    \] 
+\end{prop}
+
+\subsection{V.A. Discrete}
+
+Per quanto riguarda le \textbf{v.a. discrete}, le 
+\textbf{definizioni sono analoghe}, con la sola differenza
+che gli \textit{integrali sono sostituiti da sommatorie}.
+
+Data una v.a. discreta $X$ definita su $A$, la condizione 
+di normalizzazione diventa quindi:
+\[
+    \sum_{a\in A} p_X(a) = 1
+\]
+Per la \textbf{distribuzione cumulativa} abbiamo quindi:
+
+\begin{definition}[DISTRIBUZIONE CUMULATIVA]
+    \[
+        F_x(u) \coloneqq P[X\le u] = \sum_{a\le u, a\in A} p_X(a)
+    \] 
+\end{definition}
+
+\subsection{Media, varianza e momenti}
+
+Ricordiamo inoltre che, data una v.a. $X$, possiamo definirne
+la \textbf{media} come segue:
+
+\begin{definition}[MEDIA]
+    La \textbf{media} (o \textbf{valore atteso}) di una v.a. $X$ è:
+    \[
+        \begin{aligned}
+            m_x = m_x(1) = \mathbb{E}[X] &\coloneqq \int_{-\infty}^{\infty} x p_X (x) dx \\ 
+            m_x = m_x(1) = \mathbb{E}[X] &\coloneqq \sum_{a_i \in A} a_i p_X(a_i)
+        \end{aligned}
+    \] 
+    Rispettivamente se $X$ è \textbf{continua} oppure \textbf{discreta}.
+\end{definition}
+
+Si definisce anche il \textbf{momento secondo} di $X$, ovvero il
+\textit{valore atteso del quadrato} di $X$, come segue:
+
+\begin{definition}[MOMENTO SECONDO]
+    Il \textbf{momento secondo} di una v.a. $X$ è:
+    \[
+        \begin{aligned}
+            M_x = m_x(2) = \mathbb{E}[X^2] &\coloneqq \int_{-\infty}^{\infty} x^2 p_X (x) dx \\ 
+            M_x = m_x(2) = \mathbb{E}[X^2] &\coloneqq \sum_{a_i \in A} a_i^2 p_X(a_i)
+        \end{aligned}
+    \] 
+    Rispettivamente se $X$ è \textbf{continua} oppure \textbf{discreta}.
+\end{definition}
+
+In generale, abbiamo:
+\[
+    m_x(n) = \mathbb{E}[X^n]
+\]
+
+Infine, definiamo la \textbf{varianza} di una v.a. come segue:
+
+\begin{definition}[VARIANZA]
+    La \textbf{varianza} di una v.a. $X$ è:
+    \[
+        S_{xx} = \sigma_x ^2 \coloneqq\mathbb{E}[(X - m_x)^2] = \mathbb{E}[X^2] - \mathbb{E}^2[X] \\ 
+    \] 
+    Rispettivamente se $X$ è \textbf{continua} oppure \textbf{discreta}.
+\end{definition}
+
+\subsection{Variabili uniformi e gaussiane}
+
+Le principali \textbf{distribuzioni di probabilità} con cui avremo a che fare 
+sono la \textbf{distribuzione uniforme} e la \textbf{distribuzione gaussiana}.
+
+\begin{definition}[DISTRIBUZIONE UNIFORME]
+    Diciamo che una v.a. $X$ è \textbf{uniforme} se 
+    la sua \textbf{densità} è data da:
+    \[
+        p_X(x) = \begin{cases}
+            \frac{1}{b-a} & a < x < b \\ 
+            0 & \text{altrove}
+        \end{cases}
+    \] 
+\end{definition}
+
+Inoltre scriviamo $x\sim \mathcal{U}(a,b)$ per indicare che 
+$x$ è campionata da una distribuzione uniforme su $[a,b]$.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.8\textwidth,
+            height=6cm,
+            axis lines=middle,
+            xlabel={$x$},
+            ylabel={$p_X(x)$},
+            xmin=-4, xmax=4,
+            ymin=0, ymax=1.2,
+            xtick={-4,-3,-2,-1,0,1,2,3,4},
+            ytick={0, 0.2, 0.4, 0.6, 0.8, 1.0},
+            grid=major,
+            grid style={dashed, gray!30},
+            xlabel style={below right},
+            ylabel style={above left},
+            legend pos=north east,
+            legend style={font=\small, draw=none, fill=none},
+            ]
+            % U(-0.5, 0.5): larghezza 1, altezza 1
+            \addplot[thick, nord10, const plot, sharp plot] 
+                coordinates {(-4,0) (-0.5,0) (-0.5,1) (0.5,1) (0.5,0) (4,0)};
+                \addlegendentry{\(\mathcal{U}(-0.5, 0.5)\)}
+
+            % U(-1.5, 1.5): larghezza 3, altezza 1/3
+            \addplot[thick, nord11, const plot, sharp plot] 
+                coordinates {(-4,0) (-1.5,0) (-1.5,0.333) (1.5,0.333) (1.5,0) (4,0)};
+                \addlegendentry{\(\mathcal{U}(-1.5, 1.5)\)}
+
+            % U(-3, 3): larghezza 6, altezza 1/6
+            \addplot[thick, nord14, const plot, sharp plot] 
+                coordinates {(-4,0) (-3,0) (-3,0.166) (3,0.166) (3,0) (4,0)};
+                \addlegendentry{\(\mathcal{U}(-3, 3)\)}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Distribuzioni uniformi}
+\end{figure}
+
+Definiamo ora la \textbf{distribuzione gaussiana} (o \textbf{normale}):
+
+\begin{definition}[DISTRIBUZIONE UNIFORME]
+    Diciamo che una v.a. $X$ è \textbf{gaussiana} (o \textbf{normale}) se 
+    la sua \textbf{densità} è data da:
+    \[
+        p_X(x) = \frac{1}{\sqrt{2 \pi} \sigma } 
+        \exp \left( - \frac{(x-\mu)^2}{2 \sigma^2} \right)
+    \] 
+\end{definition}
+
+Dove $\sigma= \sqrt{\sigma_x^2}$ è la \textbf{deviazione standard} della
+distribuzione e $\mu = m_x$ è la sua \textbf{media}.
+
+Similmente alla notazione usata sopra, scriviamo $x\sim \mathcal{N}(\mu , \sigma)$ 
+per indicare che $x$ è campionata da una distribuzione uniforme con 
+media $\mu $ e deviazione standard $\sigma$ (e quindi varianza $\sigma^2$).
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.8\textwidth,
+            height=6cm,
+            axis lines=middle,
+            xlabel={$x$},
+            ylabel={$p_X(x)$},
+            xmin=-6, xmax=6,
+            ymin=0, ymax=1.2,
+            xtick={-6,-4,-2,0,2,4,6},
+            ytick={0, 0.2, 0.4, 0.6, 0.8, 1.0},
+            grid=major,
+            grid style={dashed, gray!30},
+            xlabel style={below right},
+            ylabel style={above left},
+            legend pos=north east,
+            legend style={font=\small, draw=none, fill=none},
+            % Definiamo una funzione per la gaussiana per rendere il codice più pulito
+            declare function={
+                gauss(\x,\mu,\sigma) = (1/(\sigma*sqrt(2*pi))) * exp(-((\x-\mu)^2)/(2*\sigma^2));
+            }
+            ]
+            % Gaussiana Standard (mu=0, sigma=1)
+            \addplot[thick, nord10, domain=-6:6, samples=200] {gauss(x, 0, 1)};
+                \addlegendentry{\(\mathcal{N}(0, 1)\)}
+
+            % Gaussiana stretta e spostata (mu=-2, sigma=0.6)
+            \addplot[thick, nord11, domain=-6:6, samples=200] {gauss(x, -2, 0.6)};
+                \addlegendentry{\(\mathcal{N}(-2, 0.6)\)}
+
+            % Gaussiana larga e spostata (mu=1.5, sigma=1.8)
+            \addplot[thick, nord14, domain=-6:6, samples=200] {gauss(x, 1.5, 1.8)};
+                \addlegendentry{\(\mathcal{N}(1.5, 1.8)\)}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Distribuzioni gaussiane}
+\end{figure}
+
+Molto spesso è utile considerare la cosiddetta \textbf{normale standard}
+(o gaussiana standard):
+
+\begin{definition}[NORMALE STANDARD]
+    Una \textbf{distribuzione normale} con \textbf{media nulla} e
+    \textbf{varianza unitaria} si dice \textbf{normale standard}:
+    \[
+        \mathcal{N}(0,1)
+    \] 
+\end{definition}
+
+Per distribuzioni gaussiane standard, i valori della funzione
+di \textbf{distribuzione cumulativa} $\Phi(a)$ sono \textbf{tabulati}.
+\[
+    \Phi(a) = P[X \le a] = \int_{-\infty}^a \frac{1}{\sqrt{2\pi}} e^{-0.5 x^2} dx 
+\]
+
+Spesso risulta utile considerare il \textbf{valore complementare}.
+Anche questi valori sono tabulati e si trovano nelle \textit{tabelle della funzione Q}:
+\[
+    Q(a) = 1 - \Phi(a)
+\]
+
+\section{Processi aleatori}
+
+I processi aleatori possono essere interpretati come 
+\textbf{un'estensione del concetto di variabile aleatoria} 
+quando viene \textbf{preso in considerazione anche il parametro temporale}.
+
+Diamone quindi la definizione:
+
+\begin{definition}[PROCESSO ALEATORI]
+    Si definisce \textbf{processo aleatorio} $v(t)$ (o \textit{stocastico}) una
+    \textbf{famiglia di variabili aleatorie} dipendenti dal tempo:
+    \[
+        v(t) \coloneqq  \{X(t), t\in T \subseteq \mathbb{R}_+\}  
+    \] 
+\end{definition}
+
+Ciascuna variabile è definita su uno \textit{spazio campionario} $\Omega$ e
+\textit{assume valori} in un insieme definito \textbf{spazio degli stati del processo}.
+
+Lo spazio della variabile \textbf{tempo} può essere \textbf{continuo o discreto}.
+Nel primo caso si parla di \textit{processo stocastico tempo-continuo}, mentre
+nel secondo di \textit{processo stocastico tempo-discreto}.
+
+\begin{remark}
+    Notiamo che, \textbf{fissato un istante} $t$, $v(t)$
+    \textit{"decade"} ad una semplice \textbf{variabile aleatoria}:
+    un processo aleatorio \textbf{associa} quindi una
+    \textbf{variabile aleatoria} a \textbf{ciascun istante}
+    temporale.
+\end{remark}
+
+\subsection{Distribuzione, densità di probabilità e media}
+
+In modo analogo a quanto fatto per le variabili aleatorie, si
+definiscono:
+
+\begin{definition}[DISTRIBUZIONE DI PROBABILITA' DEL PRIMO ORDINE]
+    \[
+        F_v (a,t) \coloneqq P[v(t) \le a]
+    \] 
+\end{definition}
+
+\begin{definition}[DENSITA' DI PROBABILITA' DEL PRIMO ORDINE]
+    \[
+        p_v(a,t) \coloneqq \frac{d}{da} F_v(a,t)
+    \] 
+\end{definition}
+
+Chiaramente, vale sempre la condizione di \textbf{normalizzazione}:
+\[
+    \int_{-\infty}^{+\infty} p_v (a,t) da = 1
+\]
+
+Sempre in modo analogo a quanto visto per le v.a., definiamo la
+\textbf{media} di un processo aleatorio:
+
+\begin{definition}[MEDIA DI UN PROCESSO ALEATORIO]
+    \[
+        m_v(t) \coloneqq \mathbb{E}[v(t)] = \int_{-\infty}^{+\infty} a p_v(a,t) da
+    \] 
+\end{definition}
+
+Possiamo dare la seguente interpretazione alla media di un processo aleatorio:
+
+\begin{remark}
+    La \textbf{media} di un processo aleatorio è una \textbf{funzione}
+    che associa a \textbf{ciascun istante} il \textbf{valore atteso del processo}.
+\end{remark}
+
+Per concludere, diamo la definzione di \textbf{processi stazionari}:
+
+\begin{definition}[PROCESSO STAZIONARIO]
+    Un processo aleatorio si dice \textbf{stazionario} se $p_v(a,t)$
+    \textbf{non dipende dal tempo} $t$:
+    \[
+        p_v(a,t) = p_v(a)
+    \] 
+\end{definition}
+
+Ciò significa che il processo è \textbf{descritto dalla stessa v.a. in ogni istante}.
+Chiaramente, ne consegue che la \textbf{media è costante}; infatti:
+\[
+    m_v(t) = \mathbb{E}[v(t)] = \int_{-\infty}^{+\infty} a p_v(a) da = m_v \text{ , }\forall t
+\]
+
+\subsection{Esempio}
+
+Consideriamo il \textbf{processo aleatorio} seguente:
+\[
+    v(t) = A \cos(2\pi f_{0}t)
+\]
+In cui $A\sim \mathcal{U}(0,5)$.
+
+\begin{remark}
+    Possiamo interpretare $v(t)$ come un \textit{segnale sinusoidale} a
+    frequenza $f_{0}$ la cui \textbf{ampiezza varia casualmente} tra 
+    $0$ e $5$ (Volt per esempio).
+\end{remark}
+
+Poniamo $c\coloneqq \cos (2\pi f_{0}t)$. Abbiamo:
+\[
+    A \sim \mathcal{U}(0,5) \implies v(t) = Ac \sim \mathcal{U}(0,5c)
+\]
+Per cui abbiamo:
+\[
+    p_v(t) = \begin{cases}
+        \frac{1}{5c} & 0 \le a \le 5c \\ 
+        0 & \text{altrimenti}
+    \end{cases}
+\]
+Che possiamo riscrivere come:
+\[
+    p_v(t) = \frac{1}{5 \cos(2\pi f_{0}t)} \text{rect} \left( 
+               \frac{a - 2.5 \cos(2\pi f_{0}t)}{5 \cos(2\pi f_{0}t)} \right)
+\]
+Calcoliamo $p_v(t)$ per alcuni valori di $t$, per esempio:
+\[
+    \begin{aligned}
+        p_v(a,0) &= \frac{1}{5} \text{rect} \left( \frac{a-2.5}{5} \right) \\ 
+        p_v \left(a, \frac{1}{4f_{0}} \right) &= \delta(a)
+    \end{aligned}
+\]
+
+La \textbf{media} risulta invece:
+\[
+    m_v(t) = \mathbb{E}[v(t)] = \int_{-\infty}^{+\infty} a p_v(a,t) da = 2.5 \cos(2\pi f_{0}t)
+\]
+Che è un \textit{risultato intuitivo}, dato che l'ampiezza $A$ \textit{varia uniformemente}.
