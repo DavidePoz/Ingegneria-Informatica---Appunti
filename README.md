@@ -51,6 +51,7 @@ che l'esportazione in pdf.
 ## TERZO ANNO
 ### PRIMO SEMESTRE
 - **Fondamenti di Telecomunicazioni** (9 CFU) - Work In Progress
+- **Modelli e Software per l'Ottimizzazione Discreta** (6 CFU - Corso a scelta) - Work In Progress
 
 ## BONUS
 Questa sezione raccoglie appunti "bonus", cioè di corsi che non rientrano

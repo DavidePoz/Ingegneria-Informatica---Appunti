@@ -1,0 +1,1175 @@
+% ------------------------------------------------------------------------------------
+%                       PROGRAMMAZIONE LINEARE INTERA
+% ------------------------------------------------------------------------------------
+
+\chapter{Programmazione Lineare Intera}
+
+La formulazione generale di un problema di programmazione lineare intera è
+\textbf{molto simile} ad un \textbf{problema di PL}, con l'\textbf{aggiunta del
+vincolo di interezza} per \textit{alcune} (in tal caso parliamo di 
+\textit{programmazione lineare mista}: MIP - Mixed Integer Programming) oppure
+\textit{tutte} (in tal caso parliamo di \textit{programmazione lineare intera pura}) 
+le variabili del problema.
+
+\begin{definition}[FORMA GENERALE PROBLEMA PL INTERA]
+    La \textbf{forma generale} di un \textbf{problema di programmazione
+    lineare intera} è la seguente:
+    \[
+        \begin{cases}
+            \text{min/max } c^\top x \\ 
+            a_i^\top x \sim b_i & i = 1,\ldots ,m \text{ , }\sim \in \{\le , =, \ge \} \\
+            l_j \le x_j \le u_j & j = 1,\ldots ,n \\ 
+            x_j \in \mathbb{Z} & \forall j\in J \subseteq \{1,\ldots ,n\}  
+        \end{cases}
+    \] 
+\end{definition}
+
+Anche se la \textbf{modifica} rispetto ad un problema di PL \textbf{sembra minima},
+\textbf{in realtà} è \textbf{molto più complessa di quello che sembra}.
+
+\begin{remark}[COMPLESSITA' PROBLEMI MIP]
+    Questa tipologia di problemi è \textbf{NP-hard}.
+\end{remark}
+
+\section{Interpretazione geometrica}
+
+Per capire come mai la complessità di questa classe di problemi è maggiore,
+ricorriamo all'interpretazione geometrica.
+
+Ricordiamo che l'\textbf{interpretazione geometrica} della \textbf{regione ammissibile}
+per un problema di PL era riconducibile ad un \textbf{poliedro}.
+Ora, invece, se assumiamo che il \textbf{vincolo di interezza} riguardi 
+\textbf{tutte le variabili}, potremmo considerare solo i 
+\textbf{punti all'interno del poliedro} che hanno \textbf{solo coordinate intere}, 
+come mostrato nella figura~\ref{fig:04_01_InterpretazioneGeometricaMIP}:
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale=1.2]
+        % Griglia sottile dei punti interi (sfondo)
+        \draw[very thin, nord4, step=1cm] (-0.2, -0.2) grid (6.2, 5.2);
+
+        % Assi coordinati
+        \draw[->, thick, nord0] (-0.5, 0) -- (6.5, 0) node[right] {$x_1$};
+        \draw[->, thick, nord0] (0, -0.5) -- (0, 5.5) node[above] {$x_2$};
+
+        % Definizione dei vertici del "rilassamento continuo" (il poliedro di partenza)
+        \coordinate (V1) at (1, 3);
+        \coordinate (V2) at (2.5, 4.5);
+        \coordinate (V3) at (4.5, 4);
+        \coordinate (V4) at (5, 2);
+        \coordinate (V5) at (3.5, 0.5);
+        \coordinate (V6) at (1.5, 0.8);
+
+        % Disegno l'area del poliedro continuo (rilassamento) 
+        \filldraw[fill=nord6, draw=nord3, thick, dashed] 
+            (V1) -- (V2) -- (V3) -- (V4) -- (V5) -- (V6) -- cycle;
+
+        % Disegno le rette dei vincoli estese (iperpiani)
+        \begin{scope}[thick, nord3, shorten <=-15pt, shorten >=-15pt]
+            \draw (V1) -- (V2);
+            \draw (V2) -- (V3);
+            \draw (V3) -- (V4);
+            \draw (V4) -- (V5);
+            \draw (V5) -- (V6);
+            \draw (V6) -- (V1);
+        \end{scope}
+
+        % PUNTI INTERI AMMISSIBILI (La vera regione della PL Intera)
+        \foreach \x/\y in {
+            2/1, 3/1,
+            2/2, 3/2, 4/2,
+            2/3, 3/3, 4/3,
+            2/4, 3/4, 4/4
+        } {
+            \filldraw[nord10] (\x, \y) circle (2.5pt);
+        }
+    \end{tikzpicture}
+    \caption{Interpretazione geometrica della programmazione lineare intera}
+    \label{fig:04_01_InterpretazioneGeometricaMIP}
+\end{figure}
+
+Questa modifica alla regione ammissibile comporta alcune conseguenze:
+
+\begin{remark}
+    Notiamo subito che:
+    \begin{enumerate}
+        \item La regioni ammissibile \textbf{non è più un insieme convesso}, il che
+            \textit{complica molto} la \textit{risoluzione algoritmica del problema}.
+        \item \textbf{Non} è \textbf{più vero} che \textbf{esiste sempre un vertice ottimo}:
+            addirittura, non è \textit{nemmeno detto} che i \textit{vertici appartengano
+            alla regione ammissibile}.
+    \end{enumerate}
+\end{remark}
+
+\section{Legame con la PL}
+
+Abbiamo assodato di \textbf{saper risolvere i problemi di PL}; ci viene allora spontaneo
+chiederci: \textbf{possiamo sfruttare questa conoscenza per risolvere i problemi MIP?}.
+
+Una prima idea (\textit{naive}) potrebbe essere considerare 
+l'\textbf{inviluppo convesso ideale} (\textit{ideal convex hull}) della regione
+di partenza, ovvero una \textit{"sotto-regione"} il cui \textit{bordo} 
+passi per i \textit{punti ammissibili "più esterni"}.
+
+Per capire meglio di cosa si tratta, osserviamo la figura~\ref{fig:04_02_IdealConvexHull}:
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[scale=1.2]
+        % Griglia sottile dei punti interi (sfondo)
+        \draw[very thin, nord4, step=1cm] (-0.2, -0.2) grid (6.2, 5.2);
+
+        % Assi coordinati
+        \draw[->, thick, nord0] (-0.5, 0) -- (6.5, 0) node[right] {$x_1$};
+        \draw[->, thick, nord0] (0, -0.5) -- (0, 5.5) node[above] {$x_2$};
+
+        % Definizione dei vertici del "rilassamento continuo" (il poliedro di partenza)
+        \coordinate (V1) at (1, 3);
+        \coordinate (V2) at (2.5, 4.5);
+        \coordinate (V3) at (4.5, 4);
+        \coordinate (V4) at (5, 2);
+        \coordinate (V5) at (3.5, 0.5);
+        \coordinate (V6) at (1.5, 0.8);
+
+        % Disegno le rette dei vincoli estese (iperpiani del rilassamento)
+        \begin{scope}[thick, nord3, shorten <=-15pt, shorten >=-15pt]
+            \draw (V1) -- (V2);
+            \draw (V2) -- (V3);
+            \draw (V3) -- (V4);
+            \draw (V4) -- (V5);
+            \draw (V5) -- (V6);
+            \draw (V6) -- (V1);
+        \end{scope}
+
+        % --- INVILUPPO CONVESSO IDEALE ---
+        \filldraw[fill=nord10!15, draw=nord10, ultra thick, line join=round] 
+            (2, 1) -- (3, 1) -- (4, 2) -- (4, 4) -- (2, 4) -- cycle;
+
+        % PUNTI INTERI AMMISSIBILI
+        \foreach \x/\y in {
+            2/1, 3/1,
+            2/2, 3/2, 4/2,
+            2/3, 3/3, 4/3,
+            2/4, 3/4, 4/4
+        } {
+            \filldraw[nord0] (\x, \y) circle (2.5pt);
+        }
+    \end{tikzpicture}
+    \caption{Ideal Convex Hull}
+    \label{fig:04_02_IdealConvexHull}
+\end{figure}
+
+\begin{remark}[DIMENSIONE DEL PROBLEMA E LIMITAZIONI]
+    Per quanto questa idea possa sembrare \textbf{semplice e intuitiva}, risulta
+    estremamente \textbf{difficile da applicare} a \textbf{problemi} in
+    cui il \textbf{numero di decisioni è maggiore} di quello mostrato nell'esempio. 
+
+    Di conseguenza, per molti problemi, questa \textbf{struttura} è 
+    \textbf{impossibile} (o comunque \textit{non conveniente}) 
+    da \textbf{determinare}.
+\end{remark}
+
+\subsection{Approssimazione della struttura ideale}
+
+Notiamo che la \textbf{formulazione di un problema MIP}, in generale,
+\textbf{non è univoca}: possiamo avere \textbf{infinite formulazioni} che presentano
+tutte lo \textbf{stesso inviluppo}, come mostrato nella figura~\ref{fig:04_03_DiverseFormulazioni}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale=1.2]
+        % Griglia sottile dei punti interi (sfondo)
+        \draw[very thin, nord4, step=1cm] (-0.2, -0.2) grid (6.2, 5.2);
+
+        % Assi coordinati
+        \draw[->, thick, nord0] (-0.5, 0) -- (6.5, 0) node[right] {$x_1$};
+        \draw[->, thick, nord0] (0, -0.5) -- (0, 5.5) node[above] {$x_2$};
+
+        % ==========================================
+        % FORMULAZIONE A (Il poliedro originale - largo e rilassato)
+        % ==========================================
+        \coordinate (V1) at (1, 3);
+        \coordinate (V2) at (2.5, 4.5);
+        \coordinate (V3) at (4.5, 4);
+        \coordinate (V4) at (5, 2);
+        \coordinate (V5) at (3.5, 0.5);
+        \coordinate (V6) at (1.5, 0.8);
+        \draw[nord3, thick, dashed] (V1) -- (V2) -- (V3) -- (V4) -- (V5) -- (V6) -- cycle;
+
+        % ==========================================
+        % FORMULAZIONE B (Un poliedro diverso, asimmetrico ma valido)
+        % ==========================================
+        \coordinate (W1) at (1.2, 4.5);
+        \coordinate (W2) at (4.2, 4.8);
+        \coordinate (W3) at (4.6, 1.8);
+        \coordinate (W4) at (2.8, 0.3);
+        \coordinate (W5) at (1.3, 0.3);
+        \draw[nord11, thick, densely dotted] (W1) -- (W2) -- (W3) -- (W4) -- (W5) -- cycle;
+
+        % ==========================================
+        % FORMULAZIONE C (Un poliedro molto stretto, quasi coincidente con l'inviluppo)
+        % ==========================================
+        \coordinate (U1) at (1.8, 0.8);
+        \coordinate (U2) at (3.2, 0.8);
+        \coordinate (U3) at (4.2, 1.8);
+        \coordinate (U4) at (4.2, 4.2);
+        \coordinate (U5) at (1.8, 4.2);
+        \draw[nord14, thick, dash dot] (U1) -- (U2) -- (U3) -- (U4) -- (U5) -- cycle;
+
+        % ==========================================
+        % INVILUPPO CONVESSO IDEALE (Fisso per tutte le formulazioni)
+        % ==========================================
+        \coordinate (H1) at (2, 1);
+        \coordinate (H2) at (3, 1);
+        \coordinate (H3) at (4, 2);
+        \coordinate (H4) at (4, 4);
+        \coordinate (H5) at (2, 4);
+        \filldraw[fill=nord10!15, draw=nord10, ultra thick, line join=round] 
+            (H1) -- (H2) -- (H3) -- (H4) -- (H5) -- cycle;
+
+        % ==========================================
+        % PUNTI INTERI AMMISSIBILI
+        % ==========================================
+        \foreach \x/\y in {
+            2/1, 3/1,
+            2/2, 3/2, 4/2,
+            2/3, 3/3, 4/3,
+            2/4, 3/4, 4/4
+        } {
+            \filldraw[nord0] (\x, \y) circle (2pt);
+        }
+
+        % ==========================================
+        % LEGENDA
+        % ==========================================
+        \begin{scope}[shift={(5.8, 3.2)}]
+            % Sfondo della legenda
+            \filldraw[fill=white, draw=nord3, rounded corners] (0,0) rectangle (2.8, 1.8);
+
+            % Voci
+            \draw[nord10, ultra thick] (0.2, 1.4) -- (0.7, 1.4); 
+            \node[right, font=\scriptsize, nord0] at (0.7, 1.4) {Inviluppo Ideale};
+
+            \draw[nord3, thick, dashed] (0.2, 1.0) -- (0.7, 1.0); 
+            \node[right, font=\scriptsize, nord0] at (0.7, 1.0) {Formulazione A};
+
+            \draw[nord11, thick, densely dotted] (0.2, 0.6) -- (0.7, 0.6); 
+            \node[right, font=\scriptsize, nord0] at (0.7, 0.6) {Formulazione B};
+
+            \draw[nord14, thick, dash dot] (0.2, 0.2) -- (0.7, 0.2); 
+            \node[right, font=\scriptsize, nord0] at (0.7, 0.2) {Formulazione C};
+        \end{scope}
+
+    \end{tikzpicture}
+    \caption{Diverse formulazioni possono portare allo stesso inviluppo}
+    \label{fig:04_03_DiverseFormulazioni}
+\end{figure}
+
+Questo fatto ci suggerisce una nuova idea: \textbf{cercare di approssimare}
+la \textbf{formulazione ideale} (\textit{ideal convex hull}) in maniera
+\textbf{iterativa} fino al punto in cui troviamo un \textbf{problema di PL} 
+la cui \textbf{soluzione risulta intera} (e quindi rispetta i vincoli del problema MIP).
+
+Un algoritmo che implementa questa idea è \textbf{cutting planes}
+(\textit{piani di taglio}), che funziona come descritto di seguito:
+
+\begin{definition}[ALGORITMO CUTTING PLANES]
+    Possiamo procedere come segue:
+    \begin{enumerate}
+        \item Considerare un \textbf{rilassamento continuo} del problema MIP 
+            (\textit{senza vincoli di interezza}) e \textbf{determinarne la soluzione}.
+            \begin{enumerate}
+            \item Se la \textbf{soluzione trovata} ha \textbf{coordinate intere}, 
+                allora questa è anche \textit{ottimo globale} e abbiamo \textbf{terminato}.
+            \item Altrimenti (se la soluzione \textit{non rispetta i vincoli di interezza originale}) 
+                dobbiamo proseguire.
+            \end{enumerate}
+        \item Operare una \textbf{separazione} (tramite \textbf{piano di taglio}), ovvero 
+            \textbf{introdurre un vincolo} che:
+            \begin{enumerate}
+                \item Ci permetta di \textbf{scartare la soluzione precedente} (\textit{non ammissibile}).
+                \item \textbf{Risulti valido per tutte le soluzioni ammissibili} del nostro 
+                    problema MIP.
+            \end{enumerate}
+    \item \textbf{Ripetere questi step} a \textit{partire dal problema rilassato} e 
+        \textit{con il nuovo vincolo aggiunto}.
+    \end{enumerate}
+\end{definition}
+
+Sottolineaiamo il fatto che \textit{noi non dobbiamo preoccuparci di come realizzare il punto 2},
+ci \textit{basta sapere che esistono algoritmi efficienti che lo implementano} e noi 
+\textit{ci limiteremo ad utilizzarli come "scatole nere"}.
+
+Detto ciò, è tuttavia importante fare alcune osservazioni sull'\textbf{efficienza della soluzione}.
+Innanzitutto, come \textit{tutti gli algoritmi risolutivi per problemi MIP}, la
+\textbf{complessità al caso pessimo} di \textbf{cutting planes} è \textbf{esponenziale}.
+Come se non bastasse, tuttavia, cutting planes \textbf{non} è 
+\textbf{neanche particolarmente efficiente al caso medio} e, infatti, 
+\textit{non rappresenta lo stato dell'arte} nella \textit{risoluzione dei problemi MIP}.
+
+\begin{remark}[EFFICIENZA DI CUTTING PLANES]
+    Intuitivamente, ciò è dovuto al fatto che, \textbf{dopo una certa soglia}, i
+    \textbf{tagli sono sempre meno "efficienti"}, nel senso che sono 
+    \textit{sempre più simili ai tagli precedenti}.
+\end{remark}
+
+Osserviamo inoltre anche il seguente fatto (più interessante per noi):
+
+\begin{remark}[OUTPUT DELL'ALGORITMO INTERROTTO]
+    Se \textbf{interrompiamo l'esecuzione} dell'algoritmo, questo \textbf{non}
+    avrà \textbf{prodotto alcuna soluzione ammissibile}, ma solo un
+    \textbf{lower bound} (soluzione del rilassamento).
+
+    Questo \textit{potrebbe essere utile o meno}, nel senso
+    che \textbf{preferiremmo} ottenere una \textbf{soluzione ammissibile}
+    (anche \textit{non ottima}, ma \textit{quantomeno ammissibile}).
+\end{remark}
+
+\subsection{Ricerca ad albero}
+
+Ricordiamo che avevamo menzionato gli algoritmi di \textbf{ricerca ad albero}
+(\textit{branch and bound}) come esempio di metodo risolutivo dei problemi
+di ottimizzazione.
+
+Possiamo applicare un'idea di questo tipo ai problemi MIP:
+
+\begin{definition}[RICERCA AD ALBERO]
+    Possiamo procedere come segue:
+    \begin{enumerate}
+        \item Applichiamo un \textbf{algoritmo per PL} per determinare una soluzione
+            $x^*$:
+            \begin{enumerate}
+                \item Se è \textbf{intera}, abbiamo \textbf{terminato}.
+                \item Altrimenti, \textbf{proseguiamo}.
+            \end{enumerate}
+        \item Operiamo un \textbf{branching}. Per farlo, \textbf{aggiungiamo i vincoli} seguenti 
+            (per esempio sulla $i$-esima variabile) per ottenere \textbf{due restrizioni}:
+            \[
+                \begin{aligned}
+                    x_i \le \left\lfloor x_i^* \right\rfloor & & x_i \ge \left\lceil x_i^* \right\rceil 
+                \end{aligned}
+            \]
+        \item \textbf{Ripetiamo} i passaggi in \textbf{maniera ricorsiva}.
+    \end{enumerate}
+\end{definition}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[>=stealth, scale=1.2]
+        % Griglia sottile dei punti interi
+        \draw[very thin, nord4, step=1cm] (-0.2, -0.2) grid (6.2, 5.2);
+
+        % Assi coordinati
+        \draw[->, thick, nord0] (-0.5, 0) -- (6.5, 0) node[right] {$x_1$};
+        \draw[->, thick, nord0] (0, -0.5) -- (0, 5.5) node[above] {$x_2$};
+
+        % Punti interi ammissibili (Base)
+        \foreach \x/\y in {
+            2/1, 3/1,
+            2/2, 3/2, 4/2,
+            2/3, 3/3, 4/3,
+            2/4, 3/4, 4/4
+        } {
+            \filldraw[nord3] (\x, \y) circle (2pt);
+        }
+
+        % Poliedro continuo originario (Rilassamento)
+        \coordinate (V1) at (1, 3);
+        \coordinate (V2) at (2.5, 4.5);
+        \coordinate (V3) at (4.5, 4);
+        \coordinate (V4) at (5, 2);
+        \coordinate (V5) at (3.5, 0.5);
+        \coordinate (V6) at (1.5, 0.8);
+        \draw[nord3, thick] (V1) -- (V2) -- (V3) -- (V4) -- (V5) -- (V6) -- cycle;
+
+        % Soluzione ottima frazionaria originaria (es. x1 = 1.5, x2 = 3.5)
+        \filldraw[nord11] (2.8, 3.5) circle (3pt) node[right=4pt, font=\bfseries] {$x^*$};
+
+        % --- BRANCHING ---
+        \draw[nord11, thick, decorate, decoration={snake, amplitude=1.5mm, segment length=6mm}] 
+            (2.5, 0.3) -- (2.5, 4.9);
+
+        % Nuovi vincoli (Tagli verticali)
+        % Ramo sinistro: x1 <= 1
+        \draw[nord10, ultra thick] (2, -0.2) -- (2, 5.2);
+        \draw[<-, thick, nord10] (1.4, -0.4) -- (1.9, -0.4) 
+            node[midway, below] {$x_1 \le \lfloor x_1^* \rfloor$};
+
+        % Ramo destro: x1 >= 2
+        \draw[nord10, ultra thick] (3, -0.2) -- (3, 5.2);
+        \draw[->, thick, nord10] (3.1, -0.4) -- (3.6, -0.4) 
+            node[midway, below] {$x_1 \ge \lceil x_1^* \rceil$};
+
+        % Ombreggiatura per evidenziare l'esclusione della striscia frazionaria
+        \fill[nord11, opacity=0.1] (2, 0) rectangle (3, 5);
+    \end{tikzpicture}
+    \caption{Ricerca ad albero applicata a problemi MIP}
+    \label{fig:04_04_MIP_Branching}
+\end{figure}
+
+L'intuizione geometrica dell'operazione di \textit{branching} è mostrata 
+nella figura~\ref{fig:04_04_MIP_Branching}, mentre l'albero delle restrizioni risultante
+è mostrato nella figura~\ref{fig:04_05_MIP_BranchTree}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}
+        % Stile dei nodi dell'albero
+        \tikzstyle{treenode} = [circle, draw=nord3, ultra thick, fill=nord6, minimum size=1.2cm]
+
+        % Nodo Radice (Sottoproblema corrente)
+        \node[treenode] (root) at (0, 0) {};
+
+        % Nodi Figli (Nuovi sottoproblemi)
+        \node[treenode] (left) at (-1.5, -1.5) {};
+        \node[treenode] (right) at (1.5, -1.5) {};
+
+        % Rami (Operazione di Branching)
+        \draw[ultra thick, nord3] (root) -- (left);
+        \draw[ultra thick, nord3] (root) -- (right);
+
+        % Etichette dei vincoli aggiunti
+        \node[below=0.2cm, font=\Large\bfseries, nord0] at (left.south) {$x_i \le \lfloor x_i^* \rfloor$};
+        \node[below=0.2cm, font=\Large\bfseries, nord0] at (right.south) {$x_i \ge \lceil x_i^* \rceil$};
+    \end{tikzpicture}
+    \caption{Nodi (restrizioni) risultanti dall'operazione di branching}
+    \label{fig:04_05_MIP_BranchTree}
+\end{figure}
+
+\begin{remark}
+    Al contrario dell'algoritmo \textit{cutting planes}, se \textit{durante la visita dell'albero}
+    \textbf{troviamo una soluzione intera} e decidiamo di \textbf{interrompere l'esecuzione} 
+    dell'algoritmo, \textbf{otteniamo quantomeno una soluzione ammissibile}, anzichè
+    solo un lower bound come nel caso di \textit{cutting planes}.
+\end{remark}
+
+\subsection{Branch and Cut}
+
+Vediamo ora una \textbf{soluzione ancora più efficiente}, che \textbf{combina le due precedenti}. 
+Le osservazioni chiave alla base sono le seguenti:
+
+\begin{remark}[OSSERVAZIONI ALLA BASE]
+    Notiamo che:
+    \begin{enumerate}
+        \item I \textbf{piani di taglio} ci permettono di \textbf{"migliorare" i rilassamenti}.
+        \item L'operazione di \textbf{branch} ci permette di \textit{"cambiare strada"}
+            quando i \textbf{tagli iniziano a "perdere efficienza"}.
+    \end{enumerate}
+\end{remark}
+
+Per cui l'algoritmo \textbf{branch and cut} risulta essere il seguente:
+
+\begin{definition}[BRANCH AND CUT]
+    Le fasi da ripetere sono:
+    \begin{enumerate}
+        \item Risoluzione di un \textbf{rilassamento continuo}.
+            Se la soluzione è \textit{intera}, allora \textit{abbiamo terminato},
+            altrimenti proseguiamo.
+        \item \textbf{Cut}: generiamo dei \textbf{piani di taglio} 
+            per ottenere \textbf{rilassamenti migliori}.
+        \item \textbf{Branch}: quando il processo di \textbf{cut inizia a perdere efficienza}
+            eseguiamo un'operazione di \textbf{branch} per \textbf{produrre delle restrizioni}.
+        \item \textbf{Ripetiamo} la fase 1 \textbf{sulle restrizioni} ottenute.
+    \end{enumerate}
+\end{definition}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[>=stealth, scale=1.2]
+        % Assi
+        \draw[->, thick, nord0] (-0.5, 0) -- (9.5, 0) node[right] {$t$};
+        \draw[->, thick, nord0] (0, -0.5) -- (0, 6);
+
+        % Asintoto ottimo (z*)
+        \draw[nord3, thick, dashed] (0, 3) node[left, font=\bfseries] {$z^*$} -- (9, 3);
+
+        % Upper Bound (Soluzioni intere / Euristica) - Funzione a gradini
+        \draw[nord11, ultra thick]
+            (0, 5.5) -- (1.5, 5.5)
+            |- (2.5, 4.8)
+            |- (4, 4.2)
+            |- (5.5, 3.6)
+            |- (7, 3.2)
+            |- (9, 3);
+        \filldraw[nord11] (0, 5.5) circle (2pt) node[left] {UB};
+
+        % Lower Bound (Rilassamenti / Piani di taglio) - Curva crescente
+        \draw[nord10, ultra thick] (0, 1) .. controls (2, 2.2) and (5, 2.7) .. (9, 3);
+        \filldraw[nord10] (0, 1) circle (2pt) node[left] {LB};
+
+        % Evidenziazione Optimality Gap in un tempo intermedio t_i
+        \draw[nord3, thin, dashed] (4.5, 0) node[below] {$t_i$} -- (4.5, 3.9);
+        \draw[<->, thick, nord12] (4.5, 2.5) -- (4.5, 3.6) 
+            node[midway, left, font=\small, align=right] {\textbf{Optimality} \\ \textbf{Gap}};
+    \end{tikzpicture}
+    \caption{Progresso durante l'esecuzione di \textit{Branch and Cut}}
+    \label{fig:04_06_BranchAndCutProgression}
+\end{figure}
+
+Proviamo ora a capire meglio \textit{come opera questo algoritmo}, osservando 
+la figura~\ref{fig:04_06_BranchAndCutProgression}:
+\begin{enumerate}
+    \item Dopo il \textbf{primo rilassamento}, abbiamo ottenuto un \textbf{primo lower bound},
+        che è \textbf{anche globalmente valido} in quanto risultato di un
+        \textit{rilassamento dell'"intero" problema originale}.
+    \item L'esecuzione di \textbf{algoritmi euristici} (\textit{sui nodi, quindi sulle restrizioni}) 
+        genera \textbf{soluzioni ammissibili}, che fungono da 
+        \textbf{upper bound via via migliori} (\textit{sequenza monotòna}).
+    \item I \textbf{lower bound} generati dalle \textbf{soluzioni dei rilassamenti} sono
+        \textbf{validi solo} per la \textbf{restrizione corrispondente nell'albero} 
+        (lower bound \textit{locali}). Per ottenere un \textbf{lower bound globale}
+        dobbiamo \textbf{considerare il minor lower bound} tra quelli 
+        di ciascun \textbf{nodo aperto} (ciè il \textit{peggior caso possibile} tra 
+        \textit{tutte le strade aperte}).
+\end{enumerate}
+
+Dunque, intuiamo che \textbf{interrompendo} prematuramente l'esecuzione dell'algoritmo, otteniamo 
+come \textbf{prodotto}:
+\begin{enumerate}
+    \item Una \textbf{soluzione ammissibile} $z_{t_i}$ (la \textit{migliore conosciuta fino a quel punto}).
+    \item Un \textbf{lower bound globale} $l_{t_i}$ (\textit{"certificato di qualità"}).
+    \item I due parametri sopra, insieme, formano ciò che chiamiamo
+        \textbf{optimality gap}: $f(z_{t_i}) - l_{t_i}$.
+\end{enumerate}
+
+\begin{remark}[CONSEGUENZE]
+    Questo è molto importante (specialmente in rapporto alle soluzioni precedenti) 
+    in quanto:
+    \begin{itemize}
+        \item Il \textbf{prodotto dell'algoritmo} è molto \textbf{più informativo} rispetto
+            ad avere \textit{solo il lower bound} oppure \textit{solo una soluzione}.
+        \item \textbf{Maggiore} è il \textbf{tempo di esecuzione}, \textbf{migliore}
+            è l'\textbf{optimality gap ottenuto}, e quindi anche la nostra 
+            \textbf{stima della soluzione ottima}.
+    \end{itemize}
+\end{remark}
+
+\section{Modellazione PLI/MIP}
+
+Vediamo ora come possono essere modellati i problemi della classe \textbf{PLI}.
+Per farlo, esistono \textbf{diverse formulazioni} da scegliere 
+\textit{a seconda del problema specifico}.
+
+\subsection{Decisioni binarie}
+
+Uno dei casi \textbf{più comuni} è quello in cui un problema viene
+ridotto ad una \textbf{lista di decisioni elementari} del tipo \textbf{yes/no}.
+
+\begin{definition}[DECISIONI YES/NO]
+    Tali \textbf{decisioni} sono rappresentate tramite un 
+    \textbf{vettore di variabili binarie}:
+    \[
+        x \in \{0,1\}^n  
+    \] 
+    Dove $n$ è il \textit{numero di decisioni} associate al problema.
+\end{definition}
+
+Intuitivamente, $x_i=1$ significa che la \textbf{corrispondente decisione è affermativa};
+viceversa, se $x_i=0$, la \textit{corrispondente decisione è negativa}.
+
+\subsection{Variabili discrete}
+
+Quando il problema \textit{non può essere ridotto}
+a delle \textit{semplici decisioni binarie} dobbiamo \textbf{gestire più valori}.
+Se questi sono \textbf{consecutivi}, allora la modellazione è molto \textit{semplice}.
+Per esempio:
+\[
+    x \in \{2,3,4,5\} \implies 2\le x \le 5 \text{ , } x \in \mathbb{Z}  
+\]
+
+\begin{definition}[VARIABILI DISCRETE REGOLARI]
+    In generale, basta considerare un \textbf{intervallo} ed il \textbf{vincolo di interezza}:
+    \[
+        z_l \le x \le z_u \text{ , } x, z_l, z_u \in \mathbb{Z} 
+    \] 
+\end{definition}
+
+Tuttavia è da notare che \textit{molto spesso} i 
+\textbf{valori possibili \textit{non} presentano regolarità}.
+Consideriamo il seguente esempio:
+\[
+    y \in \{0.25, 0.5, 1.25, 3\}  
+\]
+Che possiamo immaginare associato (per esempio) ai 
+\textit{possibili valori di potenza erogata da un motore}.
+
+La \textit{formulazione di un problema} di ottimizzazione \textit{richiede una serie di vincoli} 
+in forma di \textit{disequazioni}, che però \textit{non possono rappresentare} un
+\textit{insieme di questo tipo}.
+Dobbiamo allora ricorrere a delle \textbf{variabili di appoggio} che ci
+\textbf{permettano di effetuare la selezione} dei \textbf{valori ammissibili}.
+
+\begin{definition}[VARIABILI DISCRETE RIRREGOLARI]
+    Dati i \textbf{valori ammissibili} per una variabile $y_i$:
+    \[
+        y \in \{ s_{1},\ldots , s_k\}  
+    \] 
+    Definiamo le \textbf{variabili binarie di appoggio}:
+    \[
+        x_i = \begin{cases}
+            1 & y = s_i \\ 
+            0 & \text{altrimenti}
+        \end{cases}
+    \] 
+    Per ottenere la formulazione seguente:
+    \[
+        \begin{cases}
+            y = \sum_{i=1}^k s_i x_i \\ 
+            \sum_{i=1}^k x_i = 1 \\ 
+            x_i \in \{0,1\} & \forall i = 1,\ldots ,k  
+        \end{cases}
+    \] 
+\end{definition}
+
+\begin{remark}[SELEZIONE DEL VALORE]
+    Per come abbiamo \textbf{riformulato i vincoli}, notiamo che \textbf{uno ed uno solo}
+    dei valori $x_i$ sarà \textbf{pari ad uno}, per cui la \textbf{variabile}
+    $y$ assumerà il \textbf{corrispondente valore} $s_i$ associato.
+\end{remark}
+
+\subsection{Costi fissi}
+
+Questo pattern si usa quando una \textit{certa attività} comporta un 
+\textbf{costo fisso di attivazione} (e.g. accendere un macchinario) 
+\textbf{indipendente dalla quantità prodotta}, sommato ad un \textbf{costo variabile} 
+\textit{proporzionale alla quantità} prodotta.
+
+In tali casi abbiamo quindi un certa \textbf{funzione obiettivo} del tipo:
+\[
+    C(x) = \begin{cases}
+        0 & x = 0 \\ 
+        ax + b & x > 0
+    \end{cases}  
+\]
+
+Per \textbf{modellare la discontinuità} e ottenere una 
+\textit{formulazione comprensibile dal risolutore} dobbiamo
+\textbf{assumere} che la \textbf{variabile sia limitata}:
+\[
+    0 < \epsilon \le x \le U \text{ , }\epsilon,U \in \mathbb{R}
+\]
+Intuitivamente, queste possono rappresentare delle \textbf{quantità minime e massime}
+di un bene che possono essere \textbf{prodotte}.
+
+Ora, definite $\epsilon$ e $U$, possiamo procedere come segue:
+
+\begin{definition}[COSTI FISSI]
+    Data la \textbf{funzione di costo} $C(x)$ ed i \textit{bound} $\epsilon,U$, 
+    definiamo una \textbf{variabile binaria} ausiliaria $y\in \{0,1\}$:
+    \[
+        y = \begin{cases}
+            1 & x\ge \epsilon \\ 
+            0 & \text{altrimenti}
+        \end{cases}
+    \] 
+    E otteniamo la nuova formulazione del problema:
+    \[
+        \begin{cases}
+            C'(x) = ax + by \\ 
+            \epsilon y \le x \\ 
+            x \le Uy \\ 
+            y \in \{0,1\}  
+        \end{cases}
+    \] 
+\end{definition}
+
+Notiamo che:
+
+\begin{remark}
+    Dai vincoli deduciamo:
+    \begin{itemize}
+        \item Se $y=0$, i \textbf{vincoli schiacciano} $x$ a \textbf{zero}.
+        \item Se $y=1$, allora $x$ è \textbf{libera} di variare
+            \textbf{entro i suoi bound}.
+    \end{itemize}
+    Ciò significa che la \textbf{variabile binaria modella} la \textbf{discontinuità} 
+    introdotta dal \textbf{costo fisso} e $x\in \{0\} \cup [\epsilon, U]$.
+\end{remark}
+
+\subsection{Disgiunzioni}
+
+Abbiamo visto che una \textbf{soluzione ammissibile} di un problema di ottimizzazione
+è una \textbf{soluzione che rispetta tutti i vincoli}; ciò significa che i vincoli
+sono \textit{implicitamente legati} da un \textbf{operatore logico AND}.
+
+A volte, tuttavia, vogliamo imporre che venga \textbf{rispettato almeno uno}
+tra un \textbf{gruppo di vincoli} alternativi: si parla in tal caso di
+\textbf{disgiunzioni}.
+Consideriamo per esempio:
+\[
+    a_{1}^\top x \le b_{1} \lor a_{2}^\top x \le b_{2} \text{ , } l \le x \le u
+\]
+
+Anche in questo caso, introduciamo delle \textbf{variabili binarie} $y_{1},y_{2}$ tali che:
+\[
+    y_i = \begin{cases}
+        1 & a_i^\top x \le b_i \\ 
+        0 & \text{altrimenti}
+    \end{cases} \text{ , } y_{1} + y_{2} = 1
+\]
+Definite queste, modelliamo il problema con la \textbf{tecnica Big-M}:
+
+\begin{definition}[DISGIUNZIONI]
+    Dato un problema $P$, $l\le x\le u$, ed 
+    una \textbf{lista di vincoli alternativi}:
+    \[
+        a_{1}^\top x \le b_{1} \lor a_{2}^\top x \le b_{2}
+        \lor \ldots \lor a_{k}^\top x \le b_{k}
+    \] 
+    Definiamo $k$ \textbf{variabili binarie} $y_i$:
+    \[
+    y_i = \begin{cases}
+        1 & a_i^\top x \le b_i \\ 
+        0 & \text{altrimenti}
+    \end{cases} \text{ , } \sum_{i=1}^k = 1
+    \] 
+    E \textbf{riscriviamo i vincoli} coinvolti come segue:
+    \[
+        \begin{cases}
+            a_i^\top x \le b_i + M(1-y_i) & i=1,\ldots k \\ 
+            \sum_{i=1}^k y_i = 1 \\ 
+            l \le x \le u
+        \end{cases}
+    \]
+    Con $M\gg b_i$ $\forall i=1,\ldots, k$.
+\end{definition}
+
+Notiamo che $M$ è una \textbf{costante} positiva \textbf{sufficientemente grande} da
+\textbf{superare qualsiasi valore raggiungibile} dalle \textbf{espressioni dei vincoli}.
+
+\begin{remark}[BIG-M]
+    Di conseguenza, se il modello \textbf{sceglie} $y_s=1$, il \textbf{termine corrispondente}
+    $M(1-y_s)=0$ si \textbf{annulla} ed il \textbf{vincolo} associato 
+    \textbf{torna alla forma originale} e \textit{deve quindi essere rispettato}.
+
+    Per \textbf{tutti gli altri indici}, invece, i termini $M(1-y_s)=M$ \textbf{rimangono}
+    e \textbf{rendono \textit{inutili} i vincoli} corrispondenti (che saranno 
+    \textit{rispettati automaticamente} visto l'\textit{alto valore di M}).
+\end{remark}
+
+\subsection{Funzione linare a tratti}
+
+Spesso, la \textbf{funzione obiettivo} potrebbe essere \textbf{definita solo per} 
+$k$ \textbf{punti notevoli} (chiamati \textit{breakpoints} o \textit{vertici}) con
+\textbf{coordinate} $a_{1},a_{2},\ldots , a_k$ (ricordiamo che in generale queste sono \textit{vettori}, 
+noi consideriamo il \textit{caso unidimensionale} per la semplcità esplicativa) e
+\textbf{valori corrispondenti} $C(a_{1}),C(a_{2}),\ldots ,C(a_k)$.
+
+In tali casi, \textbf{dividiamo l'asse} in $k-1$ \textbf{intervalli} e modelliamo
+la situazione con una \textbf{funzione lineare a tratti} 
+(o \textit{PWL}, \textit{piecewise linear}) utilizzando \textbf{due tipi di variabili}:
+\begin{itemize}
+    \item $z_i\in \{0,1\}$ ($i=1,\ldots ,k-1$): variabili \textbf{binarie} 
+        per \textbf{determinare l'intervallo attivo}.
+    \item $\lambda_i \ge 0$ ($i=1,\ldots ,k$): variabili per esprimere la 
+        \textbf{combinazione convessa} dei \textbf{punti nell'intervallo attivo}.
+\end{itemize}
+
+\begin{definition}[F. LINEARE A TRATTI]
+    Il modello matematico risulta essere:
+    \[
+        \begin{cases}
+            x = \sum_{i=1}^k a_i \lambda_i \\ 
+            y = \sum_{i=1}^k C(a_i)\lambda_i \\ 
+            \sum_{i=1}^k \lambda_i = 1 \\ 
+            \sum_{i=1}^{k-1} z_i = 1 \\ 
+            \lambda_1 \le z_{1} \\ 
+            \lambda_k \le z_{k-1} \\ 
+            \lambda_i \le z_{i-1} + z_i & \forall i = 2,\ldots ,k-1 \\ 
+            z_i \in \{0,1\} & \forall i = 1,\ldots ,k-1 \\ 
+            \lambda_i \ge 0 & \forall i =1,\ldots ,k
+        \end{cases}
+    \] 
+\end{definition}
+
+La figura~\ref{fig:04_07_FunzionePWL} mostra un esempio di modello di una 
+\textbf{funzione lineare a tratti}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale=1.2, >=stealth]
+        % ==========================================
+        % GRAFICO 1: Funzione Lineare a Tratti (PWL) e variabili
+        % ==========================================
+        % Assi
+        \draw[->, thick, nord0] (-0.5, 0) -- (8.5, 0) node[right] {$x$};
+        \draw[->, thick, nord0] (0, -0.5) -- (0, 4.5) node[above] {$y$};
+
+        % Coordinate dei vertici (breakpoints)
+        \coordinate (P1) at (1, 1);
+        \coordinate (P2) at (2, 2.4);
+        \coordinate (P3) at (3, 1.2);
+        \coordinate (P4) at (4, 3.6);
+        \coordinate (P5) at (5, 2.8);
+        \coordinate (P6) at (6, 2.8);
+        \coordinate (P7) at (7, 2.0);
+
+        % Linee tratteggiate di proiezione sull'asse x
+        \foreach \i/\p in {1/P1, 2/P2, 3/P3, 4/P4, 5/P5, 6/P6, 7/P7} {
+            \draw[nord3, thin, dashed] (\p) -- (\p |- 0,0);
+        }
+
+        % Etichette asse X: a_i (punti notevoli)
+        \node[below, nord0] at (1, 0) {$a_1$};
+        \node[below, nord0] at (2, 0) {$a_2$};
+        \node[below, nord0] at (3, 0) {$a_3$};
+        \node[below, nord0] at (4, 0) {$a_4$};
+        \node[below, nord0] at (5, 0) {$a_5$};
+        \node[below, nord0] at (6, 0) {$a_6$};
+        \node[below, nord0] at (7, 0) {$a_7$};
+
+        % Etichette asse X (riga inferiore): \lambda_i (pesi convessi)
+        \node[below=15pt, nord3] at (1, 0) {$\lambda_1$};
+        \node[below=15pt, nord3] at (2, 0) {$\lambda_2$};
+        \node[below=15pt, nord3] at (3, 0) {$\lambda_3$};
+        \node[below=15pt, nord3] at (4, 0) {$\lambda_4$};
+        \node[below=15pt, nord3] at (5, 0) {$\lambda_5$};
+        \node[below=15pt, nord3] at (6, 0) {$\lambda_6$};
+        \node[below=15pt, nord3] at (7, 0) {$\lambda_7$};
+
+        % Etichette asse X (intervalli): z_i (variabili binarie)
+        \node[below=7pt, nord11, font=\footnotesize] at (1.5, 0) {$z_1$};
+        \node[below=7pt, nord11, font=\footnotesize] at (2.5, 0) {$z_2$};
+        \node[below=7pt, nord11, font=\footnotesize] at (3.5, 0) {$z_3$};
+        \node[below=7pt, nord11, font=\footnotesize] at (4.5, 0) {$z_4$};
+        \node[below=7pt, nord11, font=\footnotesize] at (5.5, 0) {$z_5$};
+        \node[below=7pt, nord11, font=\footnotesize] at (6.5, 0) {$z_6$};
+
+        % Etichette dei valori di costo C(a_i)
+        \node[above left, font=\scriptsize, nord0] at (P2) {$C(a_2)$};
+        \node[below right, font=\scriptsize, nord0] at (P3) {$C(a_3)$};
+        \node[above, font=\scriptsize, nord0] at (P4) {$C(a_4)$};
+
+        % Spezzata (PWL)
+        \draw[nord10, very thick] (P1) -- (P2) -- (P3) -- (P4) -- (P5) -- (P6) -- (P7);
+
+        % Pallini sui breakpoints
+        \foreach \p in {P1, P2, P3, P4, P5, P6, P7} {
+            \filldraw[nord0] (\p) circle (1.8pt);
+        }
+
+    \end{tikzpicture}
+    \caption{Esempio di funzione lineare a tratti}
+    \label{fig:04_07_FunzionePWL}
+\end{figure}
+
+Cerchiamo ora di capire \textit{come funziona il modello della PWL}
+aiutandoci con la figura:
+
+\begin{remark}[INTUIZIONE PWL]
+    Osservando il modello della PWL definito sopra, notiamo che:
+    \begin{itemize}
+        \item $\sum z_i = 1$ impone la \textbf{selezione di \textit{un solo} intervallo} 
+            (e.g. consideriamo $z_{2}=1$).
+        \item Poi, $z_{2}$ \textbf{"lascia accesi" solo} $\lambda_{2}$ e $\lambda_{3}$,
+            mentre per \textbf{tutti gli altri} $\lambda_i$ vale $\lambda_i \le 0$
+            (che, \textit{in combinazione} con $\lambda_i \ge 0$ implica $\lambda_i=0$).
+    \end{itemize}
+    In altre parole, le variabili $\lambda_i$ sono \textbf{forzate ad annullarsi},
+    \textbf{tranne} quelle agli \textbf{estremi} dell'\textbf{intervallo considerato}.
+\end{remark}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale = 1.2, >=stealth]
+        % ==========================================
+        % GRAFICO 2: Approssimazione di una curva continua
+        % ==========================================
+        % Assi
+        \draw[->, thick, nord0] (-0.5, 0) -- (4, 0) node[right] {$x$};
+        \draw[->, thick, nord0] (0, -0.5) -- (0, 4.5) node[above] {$y$};
+
+        % Curva continua di base (sfondo per far capire l'approssimazione)
+        \draw[nord8, ultra thick] (0.5, 0.2) .. controls (2.5, 0.2) and (3, 1) .. (3.5, 4);
+
+        % Punti scelti per l'approssimazione
+        \coordinate (Q1) at (0.8, 0.22);
+        \coordinate (Q2) at (1.8, 0.4);
+        \coordinate (Q3) at (2.6, 1.1);
+        \coordinate (Q4) at (3.1, 2.2);
+        \coordinate (Q5) at (3.4, 3.5);
+
+        % Spezzata approssimante (PWL)
+        \draw[nord10, very thick] (Q1) -- (Q2) -- (Q3) -- (Q4) -- (Q5);
+
+        % Pallini 
+        \foreach \q in {Q1, Q2, Q3, Q4, Q5} {
+            \filldraw[nord0] (\q) circle (1.8pt);
+        }
+    \end{tikzpicture}
+    \caption{Approssimazione di una curva continua con una funzione PWL}
+    \label{fig:04_08_ApprossimazioneConPWL}
+\end{figure}
+
+\begin{remark}[APPROSSIMARE FUNZIONI CONTINUE]
+    Le \textbf{funzioni lineari a tratti} possonoe essere \textbf{usate anche}
+    per \textbf{approssimare delle funzioni continue}, come mostrato
+    in figura~\ref{fig:04_08_ApprossimazioneConPWL}.
+\end{remark}
+
+\section{Rappresentabilità MIP}
+
+Ci chiediamo a questo punto \textbf{quale classe di problemi} possiamo
+\textbf{modellare con il paradigma MIP}. Per rispondere a questa domanda,
+dobbiamo studiare la \textbf{caratterizzazione} dei \textbf{problemi MIP}.
+
+\begin{definition}[MIP-RAPPRESENTABILITA']
+    Sia $S \subseteq \mathbb{R}^n$ e sia $x\in S$.
+    Allora l'insieme $S$ si dice \textbf{MIP-rappresentabile} se
+    \[
+        S = \text{proj } \begin{cases}
+            Ax + Bu + Dy \ge b \\ 
+            x_j \in \mathbb{Z} & j\in J \subseteq \{1,\ldots ,n\} \\ 
+            y\in \mathbb{Z}
+        \end{cases}
+    \] 
+\end{definition}
+
+Dove per "$\text{proj}$" intendiamo la \textbf{proiezione} dello 
+\textit{"spazio esteso"} (ottenuto con l'\textit{aggiunta delle variabili} $u$ e $y$) 
+su $\mathbb{R}^n$ (spazio \textit{"orginale"}). 
+Ora, data questa definizione, possiamo vedere finalmente la 
+\textbf{caratterizzazione dei problemi MIP}:
+
+\begin{theorem}[TEOREMA DI JEROSLOW]
+    Un insieme $S\subseteq \mathbb{R}^n$ è \textit{MIP-rappresentabile}
+    \textbf{se e solo se} è un'\textbf{unione finita} di
+    \textbf{poliedri} con lo \textbf{stesso cono di reessione}.
+\end{theorem}
+
+\begin{remark}
+    Anche un \textbf{punto singolo} è considerabile \textbf{un poliedro}.
+\end{remark}
+
+La figura~\ref{fig:04_09_ConoRecessione} ci aiuta a capire che cosa
+si intende per \textbf{cono di recessione}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale=1.2]
+        \definecolor{conegreen}{HTML}{196850} % Verde scuro per il cono, come nello schizzo
+
+        % --- Bordi del poliedro (iperpiani) ---
+        % Vincolo verticale sinistro
+        \draw[ultra thick, nord0] (1, 1.2) -- (1, 4.8); 
+        % Vincolo superiore (inclinazione ~31 gradi)
+        \draw[ultra thick, nord0] (0.5, 3.8) -- (4.5, 6.2); 
+        % Vincolo inferiore (inclinazione ~-31 gradi)
+        \draw[ultra thick, nord0] (0.5, 2.2) -- (4.5, -0.2); 
+
+        % --- Cono di recessione ---
+        % Punto di origine generico all'interno del poliedro
+        \coordinate (O) at (1.5, 3);
+
+        % Raggi (direzioni percorribili all'infinito)
+        \foreach \angle in {-31, -15, 0, 15, 31} {
+            \draw[->, ultra thick, conegreen] (O) -- +(\angle:2.8);
+        }
+
+        % Arco con frecce che delimita l'apertura del cono
+        \draw[<->, ultra thick, conegreen] (O) ++(31:2.4) arc (31:-31:2.4);
+    \end{tikzpicture}
+    \caption{Cono di recessione di un poliedro}
+    \label{fig:04_09_ConoRecessione}
+\end{figure}
+
+\begin{definition}[CONO DI RECESSIONE DI UN POLIEDRO]
+    E' l'insieme di \textbf{tutte le direzioni percorribili}
+    all'\textbf{infinito senza mai uscire dal poliedro}.
+\end{definition}
+
+\begin{remark}
+    Il \textbf{cono di recessione} di un \textbf{politopo}
+    (\textit{poliedro "chiuso"}) è semplicemente il \textbf{vettore nullo}.
+\end{remark}
+
+Questa osservazione ci permette di concludere anche che:
+
+\begin{remark}
+    L'\textbf{unione finita} di \textbf{politopi} è
+    \textbf{MIP-rappresentabile}. Infatti, tutti hanno lo 
+    \textbf{stesso cono di recessione} (vettore nullo).
+\end{remark}
+
+\subsection{Problemi SAT}
+
+Ricordiamo la classe di problemi di \textbf{soddisfacibilità booleana}
+(problemi \textit{SAT}):
+
+\begin{definition}[PROBLEMI SAT]
+    Problemi dati da $n$ \textbf{variabili booleane} ed
+    $m$ \textbf{clausole booleane} (ovvero \textit{disgiunzioni}).
+    La \textbf{soluzione del problema} sta nel \textbf{determinare}
+    se i \textbf{vincoli sono tutti soddisfacibili}.
+\end{definition}
+
+Per capire meglio, vediamo un esempio:
+
+\begin{exa}
+    Consideriamo per esempio il problema sulle variabili booleane:
+    \[
+        x_{1},x_{2},x_{3},x_{4}
+    \] 
+    Con le clausole seguenti:
+    \[
+        \begin{aligned}
+            x_{1} &\lor \overline{x}_2 \lor x_{3} \\ 
+            x_{1} &\lor x_{4} \\ 
+            x_{2} &\lor x_{3}
+        \end{aligned}
+    \] 
+\end{exa}
+
+Matematicamente, possiamo pensare di identificare una \textbf{variabile booleana}
+con sè stessa, la sua \textbf{negazione} con il suo \textit{complementare a uno}, e possiamo
+verificare se le espressioni ottenute sono \textbf{vere} ($\ge 1$).
+Il problema dell'esempio sopra diventerebbe:
+\[
+    \begin{aligned}
+        x_{1} + (1-x_{2}) + x_{3} &\ge 1 \\ 
+        (1-x_{1}) + x_{4} &\ge 1 \\ 
+        x_{2} + x_{3} &\ge 1
+    \end{aligned}
+\]
+
+\begin{remark}
+    \textbf{Non} possiamo \textbf{risolvere un rilassamento continuo} di questi
+    problemi. Basterebbe infatti \textbf{porre ogni variabile} ad $\frac{1}{2}$,
+    ma tale soluzione \textbf{non ci darebbe nessuna informazione} utile.
+\end{remark}
+
+Questo è il motivo per cui un problema del genere, \textbf{seppur facile da modellare}
+con il \textbf{paradigma MIP}, risulta \textbf{difficilmente risolvibile} in pratica.
+
+\subsection{Max-Cut}
+
+Vediamo ora un altro esempio di problema che \textit{soffre dello stesso problema
+dei problemi SAT}.
+
+\begin{definition}[MAX-CUT]
+    Dato un \textbf{grafo} $G=(V,E)$, si dice \textbf{max-cut}
+    una \textbf{partizione dei nodi} $S$ (t.c. $S \cup V\setminus S = V$) 
+    di $G$ tale che il \textbf{numero di archi} che 
+    \textbf{connettono nodi} in $S$ a \textbf{nodi} in $V\setminus S$
+    sia \textbf{massimo}.
+\end{definition}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale=1.2]
+        % Stili dei nodi per i due insiemi
+        \tikzstyle{nodeS} = [circle, draw=nord10, ultra thick, fill=nord10!20, 
+            minimum size=8mm, font=\bfseries\color{nord0}]
+        \tikzstyle{nodeV} = [circle, draw=nord3, ultra thick, fill=nord4, 
+            minimum size=8mm, font=\bfseries\color{nord0}]
+
+        % --- Aree di sfondo per evidenziare la partizione ---
+        \fill[nord10, opacity=0.05, rounded corners] (-0.5, -0.5) rectangle (2.8, 3.5);
+        \node[nord10, font=\large\bfseries] at (1, -0.5) {Insieme $S$};
+
+        \fill[nord3, opacity=0.05, rounded corners] (3.2, -0.5) rectangle (6.5, 3.5);
+        \node[nord3, font=\large\bfseries] at (5, -0.5) {Insieme $V \setminus S$};
+
+        % --- Nodi ---
+        % Insieme S
+        \node[nodeS] (1) at (1, 2.5) {1};
+        \node[nodeS] (2) at (0.5, 0.5) {2};
+        \node[nodeS] (3) at (2.2, 1.2) {3};
+
+        % Insieme V \ S
+        \node[nodeV] (4) at (4.5, 2.8) {4};
+        \node[nodeV] (5) at (5.5, 1.5) {5};
+        \node[nodeV] (6) at (4.2, 0.2) {6};
+
+        % --- Archi interni (Non conteggiati nel taglio) ---
+        \draw[thick, nord3] (1) -- (2);
+        \draw[thick, nord3] (1) -- (3);
+        \draw[thick, nord3] (2) -- (3);
+        \draw[thick, nord3] (4) -- (5);
+        \draw[thick, nord3] (5) -- (6);
+
+        % --- Archi tagliati (Da massimizzare) ---
+        \draw[ultra thick, nord11] (1) -- (4);
+        \draw[ultra thick, nord11] (3) -- (4);
+        \draw[ultra thick, nord11] (3) -- (5);
+        \draw[ultra thick, nord11] (3) -- (6);
+
+        % --- Linea di partizione (Cut) ---
+        \draw[nord11, ultra thick, dashed] (3, 3.8) .. controls (2.6, 1.5) 
+            and (3.4, 1.5) .. (3, -0.8) node[below, font=\bfseries] {Taglio (Cut)};
+    \end{tikzpicture}
+    \caption{Problema Max-Cut}
+    %\label{fig:04_10_MaxCut}
+\end{figure}
+
+Possiamo \textbf{assegnare ad ogni nodo} $i$ una 
+\textbf{variabile booleana} $x_i$:
+\[
+    x_i = \begin{cases}
+        1 & i \in S \\ 
+        0 & i \not\in S
+    \end{cases}
+\]
+
+Potremmo modellare il problema come segue:
+\[
+    \begin{cases}
+        \text{max } \sum_{(i,j)\in E} \left[ x_i (1-x_j) + x_j(1-x_i) \right] \\ 
+        x_i \in \{0,1\} & \forall i \in V  
+    \end{cases}
+\]
+
+\begin{remark}
+    La \textbf{funzione obiettivo \textit{non} è lineare}.
+\end{remark}
+
+Effettuiamo allora una \textbf{linearizzazione}, come segue:
+\[
+    \begin{cases}
+        \text{max } \sum_{(i,j)\in E} \left[ x_i + x_j - 2y_{ij} \right] \\ 
+        x_i \in \{0,1\} & \forall i \in V  \\ 
+        y_{ij} \in \{0,1\} & \forall (i,j) \in E \\ 
+        y_{ij} = x_i \land x_j
+    \end{cases}
+\]
+
+Dove l'ultimo vincolo viene "espanso" come segue:
+\[
+    \begin{cases}
+        y_{ij} \le x_i \\ 
+        y_{ij} \le x_j \\ 
+        y_{ij} \ge x_i + x_j -1
+    \end{cases}
+\]
+
+\begin{remark}
+    Questo è stato \textbf{possibile solo perchè entrambe le variabili sono binarie},
+    per cui la loro \textbf{moltiplicazione} è \textbf{equivalente ad un \textit{AND} logico},
+    che abbiamo poi espanso in una serie di vincoli lineari.
+\end{remark}
+
+\begin{remark}
+    Come nel caso dei problemi SAT, anche in questo caso \textbf{non possiamo}
+    fare \textbf{affidamento ad un rilassamento continuo} del problema: come
+    prima, il risolutore produrrebbe una soluzione priva di senso in relazione
+    al problema originale.
+\end{remark}
+
+\subsection{Casi patologici}
+
+Gli \textbf{esempi} di problemi che abbiamo visto sopra
+\textbf{sembrano fatti apposta} per essere modellati con il \textbf{paradigma MIP}, 
+eppure risultano \textbf{difficili da risolvere in pratica}.
+
+Dobbiamo comunque notare che si tratta di \textbf{casi patologici}.
+
+\begin{remark}[CASI PATOLOGICI E APPLICABILITA' PARADIGMA MIP]
+    Nella pratica, il \textbf{paradigma MIP} permette di 
+    \textbf{modellare}, e anche \textbf{risolvere efficientemente}, una
+    \textbf{vasta gamma di problemi}.
+\end{remark}
+
+Quelli che abbiamo visto sopra sono tranquillamente considerabili
+\textit{casi "patologici"}, che \textit{non rispecchiano} veramente
+l'applicabilità effettiva del paradigma.

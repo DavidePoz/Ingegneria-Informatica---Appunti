@@ -1,0 +1,1087 @@
+% ------------------------------------------------------------------------------------
+%                           PROGRAMMAZIONE LINEARE - IN DEPTH
+% ------------------------------------------------------------------------------------
+
+\chapter{Programmazione Lineare}
+
+Torniamo ora al paradigma della \textbf{programmazione lineare} per
+discuterlo più nel dettaglio.
+
+\section{Forma standard e forma canonica}
+
+Abbiamo già visto una possibile forma in cui può presentarsi un problema
+di programmazione lineare nel capitolo introduttivo.
+
+Ora, senza perdita di generalità, possiamo assumere che il problema sia espresso 
+in \textbf{forma standard}: 
+
+\begin{definition}[FORMA STANDARD]
+    \[
+        \begin{cases}
+            \text{min } c^\top x \\ 
+            Ax = b \\ 
+            x_i \ge 0
+        \end{cases}
+    \] 
+\end{definition}
+
+Oppure in \textbf{forma canonica}:
+
+\begin{definition}[FORMA CANONICA]
+    \[
+        \begin{cases}
+            \text{min } c^\top x \\ 
+            Ax \ge  b \\ 
+            x_i \ge 0
+        \end{cases}
+    \] 
+\end{definition}
+
+\begin{remark}
+    Il nome di queste forme deriva dal fatto che \textbf{qualsiasi altro problema 
+    di programmazione lineare} è \textbf{riconducibile a queste}.
+\end{remark}
+
+\subsection{Formulazioni equivalenti}
+
+Possiamo \textbf{passare} da una \textbf{formulazione generica} di un problema
+di programmazione lineare ad una \textbf{forma standard (o canonica) equivalente} applicando
+le regole di trasformazione seguenti:
+
+\begin{enumerate}
+    \item Conversione da \textbf{massimizzazione a minimizzazione}
+        \[
+            \text{max}(c^\top x) = -\text{min}(-c^\top x)
+        \] 
+    \item Conversione da \textbf{vincoli} "$\ge $" a vincoli "$=$"
+        \[
+            a_i^\top x \ge b_i \Longleftrightarrow \begin{cases}
+                a_i^\top x - s_i = b_i \implies a_i^\top x = b_i'  \\ 
+                s_i \ge 0
+            \end{cases}
+        \] 
+    \item Conversione da \textbf{vincoli} "$\le $" a vincoli "$=$"
+        \[
+            a_i^\top x \le b_i \Longleftrightarrow \begin{cases}
+                a_i^\top x + s_i = b_i \implies a_i^\top x = b_i'  \\ 
+                s_i \ge 0
+            \end{cases}
+        \]
+    \item Conversione da \textbf{vincoli} "$=$" a vincoli "$\ge$"
+        \[
+            a_i^\top x = b_i \Longleftrightarrow \begin{cases}
+                a_i^\top x \ge  b_i  \\ 
+                -a_i^\top x \ge -b_i
+            \end{cases}
+        \] 
+    \item Conversione da \textbf{variabili libere} a \textbf{non negative}
+        \[
+            x_i \text{ libera } \Longleftrightarrow \begin{cases}
+                x_i = x_i^+ - x_i^- \\ 
+                x_i^+,x_i^- \ge 0
+            \end{cases}
+        \] 
+    \item Conversione da \textbf{lower bound generico} a \textbf{variabile non negativa}
+        \[
+            x_i \ge l_i \Longleftrightarrow \begin{cases}
+                x_i = x_i' + l_i \\
+                x_i' \ge0
+            \end{cases}
+        \] 
+    \item Conversione da \textbf{upper bound generico} a \textbf{variabile non negativa}
+        \[
+            x_i \le u_i \Longleftrightarrow \begin{cases}
+                x_i = u_i - x_i' \\
+                x_i' \ge0
+            \end{cases}
+        \]
+    \item Conversione da \textbf{variabile bounded} a \textbf{variabili non negative}
+        \[
+            l_i \le  x_i \le u_i \Longleftrightarrow \begin{cases}
+                x_i = x_i' + l_i \\
+                x_i' + s_i = u_i - l_i \\
+                x_i', s_i \ge0
+            \end{cases}
+        \] 
+\end{enumerate}
+
+\begin{warn}
+    Il \textbf{passaggio} da una forma all’altra può richiedere una 
+    \textbf{variazione del numero di variabili e/o vincoli} del problema; tuttavia
+    le trasformazioni inducono un \textbf{blow-up al più polinomiale} della 
+    taglia del problema.
+\end{warn}
+
+\section{Interpretazione geometrica}
+
+Proviamo ora a dare un'interpretazione geometrica ad un problema di PL.
+Per cominciare, diamo le seguenti due definizioni:
+
+\begin{definition}[SEMISPAZIO AFFINE e IPERPIANO]
+    Gli insiemi
+    \[
+        \begin{aligned}
+            \{x\in \mathbb{R}^n : a^\top x \le a_0 \} \\ 
+            \{x\in \mathbb{R}^n : a^\top x = a_0\}  
+        \end{aligned}
+    \] 
+    Si dicono (rispettivamente) \textbf{semispazio affine} e \textbf{iperpiano}
+    \textit{indotti} da $(a,a_0)$.
+\end{definition}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale=2, x={(-0.6cm,-0.4cm)}, y={(1cm,0cm)}, z={(0cm,1cm)}]
+        % Assi coordinati (usiamo un grigio-blu scuro della palette per coerenza)
+        \draw[->, nord3] (0,0,0) -- (1.5,0,0) node[anchor=north east]{$x_1$};
+        \draw[->, nord3] (0,0,0) -- (0,1.5,0) node[anchor=north west]{$x_2$};
+        \draw[->, nord3] (0,0,0) -- (0,0,1.5) node[anchor=south]{$x_3$};
+
+        % Punti per definire il piano (iperpiano)
+        \coordinate (A) at (1.5, 0, 0.5);
+        \coordinate (B) at (0.5, 1.5, 0.5);
+        \coordinate (C) at (-0.5, 1.5, 1.5);
+        \coordinate (D) at (0.5, 0, 1.5);
+
+        % Disegno l'iperpiano
+        \filldraw[fill=nord9!40, draw=nord10, thick, opacity=0.8] (A) -- (B) -- (C) -- (D) -- cycle;
+
+        % Punto generico x sull'iperpiano
+        \coordinate (P) at (0.5, 0.75, 1.0);
+        \filldraw[nord12] (P) circle (1pt) node[anchor=north west] {};
+
+        % Vettore normale a
+        \draw[->, thick, nord12] (P) -- ++(0.75, 0.3, 0.75) node[anchor=south west] {$a$};
+
+        % Etichetta
+        \node[nord10, right] at (B) {$a^\top x = a_0$};
+    \end{tikzpicture}
+    \caption{Esempio di iperpiano in $\mathbb{R}^3$}
+\end{figure}
+
+\begin{definition}[POLIEDRO]
+    Si dice \textbf{poliedro} l'\textbf{intersezione} di un
+    \textbf{numero finito} di \textbf{semispazi affini} ed \textbf{iperpiani}.
+\end{definition}
+
+Notiamo che equazioni di questo tipo sono \textit{proprio quelle che compaiono in un problema di PL}.
+L’\textbf{insieme delle soluzioni ammissibili} di un problema di programmazione lineare è quindi, per
+definizione, un \textbf{poliedro}; più precisamente, un \textbf{politopo}:
+
+\begin{definition}[POLITOPO]
+    Si dice \textbf{politopo} un \textbf{poliedro limitato}
+\end{definition}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}
+        % Definizione dei vertici del poliedro
+        \coordinate (V1) at (-0.5, 2);    % Top
+        \coordinate (V2) at (1.5, 0.8);   % Top-right
+        \coordinate (V3) at (1.5, -1);    % Bottom-right
+        \coordinate (V4) at (0, -2);      % Bottom
+        \coordinate (V5) at (-1.5, -1.2); % Bottom-left
+        \coordinate (V6) at (-1.8, 0.5);  % Top-left
+
+        % Disegno l'area interna del poliedro (con un grigio chiarissimo della palette)
+        \fill[nord6] (V1) -- (V2) -- (V3) -- (V4) -- (V5) -- (V6) -- cycle;
+
+        % Etichetta centrale per il poliedro
+        \node[nord0] at (0, -0.2) {$P$};
+
+        % Disegno i bordi estesi (iperpiani/rette che definiscono i semispazi)
+        \begin{scope}[thick, nord1, shorten <=-12pt, shorten >=-12pt]
+            \draw (V1) -- (V2);
+            \draw (V2) -- (V3);
+            \draw (V3) -- (V4);
+            \draw (V4) -- (V5);
+            \draw (V5) -- (V6);
+            \draw (V6) -- (V1);
+        \end{scope}
+
+        % Disegno dei vertici (punti neri)
+        \filldraw[nord0] (V1) circle (1.5pt);
+        \filldraw[nord0] (V2) circle (1.5pt);
+        \filldraw[nord0] (V3) circle (1.5pt);
+        \filldraw[nord0] (V4) circle (1.5pt);
+        \filldraw[nord0] (V5) circle (1.5pt);
+        \filldraw[nord0] (V6) circle (1.5pt);
+
+    \end{tikzpicture}
+    \caption{Esempio di politopo in $\mathbb{R}^2$}
+    \label{fig:03_02_politopo}
+\end{figure}
+
+\subsection{Descrizione interna ed esterna}
+
+Quella che abbiamo visto sopra è la \textbf{descrizione esterna} di un politopo, ovvero
+una sua descrizione tramite \textbf{intersezione di vincoli}.
+
+Dalla figura~\ref{fig:03_02_politopo} possiamo tuttavia intuire che è possibile
+\textbf{descrivere un politopo} tramite i suoi \textbf{vertici}: si parla in questo
+caso di \textbf{descrizione interna}.
+
+\begin{definition}[VERTICE]
+    Si dice \textbf{vertice di un poliedro} $P$ un \textbf{punto} $x$ che
+    \textbf{non} può essere \textbf{espresso} come \textbf{combinazione convessa stretta} 
+    di \textbf{altri due punti del poliedro} stesso. Ovvero, dato il punto
+    $x^* \in P$, esso è \textbf{vertice} se:
+    \[
+        \begin{aligned}
+            &\forall x_{1},x_{2} \in P \\ 
+            &\nexists \lambda_{1},\lambda_{2}\in(0,1) : \lambda_{1}+\lambda_{2} = 1 \\ 
+            &: \lambda_{1}x_{2} + \lambda_{2}x_{2} = x
+        \end{aligned}
+    \] 
+\end{definition}
+
+Ogni politopo ha un \textit{numero finito di vertici} e soddisfa il seguente teorema:
+
+\begin{theorem}
+    Ogni \textbf{punto di un politopo} può essere espresso come \textbf{combinazione convessa}
+    dei suoi \textbf{vertici} $\{x_{1},\ldots ,x_t\}  $:
+    \[
+        x\in P \Longleftrightarrow \begin{cases}
+            x = \sum_{j=1}^t \lambda_j x_j \\ 
+            \sum_{j=1}^t \lambda_j = 1 \\ 
+            \lambda_j \ge 0 \text{ , }\forall j=1,\ldots,t
+        \end{cases}
+    \] 
+\end{theorem}
+
+Chiaramente, i vertici sono \textbf{tutti necessari} per descrivere un poliedro.
+
+Ora, per facilitare la compresione della definizione del teorema, riportiamo alcune
+note sulle combinazioni convesse:
+
+\begin{remark}[COMBINAZIONE CONVESSA]
+    Una combinazione convessa di $t$ punti è una loro \textbf{combinazione lineare} in cui:
+    \begin{itemize}
+        \item I \textbf{pesi} $\lambda_j$ sono \textbf{non negativi}.
+        \item I \textbf{pesi sommano a uno}.
+    \end{itemize}
+
+    Con \textbf{due punti}, le loro \textbf{combinazioni convesse} formano il \textbf{segmento 
+    di retta} che li unisce. In generale, la combinazione convessa di un insieme di
+    punti (non allineati) \textbf{genera la figura convessa} (piena) che li \textbf{"avvolge"},
+    chiamata \textbf{involucro convesso} (\textit{convex hull}).
+\end{remark}
+
+\begin{exa}[SEGMENTO DI RETTA]
+    Poniamo di avere:
+    \[
+        \begin{aligned}
+            &\alpha_{1}x_{1} + \alpha_{2}x_{2} = 0 \\ 
+            &\alpha_{1} + \alpha_{2} = 1 \implies \alpha_{2} = 1-\alpha_{1} \\ 
+        \end{aligned}
+    \] 
+    Quindi:
+    \[
+        \begin{aligned}
+            \alpha_{1}x_{1} + (1-\alpha_{1})x_{2} &= \alpha_{1}x_{1} + x_{2} -\alpha_{1}x_{2} \\ 
+                                                  &= x_{2} + \alpha_{1}(x_{1}-x_{2})
+        \end{aligned}
+    \] 
+\end{exa}
+
+\subsection{Teorema fondamentale della PL}
+
+L'\textbf{utilità} della \textbf{descrizione interna} di un politopo sta nel
+seguente teorema:
+
+\begin{theorem}[TEOREMA FONDAMENTALE DELLA PL]
+    Se un problema di programmazione lineare $\text{min}\{cx : x\in P\}$ \textbf{ammette
+    ottimo finito}, allora \textbf{esiste un vertice} di $P$ \textbf{ottimo}.
+\end{theorem}
+
+Facciamo attenzione a un dettaglio:
+
+\begin{warn}
+    I vertici \textbf{non sono gli unci ottimi}, il teorema afferma semplicemente
+    che, se l'ottimo della funzione obiettivo è finito, allora \textbf{sicuramente
+    un vertice di P sarà ottimo}.
+\end{warn}
+
+Per capire meglio, proviamo a considerare gli \textbf{insiemi di livello della funzione
+obiettivo}:
+\[
+    \begin{aligned}
+        f(x) &= l \in \mathbb{R} \\ 
+        \implies c^\top x &= l
+    \end{aligned}
+\]
+Gli insiemi di livello per la funzione obiettivo di un problema di PL sono degli \textbf{iperpiani}.
+Al variare di $l$ otteniamo \textbf{infiniti iperpiani}, \textbf{tutti paralleli}
+tra loro (tutti perpendicolari al vettore normale $c$, che rimane invariato).
+Notiamo inoltre che $c$ è proprio il \textbf{gradiente} di $f(x)$, per cui:
+
+\begin{remark}[RISOLVERE UN PROBLEMA PL]
+    Intuiamo che \textbf{minimizzare} $f(x)$ significa \textbf{spostarsi} negli insiemi di 
+    livello \textbf{in direzione} $-c$ (\textit{opposta} al gradiente) fino a trovare
+    la \textbf{migliore soluzione} all'\textbf{interno di P}.
+\end{remark}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale=0.8]
+        % Definizione dei vertici del poliedro (soluzioni ammissibili di base)
+        \coordinate (V1) at (-0.5, 2);    % Top (soluzione ottima)
+        \coordinate (V2) at (1.5, 0.8);   % Top-right
+        \coordinate (V3) at (1.5, -1);    % Bottom-right
+        \coordinate (V4) at (0, -2);      % Bottom
+        \coordinate (V5) at (-1.5, -1.2); % Bottom-left
+        \coordinate (V6) at (-1.8, 0.5);  % Top-left
+
+        % Disegno l'area interna del poliedro (regione ammissibile)
+        \fill[nord6] (V1) -- (V2) -- (V3) -- (V4) -- (V5) -- (V6) -- cycle;
+
+        % Etichetta centrale per il poliedro
+        \node[nord0] at (0, -0.2) {$P$};
+
+        % Disegno i bordi estesi (iperpiani che definiscono i semispazi)
+        \begin{scope}[thick, nord1, shorten <=-12pt, shorten >=-12pt]
+            \draw (V1) -- (V2);
+            \draw (V2) -- (V3);
+            \draw (V3) -- (V4);
+            \draw (V4) -- (V5);
+            \draw (V5) -- (V6);
+            \draw (V6) -- (V1);
+        \end{scope}
+
+        % Disegno l'iperpiano della funzione obiettivo (curva di livello ottima)
+        \draw[thick, nord11] ($(V1) + (-1.5, 0.3)$) -- ($(V1) + (2, -0.4)$) node[right, nord0] {$cx$};
+
+        % Vettore normale c (gradiente della funzione obiettivo)
+        \draw[->, thick, nord11] ($(V1) + (1.2, -0.24)$) -- ++(0.24, 1.2) node[above, nord0] {$-c$};
+
+        % Disegno dei vertici non ottimi
+        \filldraw[nord0] (V2) circle (1.5pt);
+        \filldraw[nord0] (V3) circle (1.5pt);
+        \filldraw[nord0] (V4) circle (1.5pt);
+        \filldraw[nord0] (V5) circle (1.5pt);
+        \filldraw[nord0] (V6) circle (1.5pt);
+
+        % Evidenzio il vertice ottimo sul quale si ferma l'iperpiano
+        \filldraw[nord11] (V1) circle (1.5pt);
+
+    \end{tikzpicture}
+    \caption{Interpretazione geometrica del teorema fondamentale della PL}
+    \label{fig:03_03_InterpretazioneGeomThFondPL}
+\end{figure}
+
+La figura~\ref{fig:03_03_InterpretazioneGeomThFondPL} illustra l'interpretazione discussa sopra. 
+Ci permette inoltre di intuire perchè \textit{non necessariamente tutti i punti ottimi sono vertici};
+se infatti $c$ dovessere essere ortogonale ad uno dei lati del politopo, allora 
+\textit{esisterebbe un insieme di livello coincidente con il lato in questione}, dando luogo a
+\textit{infiniti punti ottimi} (di cui due sarebbero \textit{comunque vertici}).
+
+Inoltre, quello discusso è proprio l'approccio seguito da uno dei principali algoritmi di
+risoluzione per problemi PL:
+
+\begin{definition}[ALGORITMO DEL SIMPLESSO]
+    Algoritmo risolutivo per problemi di PL che, \textbf{partendo da un vertice qualsiasi},
+    si \textbf{muove in modo greedy} ad un \textbf{vertice vicino non peggiore} ad ogni
+    iterazione, \textbf{fino a trovare un vertice ottimo}.
+\end{definition}
+
+\section{Esempi di modellizzazione con PL}
+
+Per quanto problemi diversi saranno modellati diversamente, possiamo approcciare 
+la fase di modellazione seguendo la seguente \textbf{scaletta generale}:
+
+\begin{remark}[SCALETTA GENERALE]
+    La scaletta è la seguente:
+    \begin{enumerate}
+        \item \textbf{Riconoscere} gli \textbf{insiemi} in gioco.
+        \item \textbf{Riconoscere} i \textbf{dati}(\textit{parametri}, detti anche \textbf{attributi}) 
+            del problema (\textit{dati in input}).
+        \item \textbf{Scegliere} le \textbf{variabili} (\textit{decisioni} del
+            problema).
+        \item Determinare la \textbf{funzione obiettivo}.
+        \item Determinare i \textbf{vincoli} del problema.
+    \end{enumerate}
+\end{remark}
+
+Di seguito vediamo alcuni esempi in cui il problema è modellato seguendo
+questa scaletta.
+
+\subsection{Problema del trasporto}
+
+Il problema è così posto:
+
+\begin{definition}[PROBLEMA DEL TRASPORTO]
+    Abbiamo un \textbf{insieme di sorgenti} $\{s_{1},s_{2},\ldots ,s_n\}  $ ed un 
+    \textbf{insieme di destinazioni} $\{d_{1},d_{2},\ldots ,d_k\}  $.
+    \begin{itemize}
+        \item Per ogni coppia \textbf{sorgente-destinazione} $(s_i, m_j)$ 
+            abbiamo un \textbf{certo costo} di spedizione $c_{ij}$.
+        \item Ogni sorgente $s_i$ ha una \textit{certa quantità di bene}
+            (\textbf{disponibilità}) $d_i$.
+        \item Ogni destinazione $m_j$ ha una \textit{certa domanda} 
+            di prodotto (\textit{richiesta}) $r_j$.
+    \end{itemize}
+
+    Vogliamo ideare il \textbf{piano di spedizione} che \textbf{minimizza
+    il costo totale di spedizione}.
+\end{definition}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale=1.5,
+        % Stili dei nodi
+        source/.style={circle, draw=nord3, fill=nord4, thick, minimum size=8mm, inner sep=0pt},
+        dest/.style={circle, draw=nord3, fill=nord6, thick, minimum size=8mm, inner sep=0pt},
+        % Stile degli archi
+        edge/.style={->, thick, nord3, shorten >=2pt, shorten <=2pt}
+        ]
+
+        % --- Posizionamento dei Nodi ---
+        % Nodi Sorgente (A sinistra)
+        \node[source] (A) at (0, 1) {A};
+        \node[source] (B) at (0, -1) {B};
+
+        % Etichette disponibilità (d_i)
+        \node[] at (-0.9,1) {$d_A = 250$};
+        \node[] at (-0.9,-1) {$d_B = 350$};
+
+        % Nodi Destinazione (A destra)
+        \node[dest] (1) at (3, 1.5) {1};
+        \node[dest] (2) at (3, 0) {2};
+        \node[dest] (3) at (3, -1.5) {3};
+
+        % Etichette richieste (r_j)
+        \node[] at (3.9, 1.5) {$r_1 = 170$};
+        \node[] at (3.9, 0) {$r_2 = 100$};
+        \node[] at (3.9, -1.5) {$r_3 = 80$};
+
+        % --- Archi (Costi c_{ij}) ---
+        % Da A a tutte le destinazioni
+        \draw[edge] (A) -- (1);
+        \draw[edge] (A) -- (2);
+        \draw[edge] (A) -- (3);
+
+        % Da B a tutte le destinazioni
+        \draw[edge] (B) -- (1);
+        \draw[edge] (B) -- (2);
+        \draw[edge] (B) -- (3);
+
+        % --- Etichette Gruppi ---
+        \node[nord0, font=\bfseries] at (0, 2.2) {Sorgenti (I)};
+        \node[nord0, font=\bfseries] at (3, 2.2) {Destinazioni (J)};
+
+    \end{tikzpicture}
+    \caption{Esempio di problema del trasporto}
+\end{figure}
+
+\begin{remark}
+    La rappresentazione del problema è data da un \textbf{grafo bipartito}.
+\end{remark}
+
+Nell'esempio in figura abbiamo a che fare con i seguenti insiemi:
+\[
+    \begin{aligned}
+        I &: \{\text{sorgenti}\} = \{A,B\} \\ 
+        J &: \{\text{destinazioni}\}  = \{1,2,3\}  
+    \end{aligned}
+\]
+Abbiamo inoltre i seguenti \textit{dati di input} (\textbf{parametri}): 
+\begin{itemize}
+    \item \textbf{Disponibilità}: $d_A=250$, $d_B=350$
+    \item \textbf{Richieste}: $r_{1}=170$, $r_{2}=100$, $r_{3}=80$.
+    \item \textbf{Costi unitari} di spedizione: $c_{ij}$.
+\end{itemize}
+
+E scegliamo di utilizzare come \textbf{variabili}:
+\[
+    x_{ij}\in \mathbb{R}^+ = \text{ q.tà di prodotto da spedire da }i \text{ a }j \text{ , }
+    (\forall i\in I \text{ , }\forall j \in J)
+\]
+
+Dove con $\mathbb{R}^+$ intendiamo $x\in \mathbb{R}, x\ge 0$ (quindi 0 incluso).
+
+\begin{remark}
+    La \textit{descrizione semantica} delle variabili scelte \textbf{non}
+    \textit{fa parte del modello}: si tratta semplicemente di una \textit{descrizione
+    utile alla compresione del modello}, ma, ovviamente, l'\textit{algoritmo
+    risolutivo non ne è a conoscenza}.
+\end{remark}
+
+Dato che vogliamo \textbf{minimizzare il costo totale di spedizione}, ha senso 
+scegliere la seguente \textbf{funzione obiettivo}:
+\[
+    f(x) = \sum_{i\in I} \sum_{j\in J} c_{ij}x_{ij}
+\]
+
+Infine, per quanto riguarda i vincoli, possiamo considerare i seguenti:
+\begin{enumerate}
+    \item Le \textbf{richieste} delle destinazioni devono essere \textbf{soddisfatte}: 
+        $\sum_{i\in I} x_{ij} \ge r_j \text{ } \forall j\in J$
+    \item \textbf{Non} bisogna \textbf{eccedere le disponibilità}: 
+        $\sum_{j\in J}x_{ij} \le d_i \text{ } \forall i\in I$
+\end{enumerate}
+
+Terminato questo processo di modellazione, il nostro modello per il problema 
+in esempio risulta quindi essere:
+\[
+    \begin{cases}
+        \text{min } \sum_{i\in I} \sum_{j\in J} c_{ij}x_{ij} \\ \\  
+        \sum_{i\in I} x_{ij} \ge r_j & \forall j\in J \\ \\ 
+        \sum_{j\in J}x_{ij} \le d_i & \forall i\in I \\ \\
+        x_{ij} \in \mathbb{R}^+ & \forall i \in I \text{ , }\forall j\in J
+    \end{cases}
+\]
+
+\subsection{Problema della dieta}
+
+Il problema è così posto:
+
+\begin{definition}[PORBLEMA DELLA DIETA]
+    Abbiamo:
+    \begin{itemize}
+        \item Un \textbf{insieme di alimenti} $J=\{\text{alimenti}\}  $ di una \textit{possibile dieta} 
+        (per animali da fattoria da sfamare), con \textbf{costo unitario} $c_j$. 
+        \item Una \textbf{lista di sostanze nutritive} $I=\{\text{sostanze nutritive}\}$, 
+        ciasuna con \textbf{quantità minima} $b_i$. 
+        \item Dei valori $a_{ij}$ che rappresentano la \textbf{quantità} di \textbf{nutriente} 
+        $i$ che si trova \textbf{nell'alimento} $j$.
+    \end{itemize}
+\end{definition}
+
+Scegliamo come \textbf{variabili}:
+\[
+    x_j \in \mathbb{R}^+ = \text{q.tà di elemento j nella dieta }\forall j\in J
+\]
+
+Intuitivamente, il modello sarà:
+\[
+    \begin{cases}
+        \text{min } \sum_{j\in J} c_j x_j \\ \\ 
+        \sum_{j\in J} a_{ij}x_j \ge b_i & \forall i\in I \\ \\ 
+        x_j \ge 0 & \forall j\in J
+    \end{cases}
+\]
+
+\begin{remark}
+    Vogliamo \textbf{minimizzare} il \textbf{costo della dieta} di un animale, rispettando
+    comunque i \textbf{fabbisogni minimi} $b_i$ per \textbf{ogni nutriente}.
+\end{remark}
+
+\section{Dualità}
+
+Ricordiamo che \textbf{risolvere un problema} di ottimizzazione \textbf{non} significa 
+\textbf{solamente trovare una soluzione} ottima, è anche necessario \textbf{dimostrare}
+che la soluzione \textbf{sia effettivamente ottima}.
+
+Tenendo questo a mente, riprendiamo il concetto di \textbf{dualità}. 
+Abbiamo visto che un problema di ottimizzazione può essere visto come:
+\begin{enumerate}
+    \item Un problema (\textbf{primale}) di \textbf{ricerca}: cerchiamo 
+        \textit{soluzioni via via migliori} generando \textbf{nuovi upper bound}.
+    \item Un problema (\textbf{duale}) di \textbf{inferenza}: usiamo i \textit{vincoli}
+        per generare \textbf{lower bound} via via migliori.
+\end{enumerate}
+
+Eseguendo \textbf{in parallelo} la risoluzione del \textbf{primario} e del \textbf{duale}
+possiamo \textbf{trovare una soluzione} e anche \textbf{dimostrarne l'ottimalità}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale=1.2, >=stealth]
+        % Assi coordinati (in grigio scuro per risaltare)
+        \draw[->, ultra thick, nord0] (-0.5, 0) -- (6.5, 0);
+        \draw[->, ultra thick, nord0] (0, -0.6) -- (0, 3.5);
+
+        % Livello della soluzione ottima (sol)
+        \draw[dashed, thick, nord0] (0, 1.5) -- (6, 1.5);
+        \node[left, nord0, font=\bfseries\Large] at (-0.2, 1.5) {sol};
+
+        % Curva Primale P (Upper bound che scende, colore verde Nord)
+        \draw[ultra thick, nord14] (0, 3.1) to[out=-40, in=175] (6, 1.55);
+        \node[above, nord14, font=\bfseries\Large] at (5.5, 1.8) {P};
+
+        % Curva Duale D (Lower bound che sale, colore rosso Nord)
+        \draw[ultra thick, nord11] (0, 0) to[out=30, in=185] (6, 1.45);
+        \node[below, nord11, font=\bfseries\Large] at (5.5, 1.2) {D};
+
+    \end{tikzpicture}
+    \caption{Risoluzione parallela del problema primario e del duale}
+\end{figure}
+
+\subsection{Formulazione matematica del duale}
+
+Vediamo ora più nel dettaglio in cosa consiste il problema \textbf{duale}.
+
+Dato un problema di ottimizzazione $P$ del tipo
+\[
+    P: \begin{cases}
+        \text{min } c^\top x \\ 
+        Ax \ge b
+    \end{cases}
+\]
+possiamo intuire dalla figura e da quanto detto sopra che il suo \textbf{duale} 
+consiste nel \textbf{determinare un lower bound} $c_{0}$ per $c^\top x$ e 
+può essere formulato come segue:
+
+\begin{remark}[FORMULAZIONE DEL DUALE]
+    Risolvere il problema \textbf{duale} significa \textbf{cercare disuguaglianze}
+    del tipo:
+    \[
+        c^\top x \ge c_{0}
+    \] 
+    In modo che $c_{0}$ sia \textbf{massimo} (lower bound più stringente possibile).
+    Cioè:
+    \[
+        \begin{cases}
+            \text{max } c_{0} \\ 
+            c^\top x \ge c_{0}
+        \end{cases}
+    \]
+\end{remark}
+
+A questo punto dobbiamo però precisare che la disuguaglianza che stiamo cercando
+deve \textbf{essere valida}. Formalizziamo allora questo concetto:
+
+\begin{definition}[DISUGUAGLIANZA VALIDA]
+    Data una \textbf{regione ammissibile} $P$ ed una \textbf{disuguaglianza}
+    $\alpha^\top x \ge \beta$, diciamo che questa è \textbf{valida} in $P$
+    \textbf{se e solo se} vale:
+    \[
+        \alpha^\top x \ge \beta \text{ } \forall x \in P
+    \] 
+\end{definition}
+
+Verificare che la \textbf{disuguaglianza sia effettivamente rispettata} $\forall x\in P$ è 
+chiaramente \textbf{infattibile} dato che esistono \textbf{infiniti punti} in $P$; per 
+fortuna, però, possiamo sfruttare il seguente teorema:
+
+\begin{theorem}
+    Se una \textbf{disuguaglianza} è \textbf{valida per tutti i vertici} di un politopo
+    $P$, allora è valida \textbf{anche per tutti} gli 
+    \textbf{altri punti} di $P$.
+\end{theorem}
+
+Del resto, se $P$ è identificato dai vertici $x_{1},x_{2},\ldots ,x_t$, sappiamo
+che un punto $x\in P$ può essere scritto come:
+\[
+    x = \lambda_{1}x_{1} + \ldots \lambda_t x_t
+\]
+
+Con $\sum \lambda_j = 1$ e $\lambda_j\ge 0$, $j=1,\ldots ,t$. Abbiamo quindi:
+\[
+    \begin{aligned}
+        \alpha^\top x &= \alpha^\top (\lambda_{1}x_{1} + \ldots \lambda_t x_t) \\ 
+              &= \lambda_{1}(\alpha^\top x_{1}) + \ldots + \lambda_t(\alpha^\top x_t)
+    \end{aligned}
+\]
+
+Supponiamo ora che la diseguaglianza sia \textbf{verificata per ogni vertice}:
+\[
+    \begin{aligned}
+        \alpha^\top x_{1} &\ge \beta \\ 
+        \alpha^\top x_{2} &\ge \beta \\ 
+               &\ldots \\ 
+        \alpha^\top x_t &\ge \beta
+    \end{aligned}
+\]
+
+Allora risulta:
+\[
+    \begin{aligned}
+        \alpha^\top x &\ge \lambda_{1}(\beta) + \ldots + \lambda_t(\beta) \\
+                      &\Downarrow \\ 
+        \alpha^\top x &\ge \beta(\lambda_{1}+\ldots +\lambda_t) = \beta 
+    \end{aligned}
+\]
+
+Esattamente come volevamo $\square$.
+
+\subsection{Approccio e lemma di Farkas}
+
+Abbiamo quindi capito che risolvere il problema duale significa 
+cercare il \textbf{massimo} $c_{0}$ tale che $c^\top x \ge c_{0}$ sia \textbf{valida} per
+il problema $P$ che stiamo risolvendo. Abbiamo inoltre capito \textit{come}
+verificare se una disuguaglianza è \textit{valida o meno}, ma non abbiamo
+ancora discusso \textbf{come trovare} $c_{0}$.
+
+Nella pratica, la ricerca di $c_{0}$ si traduce nello \textbf{sfruttare i vincoli} $Ax\ge b$ 
+per \textit{dedurre} (\textbf{inferenza}) dei 
+\textbf{lower bound stringenti} $c^\top x \ge c_{0}$.
+
+Intuitivamente, possiamo pensare di ottenere tali lower bound 
+\textbf{moltiplicando la disequazione} data dai \textbf{vincoli} 
+per un \textbf{vettore} $u\ge 0$ (componenti \textit{non negative}):
+\[
+    \underbrace{ u^\top A }_{c} x \ge \underbrace{ u^\top b }_{c_{0}}
+\]
+
+Il problema diventa quindi:
+\[
+    \begin{cases}
+        \text{max } c_{0} \\ 
+        c^\top x \ge c_{0} \\
+        u \ge 0 
+    \end{cases}
+\]
+
+\begin{remark}[CONDIZIONI SU $u$]
+    Siccome il nostro problema \textbf{originale} aveva come 
+    \textbf{vincoli} $Ax\ge b$, dobbiamo \textbf{imporre} $u\ge 0$ per
+    \textbf{non modificare il verso} della disuguaglianza.
+
+    Se \textbf{invece} i vincoli fossero stati della forma
+    $Ax=b$, allora $u$ sarebbe stato \textbf{libero}.
+\end{remark}
+
+Ora, chiaramente \textbf{non possiamo procedere alla cieca}: $u$ dovrà
+essere \textbf{scelto con criterio} affinchè la disuguaglianza
+\textbf{risulti valida}. Per questo, ci viene in aiuto il seguente lemma:
+
+\begin{theorem}[LEMMA DI FARKAS]
+    Una \textbf{disuguaglianza} $c^\top x \ge c_{0}$ è \textbf{valida}
+    per $P$ \textbf{se e solo se}:
+    \[
+        \exists u \in \mathbb{R}_+^m \text{ t.c. } 
+        c^\top \ge u^\top A \text{ e } c_{0} \le u^\top b
+    \] 
+\end{theorem}
+
+Il lemma di Farkas ci permette di riscrivere il problema come segue:
+\[
+    \begin{cases}
+        \text{max } c_{0} \\ 
+        c^\top \ge u^\top A \\
+        c_{0} \le u^\top b \\ 
+        u \ge 0
+    \end{cases}
+\]
+
+\begin{remark}[CAMBIO DI PROSPETTIVA] 
+    Notiamo che:
+    \begin{itemize}
+        \item Noi \textbf{vogliamo massimizzare} $c_{0}$.
+        \item Contemporaneamente, il \textbf{vincolo} $c_{0} \le u^\top b$ 
+            impone un \textit{upper bound} a $c_{0}$. 
+    \end{itemize}
+    Chiaramente, la \textbf{scelta ottimale} è \textbf{far coincidere}
+    $c_{0}$ con il suo \textit{upper bound}, per cui imponiamo
+    \[
+        c_{0} \coloneqq u^\top b
+    \] 
+    E scegliamo di \textbf{massimizzare questa quantità}.
+\end{remark}
+
+Alla luce di ciò, possiamo riscrivere il problema nella seguente forma:
+\[
+    \begin{cases}
+        \text{max } u^\top b \\ 
+        u^\top A \le c^\top \\ 
+        u \ge 0
+    \end{cases}
+\]
+
+\begin{remark}
+    Osserviamo che:
+    \begin{enumerate}
+        \item Il \textbf{duale} di un problema di PL è un \textbf{altro problema di PL}.
+        \item I \textbf{ruoli} dei \textbf{vettori} $c$ e $b$ si sono \textbf{scambiati}.
+            Ciò significa che:
+            \begin{enumerate}
+                \item Il numero di \textbf{vincoli del duale} è uguale
+                    al numero di \textbf{variabili del primale}.
+                \item Il numero di \textbf{variabili del duale} è uguale
+                    al numeri di \textbf{vincoli del primale}.
+            \end{enumerate}
+    \end{enumerate}
+\end{remark}
+
+Il secondo punto è schematizzato in figura.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        scale=1,
+        % Stili personalizzati per i blocchi
+        matrix block/.style={draw=nord0, fill=nord5, rounded corners=2pt, 
+        ultra thick, align=center, font=\Huge\bfseries},
+        vector block/.style={draw=nord0, fill=nord4, rounded corners=2pt, 
+        ultra thick, align=center, font=\Large\bfseries},
+        label/.style={nord0, font=\Huge\bfseries}
+        ]
+
+        % ==========================================
+        % PROBLEMA PRIMALE (P) - A sinistra
+        % ==========================================
+
+        % Matrice A (larga)
+        \draw[matrix block] (-2, -1.2) rectangle (2, 1.2) node[midway] {$A$};
+
+        % Vettore c (orizzontale in alto)
+        \draw[vector block] (-2, 1.35) rectangle (2, 1.95) node[midway] {$c$};
+
+        % Vettore b (verticale a destra)
+        \draw[vector block] (2.15, -1.2) rectangle (2.75, 1.2) node[midway] {$b$};
+
+        % Etichetta P in basso
+        \node[label] at (0, -2) {$P$};
+
+
+        % ==========================================
+        % FRECCIA CENTRALE
+        % ==========================================
+        \draw[<->, line width=2.5pt, nord3] (3.5, 0) -- (4.5, 0);
+
+
+        % ==========================================
+        % PROBLEMA DUALE (D) - A destra
+        % ==========================================
+
+        % Matrice A^T (trasposta, quindi alta e stretta)
+        \draw[matrix block] (6.8, -2) rectangle (9.2, 2) node[midway] {$A^T$};
+
+        % Vettore b (diventa orizzontale in alto)
+        \draw[vector block] (6.8, 2.15) rectangle (9.2, 2.75) node[midway] {$b$};
+
+        % Vettore c (diventa verticale a destra)
+        \draw[vector block] (9.35, -2) rectangle (9.95, 2) node[midway] {$c$};
+
+        % Etichetta D in basso
+        \node[label] at (8, -2.8) {$D$};
+
+    \end{tikzpicture}
+    \caption{I ruoli delle variabili e dei vincoli nel duale sono scambiati}
+\end{figure}
+
+\subsection{Dualità debole e dualità forte}
+
+Abbiamo visto che il problema \textbf{duale} può essere usato per
+produrre dei \textbf{lower bound} per il problema \textbf{primale}.
+Ciò è formalizzato dal concetto di \textbf{dualità debole}:
+
+\begin{prop}[DUALITA' DEBOLE]
+    \[
+        \begin{aligned}
+            \forall x\in P &\text{ , } \forall u \in D \\ 
+            u^\top b  &\le c^\top x
+        \end{aligned}
+    \] 
+\end{prop}
+
+Cioè, per \textbf{qualsiasi sol.} $x$ del problema \textbf{primale} $P$ e
+per \textbf{qualsiasi sol.} $u$ del problema \textbf{duale} $D$, 
+il valore della \textbf{funzione obiettivo del duale} ($u^\top b$) sarà 
+\textbf{sempre minore o uguale} al valore della \textbf{funzione obiettivo del primale}.
+
+La dimostrazione parte dalle condizioni date dal lemme di Farkas ed è, molto 
+banalmente, la seguente:
+\[
+    c^\top \ge u^\top A \implies c^\top x \ge u^\top A x \ge u^\top b
+\]
+
+Inoltre, è importantissimo anche il concetto di \textbf{dualità forte}:
+
+\begin{prop}[DUALITA' FORTE]
+    Il \textbf{valore ottimo del duale} ($d^*$) \textbf{coincide} con il
+    \textbf{valore ottimo del primale} ($p^*$) \textit{SE E SOLO SE}
+    \textbf{entrambi ammettono ottimi finiti}.
+\end{prop}
+
+Possiamo interpretare questi due concetti come segue:
+
+\begin{remark}[DUALITA' DEBOLE VS FORTE]
+    La dualità forte è un concetto appunto \textit{più forte} perchè \textit{non solo}
+    formalizza la \textit{ricerca dei lower bound} per la soluzione, ma ci dice anche 
+    \textbf{quando soluzione del primale} e \textbf{soluzione del duale coincidono}.
+\end{remark}
+
+Inoltre, questi concetti ci permettono di affermare che \textbf{solo alcune casistiche}
+riguardanti i \textbf{due problemi} sono effettivamente \textbf{ammissibili}.
+In figura sono schematizzate le situazioni ammissibili (contrassegnate da una spunta), e
+quelle \textit{impossibili} (contrassegnate da una croce):
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale=1.8]
+        \newcommand{\cmark}{\textcolor{nord14}{\Huge $\checkmark$}}
+        \newcommand{\xmark}{\textcolor{nord11}{\Huge $\times$}}
+
+        % --- Linee della Griglia ---
+        % Orizzontali
+        \draw[ultra thick, nord3] (0, 3) -- (4, 3);
+        \draw[ultra thick, nord3] (0, 2) -- (4, 2);
+        \draw[ultra thick, nord3] (0, 1) -- (4, 1);
+        \draw[ultra thick, nord3] (0, 0) -- (4, 0);
+        \draw[ultra thick, nord3] (0, 4) -- (4, 4);
+
+        % Verticali
+        \draw[ultra thick, nord3] (0, 0) -- (0, 4);
+        \draw[ultra thick, nord3] (1, 0) -- (1, 4);
+        \draw[ultra thick, nord3] (2, 0) -- (2, 4);
+        \draw[ultra thick, nord3] (3, 0) -- (3, 4);
+        \draw[ultra thick, nord3] (4, 0) -- (4, 4);
+
+        % Diagonale nella cella in alto a sinistra (P/D)
+        \draw[ultra thick, nord3] (0, 4) -- (1, 3);
+        \node[nord0, font=\Large\bfseries] at (0.3, 3.25) {P};
+        \node[nord0, font=\Large\bfseries] at (0.7, 3.75) {D};
+
+        % --- Intestazioni ---
+        % Colonne (Duale)
+        \node[nord0, font=\Large\bfseries, align=center] at (1.5, 3.5) {Imp.};
+        \node[nord0, font=\Large\bfseries, align=center] at (2.5, 3.5) {Sol.\\Finita};
+        \node[nord0, font=\Large\bfseries, align=center] at (3.5, 3.5) {Illim.};
+
+        % Righe (Primale)
+        \node[nord0, font=\Large\bfseries, align=center] at (0.5, 2.5) {Imp.};
+        \node[nord0, font=\Large\bfseries, align=center] at (0.5, 1.5) {Sol.\\Finita};
+        \node[nord0, font=\Large\bfseries, align=center] at (0.5, 0.5) {Illim.};
+
+        % --- Contenuto della Tabella ---
+        % Riga 1 (P: Imp.)
+        \node at (1.5, 2.5) {\cmark};
+        \node at (2.5, 2.5) {\xmark};
+        \node at (3.5, 2.5) {\cmark};
+
+        % Riga 2 (P: Sol. Finita)
+        \node at (1.5, 1.5) {\xmark};
+        \node at (2.5, 1.5) {\cmark};
+        \node at (3.5, 1.5) {\xmark};
+
+        % Riga 3 (P: Illim.)
+        \node at (1.5, 0.5) {\cmark};
+        \node at (2.5, 0.5) {\xmark};
+        \node at (3.5, 0.5) {\xmark};
+
+        % --- Evidenziazione "Casi Interessanti" ---
+        \draw[nord13, ultra thick, dashed, rotate around={45:(2.5, 1.5)}] (2.5, 1.5) ellipse (1.9cm and 0.4cm);
+    \end{tikzpicture}
+    \caption{Casistiche ammesse dai concetti di dualità.}
+\end{figure}
+
+In figura sono evidenziati alcuni \textbf{casi interessanti} (contorno tratteggiato), cioè 
+quelli che più spesso si manifestano negli esercizi. 
+
+In ogni caso, elenchiamo i casi possibili e la motivazione che sta dietro:
+
+\begin{remark}
+    I seguenti casi sono possibili:
+    \begin{itemize}
+        \item \textbf{OTTIMO P - OTTIMO D} - Caso descritto dalla \textbf{dualità forte}.
+        \item \textbf{INFINITO P - IMPOSSIBILE D} - Conseguenza della \textbf{dualità debole}.
+        \item \textbf{IMPOSSIBILE P - INFINITO D} - Conseguenza della \textbf{dualità debole}.
+        \item \textbf{IMPOSSIBILE P - IMPOSSIBILE D} - Conseguenza della \textbf{dualità debole}.
+    \end{itemize}
+\end{remark}
+
+E' facile intuire che queste situazioni sono dirette conseguenze del fatto che 
+la \textbf{soluzione del primale} rappresenta un \textbf{upper bound} per il problema, 
+mentre quella del \textbf{duale} rappresenta un \textbf{lower bound}.
+
+Inoltre, quando utilizziamo un software per risolvere un problema di PL, è bene
+tenere a mente:
+
+\begin{remark}[SOTTO-PRODOTTO DELL'ALGORITMO]
+    Quando usiamo un \textbf{algoritmo} (e.g. \textit{algoritmo del simplesso}) per
+    risolvere un problema, questo ci fornirà una \textbf{coppia di soluzioni}
+    \[
+        (x^*, u^*)
+    \] 
+    Che sono, rispettivamente, \textbf{soluzione del primale} e \textbf{soluzione del duale}.
+\end{remark}
+
+Ciò è una \textbf{conseguenza} del fatto che, come detto in precedenza, 
+\textbf{non basta trovare una soluzione} per dire di aver \textbf{risolto il problema}, 
+ma è anche necessario fornire la \textbf{dimostrazione di ottimalità}. 
+Tale dimostrazione è data proprio dalla soluzione del duale.
+
+\subsection{Esempio}
+
+A questo punto, consideriamo alcuni semplici esempi per capire concretamente 
+come operare con il problema duale.
+
+\begin{exa}[ESEMPIO DUALITA']
+    Consideriamo il seguente esempio:
+    \[
+        \begin{cases}
+            \text{min } 4x_{1} - 2x_{2} + x_{3} + 5x_{4} & \text{f. obiettivo} \\ 
+            x_{1} + x_{2} \le 1 & \text{vincolo} \\ 
+            4x_{2} - 3x_{3} \ge 2 & \text{vincolo} \\ 
+            2x_{1} + x_{3} - x_{4} = 3 & \text{vincolo} \\ 
+            x_{1},x_{2} \ge 0 & \text{dom. variabili} \\ 
+            x_{3} \le 0 & \text{dom. variabili} \\
+            x_{4} \text{ libera} & \text{dom. variabili}
+        \end{cases}
+    \] 
+\end{exa}
+
+Osserviamo subito che il problema ha \textbf{4 variabili} e \textbf{3 vincoli}, per cui
+ci aspettiamo che il \textbf{duale} abbia \textbf{3 variabili} e \textbf{4 vincoli}.
+
+In particolare, abbiamo:
+\[
+    \begin{aligned}
+        x = \begin{bmatrix} x_{1} \\ x_{2} \\ x_{3} \\ x_{4} \end{bmatrix} & &
+        c^\top = [4,-2,1,5] & & \\ \\
+        b = \begin{bmatrix} 1 \\ 2 \\ 3 \end{bmatrix} & &
+        A = \begin{bmatrix} 1 & 1 & 0 & 0 \\ 0 & 4 & -3 & 0 \\ 2 & 0 & 1 & -1 \end{bmatrix} 
+    \end{aligned}
+\]
+
+Per cominciare, determiniamo le condizioni su $u^\top = (u_{1},u_{2},u_{3})$ a 
+partire dai vincoli:
+\[
+    \begin{aligned}
+        x_{1} + x_{2} \le 1 &\implies u_{1} \le 0 \\ 
+        4x_{2} - 3x_{3} \ge  2 &\implies u_{2} \ge 0 \\
+        2x_{1} + x_{3} - x_{4} = 3 &\implies u_{3} \text{ libero}
+    \end{aligned}
+\]
+
+Inoltre, dai \textbf{termini noti dei vincoli} ricaviamo
+la \textbf{funzione obiettivo del duale}:
+\[
+    u^\top b = u_{1} + 2u_{2} + 3u_{3}
+\]
+Che, ovviamente, vogliamo \textbf{massimizzare}.
+
+Ora, per ottenere i vincoli dobbiamo considerare $u^\top A$ e $c^\top$. 
+Per comodità, consideriamo invece $A^\top u$ e $c$:
+\[
+    \begin{bmatrix} 
+        1 & 0 & 2 \\ 
+        1 & 4 & 0 \\ 
+        0 &-3 & 1 \\ 
+        0 & 0 & -1
+    \end{bmatrix} \begin{bmatrix} u_{1} \\ u_{2} \\ u_{3} \end{bmatrix} \text{ , } 
+    \begin{bmatrix} 4 \\ -2 \\ 1 \\ 5 \end{bmatrix} 
+\]
+
+Abbiamo così \textit{determinato anche i vincoli}, ed il \textbf{problema duale} 
+risulta quindi essere:
+\[
+    \begin{cases}
+        \text{max } u_{1} + 2u_{2} +3u_{3} \\ 
+        u_{1} + 2u_{3} \le 4 \\ 
+        u_{1} + 4u_{2} \le -2 \\ 
+        -3u_{2} + u_{3} \ge 1 \\ 
+        -u_{3} = 5 \\ 
+        u_{1} \le 0 \\ 
+        u_{2} \ge 0 \\
+        u_{3} \text{ libero}
+    \end{cases}
+\]
+
+\begin{remark}[VERSI DELLE DISEQUAZIONI NEI VINCOLI DUALI]
+    I \textbf{versi delle disequazioni} nei \textbf{vincoli} del \textbf{problema duale}
+    sono ottenuti a partire dalle \textbf{condizioni sui domini} delle
+    \textbf{variabili del primale}. In particolare:
+    \begin{itemize}
+        \item Un dominio del tipo $x_i\ge 0$ produce il 
+            \textbf{vincolo duale} $\le $.
+        \item Un dominio del tipo $x_i \le 0$ produce il
+            \textbf{vincolo duale} $\ge $.
+        \item Un dominio del tipo $x_i \text{ libero}$ produce il 
+            \textbf{vincolo duale} $=$.
+        \item Un dominio del tipo $x_i = 0$ produce il
+            \textbf{vincolo duale} $\text{libero}$.
+    \end{itemize}
+\end{remark}

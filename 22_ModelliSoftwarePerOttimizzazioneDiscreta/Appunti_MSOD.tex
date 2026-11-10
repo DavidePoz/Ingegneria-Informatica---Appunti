@@ -1,0 +1,31 @@
+\documentclass[12pt, a4paper]{report}
+
+% --- Impostazioni di stile ---
+\usepackage{document_style}
+
+% --- Tikz externalize
+\usetikzlibrary{external}
+\tikzexternalize[prefix=build_tikzexternal/]
+
+% ------------------------------------------------------------------------------------
+%                               INIZIO DOCUMENTO
+% ------------------------------------------------------------------------------------
+
+\begin{document}
+\pagestyle{fancy}
+
+% --- Inizio documento ---
+\input{document_intro/0_Frontespizio}
+\input{document_intro/1_Colophon}
+
+% Indice
+\tableofcontents
+
+% --- Capitoli principali ---
+\input{chapters/01_Nozioni_introduttive}
+\input{chapters/02_Concetti_generali}
+\input{chapters/03_Programmazione_lineare}
+\input{chapters/04_Programmazione_lineare_intera}
+\input{chapters/05_Problemi_modellazione}
+
+\end{document}
