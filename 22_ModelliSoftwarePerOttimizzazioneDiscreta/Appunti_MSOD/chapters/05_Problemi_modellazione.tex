@@ -1,0 +1,630 @@
+% ------------------------------------------------------------------------------------
+%                       PROGRAMMAZIONE LINEARE INTERA
+% ------------------------------------------------------------------------------------
+\chapter{Modellazione}
+
+\section{Esempi classici}
+
+\subsection{Knapsack}
+
+Il problema è il seguente:
+
+\begin{exa}[KNAPSACK]
+    Immaginiamo di avere
+    \begin{itemize}
+        \item $n$ \textbf{oggetti}, ciascuno con
+            \begin{itemize}
+                \item Un \textbf{peso} $w_j$.
+                \item Un \textbf{profitto} $p_j$
+            \end{itemize}
+            Con $j\in J = \{ 1,\ldots ,n \}  $
+        \item Un \textbf{contenitore} (\textit{knapsack}) 
+            di \textbf{capacita massima} $W$.
+    \end{itemize}
+    Vogliamo capire come \textbf{massimizzare il profitto} 
+    rimanendo \textbf{entro i limiti di capacita}.
+\end{exa}
+
+Introduciamo le \textbf{variabili binarie} seguenti:
+\[
+    x_j = \begin{cases}
+        1 & \text{se item j viene messo nel contenitore} \\ 
+        0 & \text{altrimenti}
+    \end{cases}
+\]
+
+Il problema puo quindi essere formalizzato come segue:
+\[
+    \begin{cases}
+        \text{max } \displaystyle\sum_{j \in J} p_{j} x_{j} \\ 
+        \sum_{j\in J} w_{j} x_{j} \le W \\ 
+        x_{j} \in \{0,1\} & \forall j \in J
+    \end{cases}
+\]
+
+\subsection{Facility location}
+
+Il problema è il seguente:
+
+\begin{exa}[FACILITY LOCATION]
+    Abbiamo:
+    \begin{itemize}
+        \item Un \textbf{insieme} $J$ di $n$ \textbf{utenti}.
+        \item Un \textbf{insieme} $I$ di $m$ \textbf{facilities}, ciascuna
+            con un \textbf{costo fisso di costruzione} $d_i$.
+        \item Ciascun \textbf{utente j comporta} un \textbf{costo di servizio}
+            per poter \textbf{usufruire} della \textbf{i-esima facility} 
+            pari a $c_{ij}$.
+    \end{itemize}
+    Vogliamo \textbf{pianificare} la \textbf{costruzione delle facilities}
+    in modo da \textbf{minizzare i costi di servizio}.
+\end{exa}
+
+Introduciamo le variabili binarie seguenti:
+\[
+    y_i = \begin{cases}
+        1 & \text{se costruiamo la facility i} \\ 
+        0 & \text{altrimenti}
+    \end{cases}
+\]
+
+Ed anche:
+\[
+    x_{ij} = \begin{cases}
+        1 & \text{se utente j e servito dalla facility i} \\ 
+        0 & \text{altrimenti}
+    \end{cases}
+\]
+
+Il modello risulta pertanto essere:
+\[
+    \begin{cases}
+        \text{min } \displaystyle\sum_{i\in I} d_i y_i + 
+        \sum_{i \in I} \displaystyle\sum_{j \in J} c_{ij} x_{ij} \\ 
+        \sum_{i \in I} x_{ij} = 1 \\ 
+        x_{ij} \le y_i & \forall i \in I \text{ , } \forall j \in J \\
+        y_i \in \{0,1\} & \forall i \in I \\ 
+        x_{ij} \in \{0,1\} & \forall i \in I \text{ , } \forall j \in J  
+    \end{cases}
+\]
+
+\begin{remark}[VINCOLI]
+    Il vincolo
+    \[
+        x_{ij} \le y_i \text{ } \forall i \in I \text{ , } \forall j \in J
+    \] 
+    sta ad indicare il fatto che:
+    \[
+        \begin{aligned}
+            y_i = 0 &\implies x_{ij} = 0 \text{ , } \forall j \in J \\ 
+            x_{ij} = 1 &\implies y_i = 1 \text{ , } \forall i \in I
+        \end{aligned}
+    \] 
+    In \textbf{totale}, questi vincoli sono $n \cdot m$ in \textbf{numero}.
+\end{remark}
+
+Ci chiediamo allora se \textit{possiamo fare di meglio}, ovvero
+se possiamo \textit{rappresentare la stessa implicazione}
+usando \textit{meno vincoli}.
+La risposta è \textbf{sni}: possiamo scrivere i vincoli come
+\[
+    \sum_{j\in J} x_{ij} \le ny_i \text{ , } \forall i \in I
+\]
+
+che però comporta un \textbf{problema pratico}:
+
+\begin{remark}[COMPROMESSO]
+    Abbiamo \textbf{ridotto} il \textbf{numero di questi vincoli} 
+    da $n \cdot m$ a $m$.
+
+    \textbf{Tuttavia}, questa soluzione \textbf{risulta peggiore in pratica}
+    in quanto \textbf{peggiora l'efficienza dei rilassamenti}. 
+    Inoltre, e facile intuire che i \textbf{vincoli aggregati} che
+    abbiamo scritto sarebbero stati \textbf{deducibili anche dai vincoli singoli}.
+\end{remark}
+
+\subsection{Set covering}
+
+Il problema è il seguente:
+
+\begin{exa}[SET COVERING]
+    Abbiamo come \textbf{input}:
+    \begin{itemize}
+        \item un \textbf{insieme} $I$ detto \textbf{ground set}.
+        \item Una \textbf{famiglia} $\mathcal{F} = \{ F_{1}, \ldots , F_n\}$ 
+            dove $F_j \subseteq I$ $\forall j \in J = \{1,\ldots ,n\}  $.
+    \end{itemize}
+    Vogliamo \textbf{scegliere un sottoinsieme} $\mathcal{F}^* = \{F_k\}$ 
+    con $k \in K \subseteq J$ di $\mathcal{F}$ tale per cui
+    \[
+        \bigcup_{k \in K} F_k = I
+    \] 
+\end{exa}
+
+Definiamo le \textbf{variabili binarie} seguenti:
+\[
+    x_j = \begin{cases}
+        1 & \text{se scelgo } F_j \\ 
+        0 & \text{altrimenti}
+    \end{cases}
+\]
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        % Stile per gli elementi del ground set (i nodi)
+        cnode/.style={circle, draw=nord3, very thick, fill=white,
+        minimum size=7mm, font=\bfseries, text=nord0},
+        % Stili per i sottoinsiemi (le "bolle")
+        set_selected/.style={draw=nord14, line width=1.5pt, fill=nord14, fill opacity=0.15},
+        set_unselected/.style={draw=nord3, thick, dashed}
+        ]
+        % Layering per disegnare gli insiemi DIETRO ai nodi
+        \pgfdeclarelayer{background}
+        \pgfsetlayers{background,main}
+
+        % 1. NODI (Ground set I = {1, ..., 6})
+        \node[cnode] (1) at (0, 2) {1};
+        \node[cnode] (2) at (2, 1) {2};
+        \node[cnode] (3) at (2, -1) {3};
+        \node[cnode] (4) at (0, -2) {4};
+        \node[cnode] (5) at (-2, -1) {5};
+        \node[cnode] (6) at (-2, 1) {6};
+
+        % 2. SOTTOINSIEMI (Famiglia F) disegnati nel background
+        \begin{pgfonlayer}{background}
+            % F1 (Selezionato) - Copre i nodi 1, 2, 6
+            \draw[set_selected] plot [smooth cycle, tension=0.7] coordinates {
+                    (-2.6, 0.8) (-2.4, 1.8) (0, 2.7) (2.4, 1.8) (2.6, 0.8) (1.2, 0.3) (0, 1.3) (-1.2, 0.3)
+                };
+            % F2 (Selezionato) - Copre i nodi 3, 4, 5
+            \draw[set_selected] plot [smooth cycle, tension=0.7] coordinates {
+                    (-2.6, -0.8) (-1.2, -0.3) (0, -1.3) (1.2, -0.3) 
+                    (2.6, -0.8) (2.4, -1.8) (0, -2.7) (-2.4, -1.8)
+                };
+            % F3 (Non selezionato) - Copre i nodi 2, 3
+            \draw[set_unselected] plot [smooth cycle, tension=0.7] coordinates {
+                    (1.4, 1.2) (2.6, 1.2) (2.8, 0) (2.6, -1.2) (1.4, -1.2) (1.2, 0)
+                };
+            % F4 (Non selezionato) - Copre i nodi 5, 6
+            \draw[set_unselected] plot [smooth cycle, tension=0.7] coordinates {
+                    (-1.4, 1.2) (-1.2, 0) (-1.4, -1.2) (-2.6, -1.2) (-2.8, 0) (-2.6, 1.2)
+                };
+        \end{pgfonlayer}
+
+        % 3. ETICHETTE DELLE VARIABILI (xj)
+        \node[text=nord10, font=\bfseries] at (0, 3.1) {$x_1 = 1 \quad \textcolor{nord3}{\normalfont(F_1)}$};
+        \node[text=nord10, font=\bfseries] at (0, -3.1) {$x_2 = 1 \quad \textcolor{nord3}{\normalfont(F_2)}$};
+        \node[text=nord3, font=\small] at (4, 0) {$x_3 = 0 \;\; (F_3)$};
+        \node[text=nord3, font=\small] at (-4, 0) {$(F_4) \;\; x_4 = 0$};
+
+        % 4. BOX LEGENDA E VERIFICA VINCOLI
+        \node[anchor=north, draw=nord3, thick, rounded corners, fill=nord6, inner sep=12pt] at (0, -4) {
+                \renewcommand{\arraystretch}{1.3} % Aumenta l'interlinea della tabella
+                \begin{tabular}{@{}l@{}}
+                    \textbf{\textcolor{nord10}{Copertura Ottima} $\mathcal{F}^* = \{F_1, F_2\}$} \\
+                    \textcolor{nord3}{Tutti gli elementi del \textit{ground set} sono coperti.} \\
+                    \hline
+                    \\[-10pt]
+                    Verifica vincoli (esempi) $\sum_{j:\, i \in F_j} x_j \ge 1$: \\
+                    \begin{tabular}{@{}ll}
+                        - Nodo 2 $\in F_1, F_3$: & $x_1 + x_3 = 1 + 0 = 1 \ge 1$ \quad 
+                        \textcolor{nord14}{\textbf{OK}} \\
+                        - Nodo 5 $\in F_2, F_4$: & $x_2 + x_4 = 1 + 0 = 1 \ge 1$ \quad 
+                        \textcolor{nord14}{\textbf{OK}} \\
+                        - Nodo 1 $\in F_1$:      & $x_1 = 1 \ge 1$ \hspace{21.5mm} 
+                        \textcolor{nord14}{\textbf{OK}}
+                    \end{tabular}
+                \end{tabular}
+            };
+    \end{tikzpicture}
+    \caption{Esempio di problema Set Covering}
+    %\label{fig:05_01_SetCovering}
+\end{figure}
+
+Il modello risulta quindi essere:
+\[
+    \begin{cases}
+        \text{min } \displaystyle\sum_{j \in J} x_j \\ 
+        \displaystyle\sum_{j \text{ : } i \in F_j} x_j \ge 1 & \forall i \in I \\ 
+        x_j \in \{0,1\} & \forall j \in J  
+    \end{cases}
+\]
+
+Variazioni di questo problema sono estremamente comuni nell'ambito della logistica.
+
+\begin{remark}[APPLICAZIONI REALI]
+    Problemi di questo tipo sono \textbf{risolti giornalmente}
+    dalle \textbf{compagnie aeree} per \textbf{determinare efficientemente}
+    i \textbf{turni} dei \textbf{piloti}.
+\end{remark}
+
+Inoltre, questa classe di problemi si può considerare una \textit{base di partenza}
+per formulare problemi più complessi.
+
+\begin{remark}[SET PARTIONING]
+    A volte il problema puo essere modellato come
+    problema di \textbf{set partionining}, in cui il
+    \textbf{ground set} deve esere \textbf{coperto senza sovrapposizioni}.
+    Chiaramente, questa formulazione risulta \textit{piu difficile da risolvere}.
+\end{remark}
+
+\subsection{Max Independent Set}
+
+Partiamo da un \textbf{grafo} $G=(V,E)$ e consideriamo $S\subseteq V$.
+
+\begin{definition}[INSIEME STABILE]
+    L'insieme $S$ si dice \textbf{stabile} (o \textit{independent} in inglese) 
+    se \textbf{non vi sono archi diretti} tra i \textbf{nodi di S}.
+\end{definition}
+
+Il nostro obiettivo, ovvero il cuore del problema è:
+
+\begin{exa}[MAXIMUM INDEPENDENT SET]
+    Determinare il \textbf{massimo insieme stabile} di $G$.
+\end{exa}
+
+Anche questa volta facciamo affidamento a delle \textit{variabili booleane}:
+\[
+    x_i = \begin{cases}
+        1 & \text{se il nodo i è in S} \\ 
+        0 & \text{altrimenti}
+    \end{cases}
+\]
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale=1.4]
+        % Stili dei nodi
+        % Nodi appartenenti all'Independent Set (S)
+        \tikzstyle{nodeS} = [circle, draw=nord14, ultra thick, fill=nord14!20, 
+        minimum size=8mm, font=\bfseries\color{nord0}]
+        % Nodi NON appartenenti all'Independent Set
+        \tikzstyle{nodeV} = [circle, draw=nord3, ultra thick, fill=nord4, 
+        minimum size=8mm, font=\bfseries\color{nord0}]
+
+        % --- Nodi del grafo (disposti a esagono) ---
+        % I nodi 1, 3, 5 formano il nostro Insieme Stabile (nessun arco tra di loro)
+        \node[nodeS, label={[nord10, font=\bfseries]above:$x_1 = 1$}] (1) at (90:2) {1};
+        \node[nodeS, label={[nord10, font=\bfseries]below right:$x_3 = 1$}] (3) at (-30:2) {3};
+        \node[nodeS, label={[nord10, font=\bfseries]below left:$x_5 = 1$}] (5) at (-150:2) {5};
+
+        % I nodi 2, 4, 6 sono esclusi dall'insieme
+        \node[nodeV, label={[nord3]above right:$x_2 = 0$}] (2) at (30:2) {2};
+        \node[nodeV, label={[nord3]below:$x_4 = 0$}] (4) at (-90:2) {4};
+        \node[nodeV, label={[nord3]above left:$x_6 = 0$}] (6) at (150:2) {6};
+
+        % --- Archi (Edges) ---
+        % Archi perimetrali
+        \draw[ultra thick, nord3] (1) -- (2);
+        \draw[ultra thick, nord3] (2) -- (3);
+        \draw[ultra thick, nord3] (3) -- (4);
+        \draw[ultra thick, nord3] (4) -- (5);
+        \draw[ultra thick, nord3] (5) -- (6);
+        \draw[ultra thick, nord3] (6) -- (1);
+
+        % Archi interni (rendono 1,3,5 l'UNICO independent set di dimensione 3)
+        \draw[ultra thick, nord3] (2) -- (4);
+        \draw[ultra thick, nord3] (4) -- (6);
+        \draw[ultra thick, nord3] (6) -- (2);
+
+        % --- Legenda e note esplicative ---
+        \begin{scope}[shift={(3, 1.5)}]
+            \filldraw[fill=white, draw=nord3, rounded corners] (0, -1.8) rectangle (4.2, 1);
+
+            \node[right, nord14, font=\bfseries] at (0.2, 0.6) 
+                {Insieme Stabile $S = \{1, 3, 5\}$};
+
+            \node[right, nord0, font=\footnotesize, align=left] at (0.2, 0.1) 
+                {Non ci sono archi tra i nodi verdi.};
+
+            \draw[thick, nord3] (0.2, -0.2) -- (4, -0.2);
+
+            \node[right, nord0, font=\footnotesize, align=left] at (0.2, -0.6) 
+                {Verifica vincoli (esempi) $x_i + x_j \le 1$:};
+            \node[right, nord0, font=\footnotesize, align=left] at (0.2, -1) 
+                {- Arco $(1,2)$: $1 + 0 = 1 \le 1$ \quad \textcolor{nord14}{\textbf{OK}}};
+            \node[right, nord0, font=\footnotesize, align=left] at (0.2, -1.4) 
+                {- Arco $(2,6)$: $0 + 0 = 0 \le 1$ \quad \textcolor{nord14}{\textbf{OK}}};
+        \end{scope}
+    \end{tikzpicture}
+    \caption{Esempio di problema Max Independent Set}
+    %\label{fig:05_02_MaxIndependentSet}
+\end{figure}
+
+Possiamo scrivere il modello come segue:
+\[
+    \begin{cases}
+        \text{max } \displaystyle\sum_{i\in V} x_i \\
+        x_i + x_j \le 1 & \forall (i,j)\in E \\
+        x_i \in \{0,1\} & \forall i \in V  
+    \end{cases}
+\]
+
+\begin{remark}
+    La condizione imposta è molto \textbf{intuitiva}: per \textit{definizione}
+    di \textit{insieme stabile}, possiamo prendere 
+    \textbf{al più un nodo per ciascun arco}.
+\end{remark}
+
+\subsection{Vertex Coloring}
+
+Consideriamo un \textbf{grafo connesso} $G=(V,E)$ ed un \textbf{insieme di colori}
+(che \textit{mappiamo in un insieme di numeri}) $K=\{1,2,3,\ldots,k\}$.
+
+Il problema è così posto:
+
+\begin{exa}[Vertex Coloring]
+    Vogliamo:
+    \begin{itemize}
+        \item \textbf{AMMISSIBILITA'}: assegnare un \textbf{colore ad ogni nodo}
+            in modo che sia \textbf{diverso} da quello dei \textbf{nodi adiacenti}.
+        \item \textbf{OTTIMIZZAZIONE}: determinare il \textbf{minor numero}
+            di \textbf{colori} necessario per farlo.
+    \end{itemize}
+\end{exa}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        % Stili per i nodi, colorati in base al colore assegnato (k)
+        % Usiamo colori pieni con testo bianco per massimo risalto
+        nodeC1/.style={circle, draw=nord11, very thick, fill=nord11,
+        minimum size=7mm, font=\bfseries, text=white},
+        nodeC2/.style={circle, draw=nord10, very thick, fill=nord10,
+        minimum size=7mm, font=\bfseries, text=white},
+        nodeC3/.style={circle, draw=nord14, very thick, fill=nord14,
+        minimum size=7mm, font=\bfseries, text=white},
+        % Stile per gli archi del grafo
+        edge/.style={draw=nord3, thick}
+        ]
+        % Layering per disegnare gli archi DIETRO ai nodi
+        \pgfdeclarelayer{background}
+        \pgfsetlayers{background,main}
+
+        % 1. NODI (Assegnazione ottima dei colori)
+        % k=1 (Rosso): Nodi 1, 3, 5
+        % k=2 (Blu):   Nodi 2, 6
+        % k=3 (Verde): Nodo 4
+        \node[nodeC1] (1) at (0, 2) {1};
+        \node[nodeC2] (2) at (2, 1) {2};
+        \node[nodeC1] (3) at (2, -1) {3};
+        \node[nodeC3] (4) at (0, -2) {4};
+        \node[nodeC1] (5) at (-2, -1) {5};
+        \node[nodeC2] (6) at (-2, 1) {6};
+
+        % 2. ARCHI (Grafo G)
+        \begin{pgfonlayer}{background}
+            % Archi del perimetro
+            \draw[edge] (1) -- (2);
+            \draw[edge] (2) -- (3);
+            \draw[edge] (3) -- (4);
+            \draw[edge] (4) -- (5);
+            \draw[edge] (5) -- (6);
+            \draw[edge] (6) -- (1);
+
+            % Archi interni
+            \draw[edge] (1) -- (4);
+            \draw[edge] (2) -- (4);
+            \draw[edge] (6) -- (4);
+        \end{pgfonlayer}
+
+        % 3. ETICHETTE DELLE VARIABILI (x_ik = 1)
+        \node[text=nord11, font=\bfseries] at (0, 2.7) {$x_{1,1} = 1$};
+        \node[text=nord10, font=\bfseries] at (3.2, 1.2) {$x_{2,2} = 1$};
+        \node[text=nord11, font=\bfseries] at (3.2, -1.2) {$x_{3,1} = 1$};
+        \node[text=nord14, font=\bfseries] at (0, -2.7) {$x_{4,3} = 1$};
+        \node[text=nord11, font=\bfseries] at (-3.2, -1.2) {$x_{5,1} = 1$};
+        \node[text=nord10, font=\bfseries] at (-3.2, 1.2) {$x_{6,2} = 1$};
+
+        % 4. BOX LEGENDA E VERIFICA VINCOLI (Posizionato in basso)
+        \node[anchor=north, draw=nord3, thick, rounded corners, fill=nord6, inner sep=12pt] at (0, -4.0) {
+                \renewcommand{\arraystretch}{1.3} 
+                \begin{tabular}{@{}l@{}}
+                    \textbf{\textcolor{nord10}{Colorazione Ottima} (Minimo $k=3$ colori)} \\
+                    \textcolor{nord11}{\rule{2.5mm}{2.5mm}} \textcolor{nord3}{$k=1: \{1, 3, 5\}$} \hspace{4mm}
+                    \textcolor{nord10}{\rule{2.5mm}{2.5mm}} \textcolor{nord3}{$k=2: \{2, 6\}$} \hspace{4mm}
+                    \textcolor{nord14}{\rule{2.5mm}{2.5mm}} \textcolor{nord3}{$k=3: \{4\}$} \\
+                    \hline
+                    \\[-10pt]
+                    Verifica vincoli (esempi): \\
+                    \begin{tabular}{@{}ll}
+                        \textcolor{nord3}{\textit{Ammissibilità}} ($x_{ik} + x_{jk} \le 1$): & \\
+                        - Arco $(1,2)$, per $k=1$: & $x_{1,1} + x_{2,1} = 1 + 0 = 1 \le 1$ \quad 
+                        \textcolor{nord14}{\textbf{OK}} \\
+                        - Arco $(4,6)$, per $k=3$: & $x_{4,3} + x_{6,3} = 1 + 0 = 1 \le 1$ \quad 
+                        \textcolor{nord14}{\textbf{OK}} \\
+                        \\[-10pt]
+                        \textcolor{nord3}{\textit{Assegnazione}} ($\sum_{k} x_{ik} = 1$): & \\
+                        - Nodo 1: & $x_{1,1} + x_{1,2} + x_{1,3} = 1 + 0 + 0 = 1$ \hspace{4mm} 
+                        \textcolor{nord14}{\textbf{OK}}
+                    \end{tabular}
+                \end{tabular}
+            };
+    \end{tikzpicture}
+    \caption{Esempio di problema Vertex Coloring}
+    \label{fig:05_04_VertexColoring}
+\end{figure}
+
+La figura~\ref{fig:05_04_VertexColoring} ci fornisce un esempio utile per cominciare 
+a modellare la versione di \textbf{ammissibilità}. Possiamo usare dei vincoli del tipo:
+\[
+    x_i \ne x_j \text{ } \forall (i,j) \in E
+\]
+Per imporre che nodi adiacenti siano \textit{colorati diversamente}.
+Tuttavia sarebbero \textbf{vincoli non lineari}; vediamo allora
+come possiamo \textbf{trasformarli in vincoli lineari}.
+
+Per prima cosa, consideriamo le \textit{variabili binarie}:
+\[
+    x_{ik} = \begin{cases}
+    1 & \text{se nodo } i \text{ colorato con } k \\ 
+    0 & \text{altrimenti}
+    \end{cases}
+\]
+E otteniamo quindi:
+\[
+    \begin{cases}
+        x_{ik} + x_{jk} \le 1 & \forall (i,j) \in E \text{ , } \forall k \in K \\ 
+        \displaystyle\sum_{k\in K} x_{ik} = 1 & \forall i \in V \\ 
+        x_{ik} \in \{0,1\} & \forall i \in V \text{ , } \forall k \in K
+    \end{cases}
+\]
+
+Proseguiamo adesso con il \textbf{problema di ottimalità}.
+
+\begin{remark}[OTTIMALITA' COME AMMISSIBILITA' RIPETUTA]
+    Potremmo pensare di risolvere la versione di \textbf{ottimizzazione}
+    applicando in maniera \textbf{ripetuta} la formulazione di \textbf{ammissibilità}:
+    possiamo \textbf{prima provare} con \textbf{un colore solo}, poi con \textbf{due},
+    poi con \textbf{tre}, e così via \textbf{fino a quando} non otteniamo una
+    \textbf{risposta affermativa}.
+\end{remark}
+
+Chiaramente, questo approccio è \textbf{poco efficiente}; tuttavia l'idea
+alla base è corretta.
+
+\begin{remark}[RICERCA BINARIA]
+    Data la \textbf{monotonicità del problema}, possiamo cercare il numero minimo 
+    di colori con una \textbf{ricerca binaria}.
+\end{remark}
+
+Per \textit{monotonicità del problema} intendiamo il fatto che, se il 
+\textit{problema è soddisfacibile} con un \textit{certo numero} $k$ di colori, 
+allora \textit{lo è anche per tutti i valori} $>k$.
+
+\subsection{Lot Sizing}
+
+Consideriamo la \textbf{pianificazione della produzione} di un bene da parte di un'azienda
+nell'arco di $n$ \textbf{orizzonti temporali} $t_i \in T= \{ 1,\ldots ,n \}$.
+
+Supponiamo che a ciascun orizzonte sia associato un \textbf{costo fisso} $f_t$ per la 
+produzione del bene, un \textbf{costo variabile} $p_t$ \textit{proporzionale alla quantità prodotta}, 
+una \textbf{domanda} del bene $d_t$ da parte dei clienti, e assumiamo infine di 
+\textbf{poter stoccare i beni} in un magazzino con un \textbf{costo di stoccaggio} $h_t$.
+
+L'obiettivo di un problema \textit{lot sizing} è il seguente:
+
+\begin{exa}[LOT SIZING]
+    Vogliamo \textbf{pianificare la produzione} in modo da
+    \textbf{minimizzare i costi}.
+\end{exa}
+
+Per modellare il problema, definiamo le \textbf{variabili} seguenti:
+\[
+    \begin{aligned}
+        0 \le x_t &\coloneqq \text{ quantità di bene prodotta all'orizzonte } t \\ 
+        y_t &\coloneqq  \begin{cases}
+            1 & \text{se } x_t > 0 \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+            0 \le s_t &\coloneqq \text{ livello di magazzino al tempo } t
+    \end{aligned}
+\]
+
+Assumendo $s_{0}=0$ (livello iniziale del magazzino).
+
+A questo punto possiamo modellare il problema come segue:
+\[
+    \begin{cases}
+        \displaystyle\text{min } \sum_{t\in T} p_t x_t + f_t y_t + h_t s_t \\ 
+        \epsilon y_t \le x_t \le My_t & \forall t \in T \\
+        s_{t-1} + x_t = d_t + s_t & \forall t \in T \\
+        x_t \ge 0 & \forall t \in \\ 
+        y_t \in \{0,1\} & \forall t\in T \\ 
+        s_t \ge 0 & \forall t\in T \cup \{0\} \\ 
+        s_0 = 0 & \text{condizione iniziale}
+    \end{cases}
+\]
+
+Le variabili $y_t$ rappresentano la \textbf{scelta di produrre o meno} per
+\textbf{ciascun orizzonte temporale}, mentre le variabili $x_t$ indicano
+la \textbf{quantità di bene prodotto} nel caso in cui si abbia scelto
+di produrre beni in quell'orizzonte temporale (proprio come avevamo visto
+nella sezione sui \textbf{costi fissi}).
+
+Inoltre, la funzione obiettivo è semplicemente la \textbf{somma dei costi} per 
+ciascun orizzonte temporale.
+
+Detto questo, resta solo da modellare il \textbf{soddisfacimento della domanda} $d_t$.
+
+\begin{remark}
+    Il vincolo
+    \[
+        s_{t-1} + x_t = d_t + s_t
+    \]
+    impone una \textbf{forma di conservazione}: la \textit{quantità precedentemente stoccata}
+    e la \textit{quantità prodotta} devono essere \textit{uguali} alla \textit{somma}
+    della \textit{domanda} e della \textit{quantità stoccata al nuovo orizzonte}.
+\end{remark}
+
+\section{Esercizi}
+
+\subsection{CUP}
+
+Immaginiamo di avere un \textbf{insieme di quartieri} $l\in L = \{1,\ldots , n\}$ ed 
+una \textbf{matrice} $L\times L$ che raccoglie i \textbf{tempi di percorrenza} 
+(\textit{previsti}) necessari per \textbf{raggiungere un CUP} 
+posto in un altro quartiere, come mostrato sotto:
+\[
+    \begin{matrix}
+        & | & 1 & 2 & 3 & 4 & 5 & 6 \\ 
+      - & | & - & - & - & - & - & - \\ 
+      1 & | & 0 & 10 & 20 & 30 & 30 & 20 \\ 
+      2 & | & 10 & 0 & 25 & 33 & 20 & 10 \\ 
+      3 & | & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\ 
+      4 & | & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\ 
+      5 & | & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\ 
+      6 & | & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\ 
+    \end{matrix}
+\]
+
+\begin{remark}
+    La matrice sarà \textbf{simmetrica}: andare \textit{da} $i$ a $j$ è
+    \textit{equivalente} ad andare da $j$ ad $i$.
+\end{remark}
+
+E chiamiamo $d_{ij}$ le \textit{entrate della matrice}, ovvero il \textbf{tempo di percorrenza}
+per \textbf{raggiunere un CUP} posto in $i$ \textbf{dal quartiere} $j$.
+L'obiettivo del problem è:
+
+\begin{exa}[PROBLEMA]
+    Vogliamo \textbf{posizionare i CUP nei quartieri} in modo che
+    il \textbf{tempo di percorrenza massimo} $T$ da \textit{qualsiasi quartiere}
+    sia di \textbf{15 minuti}.
+\end{exa}
+
+Per come è descritto il problema:
+
+\begin{remark}
+    Notiamo che il problema è essenzialmente un problema
+    di \textbf{set covering}: si tratta infatti di \textbf{soddisfare} 
+    dei \textbf{vincoli di copertura}.
+\end{remark}
+
+Per modellare il problema, cominciamo definendo le \textbf{variabili binarie}:
+\[
+    x_i = \begin{cases}
+        1 & \text{se posizioniamo un CUP in posizione } $i$ \\ 
+        0 & \text{altrimenti}
+    \end{cases}
+\]
+
+Abbiamo quindi:
+\[
+    \begin{cases}
+        \displaystyle\text{min } \sum_{i\in I} x_i \\ 
+        \displaystyle\sum_{i\in L : d_{ij} \le T} x_i \ge 1 & \forall j \in L \\
+        x_i \in \{0,1\} & \forall i \in L
+    \end{cases}
+\]
+
+Come nel caso di \textbf{set covering}, vogliamo usare il \textbf{minor numero di CUP}
+possibile (equivalente ad usare il minor numero di sottoinsiemi).
+Detto ciò, diamo una spiegazione del vincolo imposto:
+
+\begin{remark}
+    Per \textbf{ogni quartiere} $j\in L$ deve \textbf{esistere almeno un CUP}
+    posto in \textit{un qualche} $i\in L$ tale che il \textbf{tempo di percorrenza}
+    sia \textbf{inferiore alla soglia} richiesta.
+\end{remark}
