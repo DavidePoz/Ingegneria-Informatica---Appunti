@@ -410,199 +410,6 @@ mostrata in figura~\ref{fig:08_04_EsempioSegnaleModulato}.
     \label{fig:08_04_EsempioSegnaleModulato}
 \end{figure}
 
-\subsection{PWM}
-
-Vediamo ora un esempio di modulazione di
-tipo \textbf{PWM}: \textbf{Pulse Width Modulation}.
-
-\begin{remark}[PWM]
-    In questo tipo di modulazione si utilizzano \textbf{onde quadre} con
-    \textbf{diverse larghezze degli impulsi}.
-
-    E' ampiementa utilizzata in \textbf{elettronica digitale} perchè
-    permette di \textit{controllare la potenza di motori elettrici}
-    usando \textit{segnali digitali}.
-\end{remark}
-
-Usiamo per esempio $M=4$ con i segnali seguenti, mostrati 
-anche in figura~\ref{fig:08_05_EsempioPWM}.
-\[
-    \begin{aligned}
-        s_{1}(t) &= \begin{cases}
-            A & 0 < t <\frac{T}{4} \\ 
-            0 & \text{altrimenti}
-        \end{cases} \\ 
-        s_{2}(t) &= \begin{cases}
-            A & 0 < t <\frac{T}{2} \\ 
-            0 & \text{altrimenti}
-        \end{cases} \\ 
-        s_{3}(t) &= \begin{cases}
-            A & 0 < t <\frac{3T}{4} \\ 
-            0 & \text{altrimenti}
-        \end{cases} \\ 
-        s_{4}(t) &= \begin{cases}
-            A & 0 < t < T \\ 
-            0 & \text{altrimenti}
-        \end{cases} \\ 
-    \end{aligned}
-\]
-
-\begin{figure}[!ht]
-    \centering
-    \pgfplotsset{
-        pwmStyle/.style={
-            width=6.5cm,
-            height=3.5cm,
-            axis lines=middle,
-            xmin=-0.05, xmax=1.15,
-            ymin=-0.1, ymax=1.3,
-            xtick={0, 0.25, 0.5, 0.75, 1},
-            xticklabels={\(0\), \(\frac{T}{4}\), \(\frac{T}{2}\), \(\frac{3T}{4}\), \(T\)},
-            ytick={0, 1},
-            yticklabels={\(0\), \(A\)},
-            ylabel style={at={(0,1)}, anchor=south east},
-            grid=major,
-            grid style={dashed, gray!20},
-            axis line style={-Stealth, thick},
-        }
-    }
-
-    \begin{tikzpicture}
-
-        % --- s1(t) ---
-        \begin{axis}[name=ax1, pwmStyle, ylabel={\(s_1(t)\)}]
-            \addplot[very thick, nord10] coordinates {(0,0) (0,1) (0.25,1) (0.25,0) (1,0)};
-        \end{axis}
-
-        % --- s2(t) ---
-        \begin{axis}[name=ax2, pwmStyle, at={(ax1.east)}, anchor=west, xshift=1cm, ylabel={\(s_2(t)\)}]
-            \addplot[very thick, nord10] coordinates {(0,0) (0,1) (0.5,1) (0.5,0) (1,0)};
-        \end{axis}
-
-        % --- s3(t) ---
-        \begin{axis}[name=ax3, pwmStyle, at={(ax1.south west)}, 
-            anchor=north west, yshift=-1cm, ylabel={\(s_3(t)\)}]
-            \addplot[very thick, nord10] coordinates {(0,0) (0,1) (0.75,1) (0.75,0) (1,0)};
-        \end{axis}
-
-        % --- s4(t) ---
-        \begin{axis}[name=ax4, pwmStyle, at={(ax2.south west)}, 
-            anchor=north west, yshift=-1cm, ylabel={\(s_4(t)\)}]
-            \addplot[very thick, nord10] coordinates {(0,0) (0,1) (1,1) (1,0)};
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Esempio di forme d'onda per modulazione PWM}
-    \label{fig:08_05_EsempioPWM}
-\end{figure}
-
-Supponiamo di voler \textit{ricavare una base ortonormale} per questi segnali.
-Notiamo subito che:
-
-\begin{remark}
-    I segnali sono tutti \textbf{linearmente indipendenti} (non siamo 
-    in grado di scrivere uno come combinazione lineare degli altri), 
-    tuttavia \textbf{non sono ortogonali}.
-\end{remark}
-
-Per ottenere una \textbf{base ortonormale} potremmo usare il
-procedimento di Gram-Schmidt, tuttavia risulta spesso particolarmente
-laborioso. Possiamo invece \textbf{scegliere intelligentemente} una base
-del tipo:
-\[
-    \begin{aligned}
-        \phi_{1}(t) &= \begin{cases}
-            A' & 0 < t <\frac{T}{4} \\ 
-            0 & \text{altrimenti}
-        \end{cases} \\ 
-        \phi_{2}(t) &= \begin{cases}
-            A' & \frac{T}{4} < t <\frac{T}{2} \\ 
-            0 & \text{altrimenti}
-        \end{cases} \\ 
-        \phi_{3}(t) &= \begin{cases}
-            A' & \frac{T}{2} < t <\frac{3T}{4} \\ 
-            0 & \text{altrimenti}
-        \end{cases} \\ 
-        \phi_{4}(t) &= \begin{cases}
-            A' & \frac{3T}{4} < t < T \\ 
-            0 & \text{altrimenti}
-        \end{cases} \\ 
-    \end{aligned}
-\]
-
-I segnali di questa base sono mostrati in figura~\ref{fig:08_06_EsempioPWMBaseOrto}.
-
-\begin{figure}[!ht]
-    \centering
-    \pgfplotsset{
-        basisStyle/.style={
-            width=6.5cm,
-            height=3.5cm,
-            axis lines=middle,
-            xmin=-0.05, xmax=1.05,
-            ymin=-0.1, ymax=1.3,
-            xtick={0, 0.25, 0.5, 0.75, 1},
-            xticklabels={\(0\), \(\frac{T}{4}\), \(\frac{T}{2}\), \(\frac{3T}{4}\), \(T\)},
-            ytick={0, 1},
-            yticklabels={\(0\), \(A'\)},
-            ylabel style={at={(0,1)}, anchor=south east},
-            grid=major,
-            grid style={dashed, gray!20},
-            axis line style={-Stealth, thick},
-        }
-    }
-
-    \begin{tikzpicture}
-
-        % --- phi_1(t) ---
-        \begin{axis}[name=ax5, basisStyle, ylabel={\(\phi_1(t)\)}]
-            \addplot[very thick, nord14] coordinates {(0,0) (0,1) (0.25,1) (0.25,0) (1,0)};
-        \end{axis}
-
-        % --- phi_2(t) ---
-        \begin{axis}[name=ax6, basisStyle, at={(ax5.east)}, anchor=west, xshift=1cm, ylabel={\(\phi_2(t)\)}]
-            \addplot[very thick, nord14] coordinates {(0,0) (0.25,0) (0.25,1) (0.5,1) (0.5,0) (1,0)};
-        \end{axis}
-
-        % --- phi_3(t) ---
-        \begin{axis}[name=ax7, basisStyle, at={(ax5.south west)}, 
-            anchor=north west, yshift=-1cm, ylabel={\(\phi_3(t)\)}]
-            \addplot[very thick, nord14] coordinates {(0,0) (0.5,0) (0.5,1) (0.75,1) (0.75,0) (1,0)};
-        \end{axis}
-
-        % --- phi_4(t) ---
-        \begin{axis}[name=ax8, basisStyle, at={(ax6.south west)}, 
-            anchor=north west, yshift=-1cm, ylabel={\(\phi_4(t)\)}]
-            \addplot[very thick, nord14] coordinates {(0,0) (0.75,0) (0.75,1) (1,1) (1,0)};
-        \end{axis}
-
-    \end{tikzpicture}
-    \caption{Base scelta per la PWM d'esempio}
-    \label{fig:08_06_EsempioPWMBaseOrto}
-\end{figure}
-
-Infine notiamo che i segnali sono tutti a \textbf{supporto disgiunto}, per cui il loro
-\textbf{prodotto interno} è \textbf{sicuramente nullo} e quindi \textbf{formano una base ortogonale}. 
-La scelta è stata intelligente perchè abbiamo banalmente:
-\[
-    \begin{aligned}
-        s_{1}(t) &= \alpha \phi_{1}(t) \\ 
-        s_{2}(t) &= \alpha \left[ \phi_{1}(t) + \phi_{2}(t) \right] \\ 
-        s_{3}(t) &= \alpha \left[ \phi_{1}(t) + \phi_{2}(t) + \phi_{3}(t) \right] \\ 
-        s_{4}(t) &= \alpha \left[ \phi_{1}(t) + \phi_{2}(t) + \phi_{3}(t) + \phi_{4}(t) \right] \\ 
-    \end{aligned}
-\]
-
-Ci resta infine solo da \textbf{determinare l'ampiezza} affinchè la norma dei vettori 
-sia unitaria. Per tutti e quattro i segnali l'energia risulta:
-\[
-    E_{\phi} = A'^2 \frac{T}{4}
-\]
-
-Per cui scegliamo:
-\[
-    A' = \frac{2}{\sqrt{T}} = \frac{2\sqrt{T}}{T}
-\]
-
 \section{Canale}
 
 Vediamo ora \textit{cosa succede al segnale} \textbf{durante la trasmissione}.
@@ -610,7 +417,7 @@ Vediamo ora \textit{cosa succede al segnale} \textbf{durante la trasmissione}.
 Abbiamo già accennato al fatto che il \textbf{canale introduce rumore nel segnale}:
 se consideriamo un segnale simile a quello dell'esempio visto sopra (composto dalle
 \textit{stesse forme d'onda}), possiamo allora trovarci in una situazione come quella 
-illustrata in figura~\ref{fig:08_07_RumoreCanale}.
+illustrata in figura~\ref{fig:08_05_RumoreCanale}.
 
 \begin{figure}[!ht]
     \centering
@@ -701,20 +508,32 @@ illustrata in figura~\ref{fig:08_07_RumoreCanale}.
 
     \end{tikzpicture}
     \caption{Introduzione di rumore nel segnale durante la trasmissione}
-    \label{fig:08_07_RumoreCanale}
+    \label{fig:08_05_RumoreCanale}
 \end{figure}
 
 E' facile intuire che il rumore mostrato in figura è 
 assimilabile ad un \textbf{processo aleatorio continuo}.
 
+Osserviamo ora che durante la trasmissione potrebbero verificarsi delle \textbf{perdite di potenza} 
+(\textit{riduzione dell'ampiezza} del segnale), per esempio a causa delle 
+\textbf{lunghe distanze} percorse dal segnale.
+
 \begin{remark}[CANALE COME FILTRO]
     In generale, è possibile che il canale, \textit{oltre ad introdurre del rumore},
     applichi \textbf{anche una trasformazione} $h_c(t)$ al segnale.
-    Pensiamo banalmente alla \textbf{perdita di potenza} (\textit{riduzione dell'ampiezza}
-    del segnale) nella trasmissione sulle \textbf{lunghe distanze}
 \end{remark}
 
-\subsection{Rappresentazione vettoriale}
+Alla luce dell'osservazione sopra, possiamo intuire che un \textbf{canale} 
+\textit{caratterizzato} da
+\[
+    h_c(t) = \delta(t-t_{0})
+\]
+è un \textbf{canale non distorcente}, perchè l'\textit{unico effetto} causato
+è un \textbf{ritardo del segnale} ricevuto $y(t)$ rispetto all'ingresso $x(t)$
+(Dato che $\delta(t-t_{0})$ è \textit{elemento neutro per la convoluzione}).
+
+\subsection{Rumore e rappresentazione vettoriale}
+\label{sez:08_02_01}
 
 Ciascuna \textit{forma d'onda} $s_n(t)$ ($n\in \{1,2,3,4\}$) giunge a destinazione 
 \textbf{corrotta dal rumore} $w(t)$, per cui il \textbf{ricevitore} legge 
@@ -735,7 +554,8 @@ Per farlo, abbiamo bisogno di \textbf{scegliere una base ortonormale adeguata}.
     sono quelle che siamo interessati a ricevere.
 \end{remark}
 
-E' facile notare che i quattro segnali \textit{non sono linearmente indipendenti}, infatti:
+E' facile notare che i quattro segnali (le forme d'onda vista sopra) 
+\textit{non sono linearmente indipendenti}, infatti:
 \[
     \begin{aligned}
         s_{3}(t) &= -s_{1}(t) \\ 
@@ -752,8 +572,41 @@ Per cui la \textit{nostra scelta} di \textbf{base ortonormale} sarà:
         \left\{ \frac{\mathbf{s_{1}}}{\sqrt{E_{s_{1}}}}, \frac{\mathbf{s_{2}}}{\sqrt{E_{s_{2}}}} \right\}
 \]
 
-Fatta questa scelta, possiamo \textit{rappresentare graficamente} i vettori $s_n(t)$ 
-e $r(t)$, come mostrato in figura~\ref{fig:08_08_CostellazioneRumore}.
+Fatta questa scelta, dobbiamo osservare alcune cose:
+
+\begin{remark}[PROIEZIONE DEL RUMORE]
+    La base scelta è:
+    \begin{itemize}
+        \item \textbf{Completa} per i \textbf{simboli trasmessi}.
+        \item \textbf{NON Completa} per il \textbf{rumore}.
+    \end{itemize}
+\end{remark}
+
+Tuttavia, siccome siamo interessati solo alla \textbf{proiezione dei segnali} sulla 
+\textbf{base da noi scelta}, possiamo considerare:
+\[
+    \mathbf{w}_p = \begin{bmatrix} w_{1} & w_{2} \end{bmatrix} 
+\]
+Dove:
+\[
+    \begin{aligned}
+        w_{1} &= \langle \mathbf{w}, \phi_{1} \rangle \\ 
+        w_{2} &= \langle \mathbf{w}, \phi_{2} \rangle
+    \end{aligned}
+\]
+Cioè consideriamo \textbf{solo} la \textbf{proiezione del rumore sulla nostra base}.
+
+Ci si potrebbe chiedere quale sia l'effetto delle \textit{altre componenti del rumore}, e
+la risposta è piuttosto banale ed intuitiva:
+
+\begin{remark}[COMPONENTI DEL RUMORE]
+    Le altre componenti sono necessariamente \textbf{ortogonali alla nostra base}
+    (sono quanto è rimasto escluso dalla proiezione), per cui sono \textbf{ininfluenti}
+    sulla \textbf{determinazione del segnale ricevuto}.
+\end{remark}
+
+A questo punto, possiamo finalmente \textit{rappresentare graficamente} i vettori associati 
+ad $s_n(t)$ e a $r(t)$, come mostrato in figura~\ref{fig:08_06_CostellazioneRumore}.
 
 \begin{figure}[!ht]
     \centering
@@ -798,13 +651,17 @@ e $r(t)$, come mostrato in figura~\ref{fig:08_08_CostellazioneRumore}.
         \node[noisy] at (0.5, -2.4) {};
 
     \end{tikzpicture}
-    \caption{Segnale trasmesso e ricevuto nella rappresentazione vettoriale}
-    \label{fig:08_08_CostellazioneRumore}
+    \caption{Segnale ricevuto nella rappresentazione vettoriale}
+    \label{fig:08_06_CostellazioneRumore}
 \end{figure}
 
 \begin{remark}[COSTELLAZIONE: EFFETTO DEL RUMORE]
-    A causa del rumore, le \textbf{forme d'onda ricevute} si
-    \textbf{discostano} dai \textbf{valori "puri"} $\mathbf{s}_n$.
+    A causa del rumore, le \textbf{forme d'onda ricevute} ($\mathbf{r}_k$) si
+    \textbf{discostano} dai \textbf{valori "puri" trasmessi} $\mathbf{s}_{nk}$:
+    \[
+        \mathbf{r}_k = \mathbf{s}_{nk} + \mathbf{w}_{pk} = \mathbf{s}_{nk} 
+        + \begin{bmatrix} w_{1k} & w_{2k} \end{bmatrix} 
+    \] 
 \end{remark}
 
 Ne consegue che il \textbf{ricevitore} dovrà adottare delle \textbf{strategie}
@@ -895,7 +752,7 @@ Dato che noi considereremo \textbf{canali AWGN}, è utile tenere a mente che:
 \end{prop}
 
 In ogni caso, è chiaro che \textbf{maggiore} è il valore di \textbf{SNR} e
-\textbf{più pulito è il segnale}, come mostrato in figura~\ref{fig:08_09_EsempiSNR}.
+\textbf{più pulito è il segnale}, come mostrato in figura~\ref{fig:08_07_EsempiSNR}.
 
 \begin{figure}[!ht]
     \centering
@@ -974,11 +831,947 @@ In ogni caso, è chiaro che \textbf{maggiore} è il valore di \textbf{SNR} e
         \node[snrBox] (t3) at ([xshift=1cm, yshift=0.2cm]ax31.north west) {SNR = 20dB};
     \end{tikzpicture}
     \caption{Confronto tra diversi livelli di Signal-to-Noise Ratio (SNR)}
-    \label{fig:08_09_EsempiSNR}
+    \label{fig:08_07_EsempiSNR}
 \end{figure}
 
 \begin{remark}
     Dato che la \textbf{potenza} del \textbf{segnale} può essere 
     \textbf{diversi ordini di grandezza} più grande del \textbf{rumore},
     il valore di SNR è \textbf{spesso espresso in decibel}.
+\end{remark}
+
+\section{Ricevitore}
+
+Abbiamo visto che in un sistema di \textbf{trasmissione numerica} M-ario il
+\textbf{segnale ricevuto} è:
+\[
+    r(t) = s_m(t) + w(t)
+\]
+Dove:
+\begin{itemize}
+    \item $s_m(t)$ è la \textbf{forma d'onda} associata dal modulatore al \textbf{simbolo}
+        $a_m = m \in \{1,\ldots ,M\}$.
+    \item $w(t)$ è il \textbf{rumore} introdotto dal canale.
+\end{itemize}
+
+Abbiamo visto anche che \textbf{proiettando} $r(t)$ su una 
+\textbf{base ortonormale} $\mathcal{B}=\{\phi_{1}(t),\ldots ,\phi_I(t)\}$ 
+(ottenuta a partire dai segnali $s_m(t)$) passiamo ad una \textbf{rappresentazione vettoriale}
+equivalente \textbf{senza perdita di informazione} utile ai fini della ricezione:
+\[
+    \mathbf{r} = \mathbf{s}_m + \mathbf{w}
+\]
+Nella sezione~\ref{sez:08_02_01} abbiamo già detto che:
+
+\begin{remark}[TEOREMA DELLA RILEVANZA]
+    Data la proiezione di cui sopra, \textbf{\textit{non} vi è perdita di informazione} 
+    perchè:
+    \begin{itemize}
+        \item La \textbf{base} ortonormale è \textbf{completa per le forme d'onda trasmesse} $s_m(t)$.
+        \item Le \textbf{altre componenti} del \textbf{rumore} sono \textbf{ortogonali} allo
+        \textbf{spazio di nostro interesse}, per cui \textit{non hanno un contenuto informativo}.
+    \end{itemize}
+    Questa conclusione è detta \textbf{\textit{teorema della rilevanza}}.
+\end{remark}
+
+Avevamo anche accennato al fatto che il \textbf{ricevitore} deve adottare delle strategie
+per \textbf{suddividere lo spazio} in \textbf{\textit{regioni di decisione}} che permettano
+di \textbf{stabilire quale simbolo è stato trasmesso}, alla luce del fatto che il
+segnale ricevuto è \textbf{corrotto dal rumore}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth,
+        thick,
+        scale=0.8,
+        % Stile per i simboli ideali (punti neri)
+        signal/.style={circle, fill=nord0, inner sep=3pt},
+        % Stile per i segnali ricevuti (punti verdi con bordo nero)
+        noisy/.style={circle, draw=black, fill=nord11, inner sep=2.5pt, thick},
+        % Stile per le regioni di decisione
+        region/.style={opacity=0.15}
+        ]
+
+        % --- Regioni di Decisione (sfondo) ---
+
+        % Regione 1 (destra)
+        \fill[nord10, region] (0.5, -4.5) -- (4.5, -4.5) -- (4.5, 1.5) 
+            -- (-0.5, 0.5) -- cycle;
+
+        % Regione 2 (alto)
+        \fill[nord14, region] (-4.5, 4.5) -- (4.5, 4.5) -- (4.5, 1.5) 
+            -- (-0.5, 0.5) -- (-4.5, -0.5) -- cycle;
+
+        % Regione 3 (sinistra)
+        \fill[nord11, region] (-4.5, 4.5) -- (-4.5, -0.5) -- (-0.5, 0.5) 
+            -- (0.5, -4.5) -- (-4.5, -4.5) -- cycle;
+
+        % Regione 4 (basso)
+        \fill[nord3, region] (4.5, -4.5) -- (0.5, -4.5) -- (-0.5, 0.5) 
+            -- (4.5, 1.5) -- cycle;
+
+        % --- Confini delle Regioni (linee tratteggiate) ---
+        \draw[dashed, thick, nord3] (-4.5, -0.5) -- (-0.5, 0.5) -- (4.5, 1.5);
+        \draw[dashed, thick, nord3] (-0.5, 4.5) -- (-0.5, 0.5) -- (0.5, -4.5);
+
+        % --- Assi Cartesiani ---
+        \draw[->] (-4.5, 0) -- (4.5, 0) node[right] {\(\phi_1\)};
+        \draw[->] (0, -4.5) -- (0, 4.5) node[above] {\(\phi_2\)};
+
+        % --- Simboli Ideali (Punti Neri) ---
+        \node[signal] (s1) at (3, 0) {};
+        \node[signal] (s2) at (0, 3) {};
+        \node[signal] (s3) at (-3, 0) {};
+        \node[signal] (s4) at (0, -3) {};
+
+        % Etichette dei simboli ideali
+        \node[right=0.1cm] at (s1) {\(\mathbf{s}_1\)};
+        \node[right=0.1cm] at (s2) {\(\mathbf{s}_2\)};
+        \node[above right=0.05cm and 0.1cm] at (s3) {\(\mathbf{s}_3\)};
+        \node[right=0.1cm] at (s4) {\(\mathbf{s}_4\)};
+
+        % --- Segnali Ricevuti (Punti Verdi) ---
+        \node[noisy] at (2.2, 0.4) {};
+        \node[noisy] at (-0.4, 3.5) {};
+        \node[noisy] at (0.5, 2.4) {};
+        \node[noisy] at (-3.6, 0.5) {};
+        \node[noisy] at (0.5, -2.4) {};
+
+        % --- Etichette delle Regioni ---
+        \node[font=\large, text=nord10] at (2.5, -2) {\(R_1\)};
+        \node[font=\large, text=nord14] at (2.5, 3) {\(R_2\)};
+        \node[font=\large, text=nord11] at (-2.5, 2.5) {\(R_3\)};
+        \node[font=\large, text=nord3] at (-2.5, -2.5) {\(R_4\)};
+    \end{tikzpicture}
+    \caption{Esempio (illustrativo) di regioni di decisione}
+    \label{fig:08_08_RegioniDecisioneEsempio}
+\end{figure}
+
+La figura~\ref{fig:08_08_RegioniDecisioneEsempio} mostra delle 
+\textit{regioni di decisione puramente esemplificative} (infatti notiamo
+che il simbolo vicino a $s_{4}$ rientra nella regione $R_{1}$ e viene \textit{"scambiato"}
+per $s_{1}$).
+
+In ogni caso, una volta \textit{fissato un criterio di decisione}, il ricevitore
+dovrà:
+
+\begin{remark}[STRUTTURA DEL RICEVITORE]
+    Il ricevitore si occuperà di:
+    \begin{enumerate}
+        \item \textbf{Proiettare} il \textbf{segnale ricevuto} sulla base
+            di interesse.
+        \item \textbf{Determinare le regioni di decisione} nello spazio.
+        \item Prendere le \textbf{decisioni}, ovvero \textbf{determinare ciascun simbolo trasmesso}
+            $\hat{a}_0$ in base alla sua \textit{regione di appartenenza}:
+            \[
+                \hat{a}_0 = m \Leftrightarrow \mathbf{r} \in R_m
+            \] 
+    \end{enumerate}
+\end{remark}
+
+\subsection{Formulazione delle regioni di decisione}
+
+Chiaramente, l'\textbf{obiettivo del ricevitore} deve essere 
+\textbf{minimizzare la probabilità di errore} $P_e$ che il 
+\textbf{simbolo scelto} $\hat{a}_0$ \textbf{differisca da quello reale} $a_{0}$:
+
+\begin{definition}[PROBABILITA' ERRORE]
+    \[
+        P_e \coloneqq P[\hat{a}_0 \ne a_0]
+    \] 
+\end{definition}
+
+Intuitivamente, ciò è perfettamente \textbf{equivalente} a \textbf{massimizzare}
+la \textbf{probabilità di decisione corretta}:
+\[
+    P_c = P[\hat{a}_0 = a_{0}] = 1 - P_e
+\]
+Detto ciò, possiamo ora derivare un criterio per \textit{ottimizzare il ricevitore}.
+
+Per cominciare, ci conviene sfruttare la \textbf{legge della probabilità totale},
+in modo da \textbf{condizionare} rispetto al \textbf{simbolo trasmesso}:
+\[
+    \begin{aligned}
+        P_c &= P[\hat{a}_0 = a_{0}] \\ 
+            &= \sum_{m=1}^M P[\hat{a}_0 = a_{0} | a_{0} = m]\cdot P[a_{0} = m] \\ 
+            &= \sum_{m=1}^M P[\hat{a}_0 = m | a_{0} = m]\cdot P[a_{0} = m] \\ 
+    \end{aligned}
+\]
+
+\begin{remark}[PROBABILITA' A PRIORI]
+    La probabilità $P_m = P[a_{0} = m]$ è detta \textbf{probabilità \textit{a priori}} e
+    rappresenta la \textit{probabilità che il trasmettitore invii il simbolo} $m$.
+\end{remark}
+
+Abbiamo detto che la \textbf{decisione} presa dal ricevitore è:
+\[
+    \hat{a}_0 = m \Leftrightarrow \mathbf{r} \in R_m
+\]
+
+Per cui, sostituendo nella relazione sopra troviamo:
+\[
+    P_c = \sum_{m=1}^M P[\mathbf{r} \in R_m | a_{0} = m]\cdot P_m
+\]
+
+Ora, siccome lo \textbf{spazio è continuo}, anche la \textbf{distribuzione associata}
+ad $\mathbf{r}$ sarà \textbf{continua}; per cui risulta:
+\[
+    P_c = \sum_{m=1}^M \int_{R_m} p_{\mathbf{r|a_{0}}}(\mathbf{u}| a_{0} = m)\cdot P_m d\mathbf{u}
+\]
+
+Per comodità possiamo riscrivere questa relazione con una \textit{notazione più compatta}:
+\[
+    P_c = \sum_{m=1}^M \int_{R_m} p(\mathbf{u} | m)\cdot P_m d\mathbf{u}
+\]
+
+Definiamo ora:
+\[
+    D_m(\mathbf{u}) \coloneqq p(\mathbf{u} | m)\cdot P_m
+\]
+
+E notiamo che è il \textbf{prodotto di due termini}:
+\begin{enumerate}
+    \item $p(\mathbf{u} | m)$ - Verosimiglianza (\textbf{\textit{likelihood}}).
+    \item $P_m$ - Probabilità a priori (\textbf{\textit{prior}}).
+\end{enumerate}
+
+\begin{remark}
+    Intuitivamente, possiamo interpretare:
+    \begin{itemize}
+        \item $p(\mathbf{u}|m)$ come il \textbf{\textit{grado di "similarità"}} 
+            tra il \textbf{segnale ricevuto} $\mathbf{u}$ ed il \textbf{simbolo effettivo} $m$:
+            più ci \textit{"allontaniamo"} da $m$ e più il valore di $p$ \textit{diminuisce}.
+        \item $P_m$ come un \textbf{peso} dato a \textbf{ciascun simbolo}: se il trasmettitore
+            invia simboli con una \textit{certa distribuzione}, ci aspettiamo che questa
+            sia \textit{replicata anche in ricezione}.
+    \end{itemize}
+\end{remark}
+
+Abbiamo quindi:
+\[
+    \begin{aligned}
+        P_c &= \sum_{m=1}^M \int_{R_m} D_m(\mathbf{u}) d\mathbf{u} \\ 
+            &= \int_{R_1} D_1(\mathbf{u}) d\mathbf{u} + \int_{R_2} D_2(\mathbf{u}) d\mathbf{u} +
+            \ldots + \int_{R_M} D_M(\mathbf{u}) d\mathbf{u}
+    \end{aligned}
+\]
+
+A questo punto, per \textbf{massimizzare} $P_c$ le \textbf{regioni} $R_m$ dovranno essere 
+tali da \textbf{massimizzare il valore} $D_m$ \textbf{corrispondente}:
+\[
+    R_m = \left\{ \mathbf{u} \;|\; m = 
+    \text{arg max}_m \{ D_{1}(\mathbf{u}),\ldots , D_M(\mathbf{u}) \} \right\}  
+\]
+
+\begin{exa}
+    Immaginiamo di \textit{scegliere} un \textit{punto arbitrario} $\mathbf{u}^*$ 
+    dello spazio per cui risulta:
+    \[
+        \begin{aligned}
+            D_{1}(\mathbf{u}^*) = 0.2 & & D_{2}(\mathbf{u}^*) = 0.8 \\
+            D_{3}(\mathbf{u}^*) = 0.4 & & D_{4}(\mathbf{u}^*) = 0.1
+        \end{aligned}
+    \] 
+    Allora $\text{arg max}$ \textit{restituirà} $m=2$ ed il vettore
+    $\mathbf{u}^*$ sarà \textit{assegnato alla regione} $2$.
+\end{exa}
+
+Ora che abbiamo discusso la \textit{formulazione matematica} del ricevitore, 
+possiamo discutere alcuni \textbf{criteri pratici} impiegati per
+\textbf{massimizzare} $P_c$.
+
+\subsection{Criterio MAP}
+
+Immaginiamo che il \textbf{trasmettitore} invvi simboli con \textbf{probabilità a priori}
+\textit{conosciuta} e data da $P_m$:
+\[
+    P_m = P[a_{0} = m] \; \; m = 1,\ldots ,M
+\]
+
+Quando il \textbf{ricevitore osserva} $\mathbf{r} = \mathbf{u}$ deve calcolare 
+invece la \textbf{probabilità a posteriori} $P_p$, ovvero:
+\[
+    P_p \coloneqq P[a_{0} = m \;|\; \mathbf{r} = \mathbf{u}]
+\]
+
+\begin{remark}[PROBABILITA' A POSTERIORI]
+    Si tratta della \textbf{probabilità che il segnale trasmesso sia} $m$
+    \textbf{\textit{alla luce di quanto osservato}}.
+\end{remark}
+
+Per calcolare questa probabilità dobbiamo applicare il \textbf{teorema di Bayes}:
+\[
+     P_p = P[a_{0} = m \;|\; \mathbf{r} = \mathbf{u}] = 
+     \frac{P[\mathbf{r} = \mathbf{u} \;|\; a_{0} = m ]\cdot P[a_{0} = m]}{P_{\mathbf{r}}(\mathbf{u})}
+\]
+Dove $P_r(\mathbf{u}) = P[\mathbf{r} = \mathbf{u}]$ è la \textbf{probabilità} totale
+di \textbf{ricevere} $\mathbf{u}$.
+
+Notiamo a questo punto che vale:
+\[
+    P_p = \frac{D_m (\mathbf{u})}{P_r(\mathbf{u})}
+\]
+
+Ma $P_r[\mathbf{u}]$ è \textbf{indipendente} da $m$, per cui \textbf{massimizzare} la
+\textbf{probabilità di decisione corretta} $P_c$ è perfettamente \textbf{equivalente}
+a \textbf{massimizzare la probabilità a posteriori} $P_p$.
+
+\begin{definition}[CRITERIO MAP]
+    Quando si vuole \textbf{massimizzare la probabilità a posteriori} si
+    parla di \textbf{criterio MAP}: \textbf{\textit{Maximum A-Posteriori}}.
+\end{definition}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth,
+        thick,
+        declare function={
+            % Definiamo tre funzioni Gaussiane per rappresentare le tre densità
+            % La centrale (s2) ha ampiezza maggiore per simulare P2 > P1, P3
+            gauss1(\x) = 0.6 * exp(-((\x-2)^2)/(2*0.6^2));
+            gauss2(\x) = 1.3 * exp(-((\x-5)^2)/(2*0.8^2));
+            gauss3(\x) = 0.6 * exp(-((\x-8)^2)/(2*0.6^2));
+        }
+        ]
+        \begin{axis}[
+            width=0.9\textwidth,
+            height=6cm,
+            axis lines=middle,
+            xmin=0, xmax=10,
+            ymin=0, ymax=1.6,
+            xtick=\empty, % Nascondiamo i numeri sull'asse x
+            ytick=\empty,
+            xlabel={\(\mathbf{u}\)},
+            ylabel={\(D_m(\mathbf{u})\)},
+            xlabel style={at={(1,0.0)}, anchor=west},
+            ylabel style={at={(0.5,1)}, anchor=south},
+            axis line style={-Stealth, thick},
+            ]
+
+            % --- Curve Gaussiane ---
+            % Curva 1 (s1)
+            \addplot[thick, nord10, domain=0:10, samples=200] {gauss1(x)};
+            % Curva 2 (s2) - Più alta e larga
+            \addplot[thick, nord11, domain=0:10, samples=200] {gauss2(x)};
+            % Curva 3 (s3)
+            \addplot[thick, nord10, domain=0:10, samples=200] {gauss3(x)};
+
+            % --- Punti centrali (Simboli ideali) ---
+            \node[circle, fill=nord10, inner sep=1.5pt] at (axis cs:2, 0) {};
+            \node[circle, fill=nord11, inner sep=1.5pt] at (axis cs:5, 0) {};
+            \node[circle, fill=nord10, inner sep=1.5pt] at (axis cs:8, 0) {};
+
+            % Etichette dei simboli
+            \node[below, font=\small] at (axis cs:2, 0) {\(s_1\)};
+            \node[below, font=\small] at (axis cs:5, 0) {\(s_2\)};
+            \node[below, font=\small] at (axis cs:8, 0) {\(s_3\)};
+
+            % --- Linee di confine (Regioni di decisione) ---
+            % I confini si spostano verso l'esterno perché s2 è più probabile
+            % Confine tra R1 e R2 (spostato a sinistra del punto medio 3.5)
+            \draw[dashed, thick, nord3] (axis cs:3.2, 0) -- (axis cs:3.2, 0.65) 
+                node[above, font=\small] {\(R_1 | R_2\)};
+
+            % Confine tra R2 e R3 (spostato a destra del punto medio 6.5)
+            \draw[dashed, thick, nord3] (axis cs:6.8, 0) -- (axis cs:6.8, 0.65) 
+                node[above, font=\small] {\(R_2 | R_3\)};
+
+            % --- Etichette delle Regioni ---
+            \node[font=\large, text=nord3] at (axis cs:1.5, 0.8) {\(R_1\)};
+            \node[font=\large, text=nord11] at (axis cs:5, 1.0) {\(R_2\)};
+            \node[font=\large, text=nord3] at (axis cs:8.5, 0.8) {\(R_3\)};
+
+            % --- Formule e annotazioni ---
+            % Freccia che evidenzia lo spostamento del confine
+            \draw[->, thick, nord11] (axis cs:3.8, 0.3) -- (axis cs:3.3, 0.3) 
+                node[midway, below, font=\scriptsize, text=nord11] {spostamento};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Visualizzazione del criterio MAP}
+    \label{fig:08_09_CriterioMAP}
+\end{figure}
+
+Per l'equivalenza appena vista, il criterio MAP permette di 
+\textbf{realizzare un ricevitore ottimo} (perchè \textit{massimizza la probabilità di decisione corretta}).
+La figura~\ref{fig:08_09_CriterioMAP} ci mostra inoltre un \textit{esempio visivo} di applicazione
+del criterio in un caso in cui abbiamo:
+\[
+    P_{1} = P_{3} < P_{2}
+\]
+\begin{remark}
+    Di conseguenza, i \textbf{confini tra le regioni} sono \textbf{spostati verso gli estremi}
+    di $D_{2}(\mathbf{u})$: essendo il \textbf{simbolo} $a_{2}$ \textbf{trasmesso più di frequente}, 
+    per \textbf{essere sicuri} che $\mathbf{r}=a_{1}$ (o $\mathbf{r}=a_{3}$) avremo bisogno
+    di \textbf{regioni più "strette" intorno a questi due}.
+\end{remark}
+
+Vale inoltre la pena notare che:
+
+\begin{remark}[ASSENZA DI ASSUNZIONI]
+    Non abbiamo fatto \textbf{alcuna assunzione} nè sulla \textbf{distribuzione dei simboli trasmessi},
+    nè sulla \textbf{distribuzione del rumore}.
+    Il criterio \textbf{MAP} è quindi un \textbf{criterio \textit{generale}}, che possiamo
+    \textbf{sempre applicare}.
+\end{remark}
+
+Nelle sezioni successive introdurremo invece delle \textbf{assunzioni} su queste distribuzioni
+per ottenere dei \textbf{criteri "semplificati"} (ma anche \textit{meno generali}).
+
+\subsection{Criterio ML}
+
+Assumiamo ora che le \textbf{probabilità \textit{a priori}} siano tutte \textbf{uguali} 
+(cioè se \textit{tutti i simboli sono trasmessi con la stessa probabilità}). 
+Allora:
+\[
+    P_m = P[a_{0} = m] = \frac{1}{M}
+\]
+
+Come prima, vogliamo \textbf{massimizzare} $D_m(\mathbf{u})$:
+\[
+    D_m(\mathbf{u}) = p(\mathbf{u} \;|\; m)\cdot P_m = \frac{p(\mathbf{u} \;|\; m)}{M}
+\]
+Essendo ora $P_m$ \textit{costante}, il \textbf{criterio di ottimalità} diventa:
+\[
+    R_m = \left\{ \mathbf{u} \;|\; m = \text{arg max}_m \{ p(\mathbf{u}|m) \} \right\}  
+\]
+
+Ma avevamo chiamato $p(\mathbf{u}|m)$ \textbf{\textit{"likelihood"}}, per cui
+otteniamo in questo caso il criterio \textbf{maximum likelihood}
+
+\begin{remark}
+    Il criterio \textbf{MAP} nel caso in cui i \textbf{simboli sono equiprobabili}
+    è \textbf{equivalente a ML} (\textit{Maximum Likelihood}).
+\end{remark}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth,
+        thick,
+        declare function={
+            % Tre funzioni Gaussiane IDENTICHE (stessa ampiezza e varianza)
+            gauss1(\x) = 0.9 * exp(-((\x-2)^2)/(2*0.7^2));
+            gauss2(\x) = 0.9 * exp(-((\x-5)^2)/(2*0.7^2));
+            gauss3(\x) = 0.9 * exp(-((\x-8)^2)/(2*0.7^2));
+        }
+        ]
+        \begin{axis}[
+            width=0.9\textwidth,
+            height=6cm,
+            axis lines=middle,
+            xmin=0, xmax=10,
+            ymin=0, ymax=1.3,
+            xtick=\empty, % Nascondiamo i numeri sull'asse x
+            ytick=\empty,
+            xlabel={\(\mathbf{u}\)},
+            ylabel={\(D_m(\mathbf{u})\)},
+            xlabel style={at={(1,0.0)}, anchor=west},
+            ylabel style={at={(0.5,1)}, anchor=south},
+            axis line style={-Stealth, thick},
+            ]
+
+            % --- Curve Gaussiane (tutte uguali) ---
+            % Curva 1 (s1)
+            \addplot[thick, nord10, domain=0:10, samples=200] {gauss1(x)};
+            % Curva 2 (s2)
+            \addplot[thick, nord11, domain=0:10, samples=200] {gauss2(x)};
+            % Curva 3 (s3)
+            \addplot[thick, nord14, domain=0:10, samples=200] {gauss3(x)};
+
+            % --- Punti centrali (Simboli ideali) ---
+            \node[circle, fill=nord10, inner sep=1.5pt] at (axis cs:2, 0) {};
+            \node[circle, fill=nord11, inner sep=1.5pt] at (axis cs:5, 0) {};
+            \node[circle, fill=nord14, inner sep=1.5pt] at (axis cs:8, 0) {};
+
+            % Etichette dei simboli
+            \node[below, font=\small] at (axis cs:2, 0) {\(s_1\)};
+            \node[below, font=\small] at (axis cs:5, 0) {\(s_2\)};
+            \node[below, font=\small] at (axis cs:8, 0) {\(s_3\)};
+
+            % --- Linee di confine (Regioni di decisione) ---
+            % I confini sono esattamente a metà strada (3.5 e 6.5)
+            \draw[dashed, thick, nord3] (axis cs:3.5, 0) -- (axis cs:3.5, 0.8) 
+                node[above, font=\small] {\(R_1 | R_2\)};
+            \draw[dashed, thick, nord3] (axis cs:6.5, 0) -- (axis cs:6.5, 0.8) 
+                node[above, font=\small] {\(R_2 | R_3\)};
+
+            % --- Etichette delle Regioni ---
+            \node[font=\large, text=nord3] at (axis cs:1.5, 0.5) {\(R_1\)};
+            \node[font=\large, text=nord3] at (axis cs:5, 0.5) {\(R_2\)};
+            \node[font=\large, text=nord3] at (axis cs:8.5, 0.5) {\(R_3\)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Illustrazione del criterio ML}
+    \label{fig:08_10_CriterioML}
+\end{figure}
+
+La figura~\ref{fig:08_10_CriterioML} mostra un esempio visivo del criterio ML: al contrario del 
+\textit{caso generale} visto per il criterio MAP, essendo $P_m$ \textit{costante}, i 
+\textbf{confini delle regioni} sono effettivamente \textbf{equidistanti dai loro centri}.
+
+\subsection{Criterio MD}
+
+Infine, \textbf{assumiamo} che (\textit{oltre ad avere simboli equiprobabili}), il \textbf{rumore} 
+sia gaussiano con componenti indipendenti (come quello del canale \textbf{AWGN}).
+
+Se considerassimo un \textbf{rumore "unidimensionale"} avremmo:
+\[
+    p(w) = \frac{1}{\sqrt{2\pi} \sigma} e^{- \frac{w^2}{2 \sigma^2}}
+\]
+Siccome in generale lavoriamo con una \textbf{base ortonormale} di \textbf{dimensione} $I$, 
+dobbiamo considerare la \textbf{densità di probabilità congiunta} delle diverse
+componenti. Tuttavia, avendo assunto che \textbf{ciascuna componente sia indipendente dalle altre},
+questa risulta banalmente:
+\[
+    p(\mathbf{w}) = p(w_{1},w_{2},\ldots , w_I) = p(w_{1})\cdot p(w_{2}) \cdot \ldots \cdot p(w_I)
+\]
+Sostituendo ciascuna distribuzione $p(w_i)$ in questa relazione troviamo:
+\[
+    p(\mathbf{w}) = \left( \frac{1}{\sqrt{2\pi} \sigma} \right)^I 
+    \exp \left( - \frac{w_{1}^2 + w_{2}^2 + \ldots  + w_I^2}{2 \sigma^2} \right)
+\]
+A questo punto osserviamo che:
+\[
+    p(\mathbf{u} \;|\; m ) = p(\mathbf{w} = \mathbf{u} - \mathbf{s}_m)
+\]
+Cioè, avendo \textit{trasmesso} $m$, la \textit{probabilità di osservare} $\mathbf{u}$ è
+data dalla \textit{probabilità che il rumore fosse pari alla distanza} di $\mathbf{s}_m$
+da $\mathbf{u}$.
+
+Allora troviamo:
+\[
+    \begin{aligned}
+        p(\mathbf{u} \;|\; m ) &= p(\mathbf{u} - \mathbf{s}_m) \\  
+                               &= \left( \frac{1}{\sqrt{2\pi} \sigma} \right)^I 
+        \exp \left( - \frac{(u_{1} - s_{m,1})^2 + \ldots + (u_I - s_{m,I})^2 }{2 \sigma^2} \right) \\ 
+                               &= \left( \frac{1}{\sqrt{2\pi} \sigma} \right)^I
+        \exp \left( - \frac{\| \mathbf{u} - \mathbf{s}_m \|^2}{2 \sigma^2} \right)
+    \end{aligned}
+\]
+
+Come sempre, l'obiettivo è \textbf{massimizzare} $D_m(\mathbf{u})$.
+Come nel caso \textit{ML}, abbiamo:
+\[
+    D_m(\mathbf{u}) = p(\mathbf{u}\;|\; m)
+\]
+Ma stavolta abbiamo anche \textit{un'espressione analitica} per $p$, per cui
+possiamo \textit{effettivamente determinare analiticamente le regioni ottime}.
+
+In particolare, notiamo che il valore di $p(\mathbf{u}\;|\; m)$ è \textbf{massimo} se
+la \textbf{quantità} $\|\mathbf{u} - \mathbf{s}_m\|$ è \textbf{minima}, ma questa
+è la \textbf{distanza} (\textit{al quadrato}) tra $\mathbf{u}$ e $\mathbf{s}_m$.
+
+\begin{definition}[CRITERIO MD]
+    Dobbiamo quindi determinare la \textbf{distanza minima} di $\mathbf{u}$ 
+    da \textbf{uno dei simboli} $\mathbf{s}_m$ per capire quale era stato trasmesso.
+    Si parla allora di \textbf{criterio MD}: \textbf{\textit{Minimum Distance}}.
+    \[
+        \hat{a}_0 = \text{arg min}_m \left\{ \|\mathbf{r} - \mathbf{s}_m\|^2 \right\}  
+    \] 
+\end{definition}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth,
+        thick,
+        % Stile per i simboli ideali (punti neri)
+        signal/.style={circle, fill=nord0, inner sep=2.5pt},
+        % Stile per le regioni di decisione
+        region/.style={opacity=0.15}
+        ]
+
+        % --- Regioni di Decisione (sfondo) ---
+        % Regione 1 (destra)
+        \fill[nord10, region] (0,0) -- (4.5, 4.5) -- (4.5, -4.5) -- cycle;
+        % Regione 2 (alto)
+        \fill[nord14, region] (0,0) -- (-4.5, 4.5) -- (4.5, 4.5) -- cycle;
+        % Regione 3 (sinistra)
+        \fill[nord11, region] (0,0) -- (-4.5, 4.5) -- (-4.5, -4.5) -- cycle;
+        % Regione 4 (basso)
+        \fill[nord3, region] (0,0) -- (-4.5, -4.5) -- (4.5, -4.5) -- cycle;
+
+        % --- Confini delle Regioni (linee tratteggiate) ---
+        \draw[dashed, thick, nord3] (-4.5, -4.5) -- (4.5, 4.5);
+        \draw[dashed, thick, nord3] (-4.5, 4.5) -- (4.5, -4.5);
+
+        % --- Assi Cartesiani ---
+        \draw[->] (-5, 0) -- (5, 0) node[right] {\(\phi_1\)};
+        \draw[->] (0, -5) -- (0, 5) node[above] {\(\phi_2\)};
+
+        % --- Simboli Ideali (Punti Neri) ---
+        \node[signal] (s1) at (3, 0) {};
+        \node[signal] (s2) at (0, 3) {};
+        \node[signal] (s3) at (-3, 0) {};
+        \node[signal] (s4) at (0, -3) {};
+
+        % Etichette dei simboli ideali
+        \node[above left, font=\large] at (s1) {\(s_1\)};
+        \node[above right, font=\large] at (s2) {\(s_2\)};
+        \node[above left, font=\large] at (s3) {\(s_3\)};
+        \node[above right, font=\large] at (s4) {\(s_4\)};
+
+        % --- Etichette delle Regioni (Opzionali, per chiarezza) ---
+        \node[font=\large, text=nord10] at (3.5, 0.5) {\(R_1\)};
+        \node[font=\large, text=nord14] at (0.5, 2.5) {\(R_2\)};
+        \node[font=\large, text=nord11] at (-2.5, 0.5) {\(R_3\)};
+        \node[font=\large, text=nord3] at (0.5, -3.5) {\(R_4\)};
+    \end{tikzpicture}
+    \caption{Illustrazione criterio MD}
+    \label{fig:08_11_CriterioMD}
+\end{figure}
+
+La figura~\ref{fig:08_11_CriterioMD} mostra un esempio di applicazione del criterio MD
+ad uno \textit{spazio bidimensionale}, in cui i \textbf{confini delle regioni} risultano
+particolarmente semplici da tracciare.
+
+\begin{remark}[OTTIMALITA']
+    Il \textbf{criterio MD} coincide con \textbf{MAP} ed è \textbf{ottimo} se:
+    \begin{itemize}
+        \item I \textbf{simboli} sono \textbf{equiprobabili}.
+        \item Il \textbf{rumore} è di tipo \textbf{AWGN}
+    \end{itemize}
+\end{remark}
+
+\subsection{Struttura del ricevitore MD}
+
+Ora che abbiamo capito \textbf{\textit{come funziona}}, vediamo anche
+\textbf{come} può essere \textbf{\textit{fisicamente implementato}} il \textbf{ricevitore MD}.
+
+Specifichiamo che noi impiegheremo sempre questa tipologia di ricevitore
+per due ragioni principali:
+\begin{enumerate}
+    \item Il criterio MD è l'unico di cui abbiamo dato una \textit{formulazione analitica completa}.
+    \item Considereremo \textit{sempre canali AWGN}, per cui \textit{valgono le ipotesi}
+        di \textit{applicazione del criterio}.
+\end{enumerate}
+
+Specifichiamo inoltre che possiamo realizzare il ricevitore MD in \textbf{due modi} diversi, 
+ma comunque \textbf{equivalenti}:
+\begin{enumerate}
+    \item Ricevitore della \textbf{prima forma} (a \textit{correlazione}).
+    \item Ricevitore della \textbf{seconda forma} (a \textit{filtro adattato}).
+\end{enumerate}
+
+Cominciamo con una discussione sul ricevitore della \textbf{\textit{prima forma}}, riassumendo
+gli \textit{step} che deve eseguire un \textit{ricevitore MD}:
+
+\begin{remark}[RICEVITORE MD]
+    Il ricevitore deve:
+    \begin{enumerate}
+        \item Ottenere il \textbf{vettore} $\mathbf{r}$ come 
+            \textit{proiezione} del \textit{segnale ricevuto} $r$ 
+            sulla base $\{\phi_{1},\ldots ,\phi_I\}$.
+        \item Calcolare le \textbf{distanze} di $\mathbf{r}$ da
+            \textbf{ciascun simbolo} $\mathbf{s}_m$.
+        \item Scegliere il \textbf{simbolo a distanza minima}.
+    \end{enumerate}
+\end{remark}
+
+La figura~\ref{fig:08_12_RicevitorePrimaForma} ci mostra la \textit{schematizzazione}
+di questi step.
+
+\begin{figure}[!ht]
+    \centering
+    \resizebox{\textwidth}{!}{
+        \begin{tikzpicture}[
+            >=Stealth,
+            thick,
+            % Stili ottimizzati
+            block/.style={draw=nord0, fill=nord14!30, rectangle,
+            minimum height=0.9cm, minimum width=2.2cm, align=center,
+            font=\small, text=nord0},
+            mult/.style={draw=nord0, circle, fill=white, inner sep=0pt,
+            minimum size=0.55cm, font=\small},
+            branch/.style={font=\small, text=nord0}
+            ]
+
+            % --- Nodo di Ingresso ---
+            \node (input) at (-0.5, 0) {\(r(t)\)};
+
+            % --- Linea di distribuzione ---
+            \draw (0, 1.5) -- (0, -1.5); 
+            \fill (0,0) circle (1pt);  
+            \draw[->] (input) -- (0,0);
+
+            % ==========================================
+            % RAMO 1 (Alto)
+            % ==========================================
+            \node[mult] (m1) at (1.5, 1.5) {\(\times\)};
+            \draw[->] (0, 1.5) -- (m1.west);
+            \draw[<-] (m1.south) -- ++(0,-0.4) node[right, font=\small] {\(\phi_1^*(t)\)};
+
+            % Switch e Integratore
+            \fill (2.8, 1.5) circle (1pt);
+            \draw (2.8, 1.5) -- (3.1, 1.8) node[above, font=\scriptsize] {\(t_0\)};
+            \draw[->] (m1) -- (2.8, 1.5);
+
+            \node[block] (int1) at (4.5, 1.5) {\(\int_{t-t_0}^t (\cdot) d\tau\)};
+            \draw[->] (3.1, 1.5) -- (int1.west);
+            \draw[->] (int1) -- (5.8, 1.5) node[below right] {\(r_1\)};
+
+            % ==========================================
+            % RAMO 2 (Centro)
+            % ==========================================
+            \node[mult] (m2) at (1.5, 0) {\(\times\)};
+            \draw[->] (0, 0) -- (m2.west);
+            \draw[<-] (m2.south) -- ++(0,-0.4) node[right, font=\small] {\(\phi_2^*(t)\)};
+
+            % Switch e Integratore
+            \fill (2.8, 0) circle (1pt);
+            \draw (2.8, 0) -- (3.1, 0.3) node[above, font=\scriptsize] {\(t_0\)};
+            \draw[->] (m2) -- (2.8, 0);
+
+            \node[block] (int2) at (4.5, 0) {\(\int_{t-t_0}^t (\cdot) d\tau\)};
+            \draw[->] (3.1, 0) -- (int2.west);
+            \draw[->] (int2) -- (5.8, 0) node[below right] {\(r_2\)};
+
+            % ==========================================
+            % RAMO I (Basso)
+            % ==========================================
+            \node[mult] (mi) at (1.5, -1.5) {\(\times\)};
+            \draw[->] (0, -1.5) -- (mi.west);
+            \draw[<-] (mi.south) -- ++(0,-0.4) node[right, font=\small] {\(\phi_I^*(t)\)};
+
+            % Switch e Integratore
+            \fill (2.8, -1.5) circle (1pt);
+            \draw (2.8, -1.5) -- (3.1, -1.2) node[above, font=\scriptsize] {\(t_0\)};
+            \draw[->] (mi) -- (2.8, -1.5);
+
+            \node[block] (inti) at (4.5, -1.5) {\(\int_{t-t_0}^t (\cdot) d\tau\)};
+            \draw[->] (3.1, -1.5) -- (inti.west);
+            \draw[->] (inti) -- (5.8, -1.5) node[below right] {\(r_I\)};
+
+            % ==========================================
+            % BLOCCHI FINALI
+            % ==========================================
+            % Blocco Distanze
+            \node[block, minimum height=3.8cm, minimum width=2.2cm] (dist) 
+                at (8, 0) {calcola le\\\(M\)\\distanze\\[0.5ex] \(\|\mathbf{r} - \mathbf{s}_n\|^2\)};
+
+            % Frecce verso il blocco distanze
+            \draw[->] (5.8, 1.5) -- (dist.west |- {0,1.5});
+            \draw[->] (5.8, 0) -- (dist.west);
+            \draw[->] (5.8, -1.5) -- (dist.west |- {0,-1.5});
+
+            % Blocco Minimo
+            \node[block, minimum height=3.8cm, minimum width=2.2cm, right=0.8cm of dist] (min) 
+                {calcola il\\minimo\\[0.5ex] \(\hat{a}_0 = \arg\min\)};
+
+            % Frecce Distanze -> Minimo (D1, D2, DM)
+            \draw[->] ([yshift=1.2cm]dist.east) -- ([yshift=1.2cm]min.west) 
+                node[midway, above, font=\small] {\(D_1\)};
+            \draw[->] ([yshift=0cm]dist.east) -- ([yshift=0cm]min.west) 
+                node[midway, above, font=\small] {\(D_2\)};
+            \draw[->] ([yshift=-1.2cm]dist.east) -- ([yshift=-1.2cm]min.west) 
+                node[midway, above, font=\small] {\(D_M\)};
+
+            % Output finale
+            \draw[->] (min.east) -- ++(0.8,0) node[right] {\(\hat{a}_0\)};
+        \end{tikzpicture}
+    }
+    \caption{Ricevitore della prima forma (a correlazione).}
+    \label{fig:08_12_RicevitorePrimaForma}
+\end{figure}
+
+Notiamo che il ricevitore è composto da $I$ \textbf{\textit{rami}}, \textit{tanti quanti} gli
+\textit{elementi della base} impiegata. Ciascun ramo calcola le \textbf{proiezioni} di $r(t)$
+sui \textbf{vettori della base} in \textbf{due "sotto-step"}:
+\begin{enumerate}
+    \item \textbf{Moltiplicazione} per i vettori $\phi_i(t)$.
+    \item Calcolo dell'\textbf{integrale} di questo \textbf{prodotto}.
+\end{enumerate}
+
+Una volta ottenute le \textbf{componenti} $r_{1},r_{2},\ldots ,r_I$, quindi, il ricevitore
+calcola le $M$ \textbf{distanze euclidee} $D_m$ rispetto a tutti i \textbf{segnali ideali} $\mathbf{s}_m$
+trasmessi dalla sorgente.
+
+Infine, \textbf{seleziona} il \textbf{valore} $D_m$ \textbf{più piccolo} per
+\textbf{determinare il simbolo trasmesso}.
+
+\begin{warning}
+    In generale si ha $I \ne M$.
+\end{warning}
+
+Vediamo ora un'\textbf{implementazione alternativa}, ovvero il ricevitore
+della \textbf{\textit{seconda forma}}.
+
+Per derivare questa forma, \textit{riscriviamo la distanza quadratica} come segue:
+\[
+    \|\mathbf{r} - \mathbf{s}_m\|^2 = \|\mathbf{r}\|^2 + \|\mathbf{s}_m\|^2 
+    -2 \Re [\langle \mathbf{r}, \mathbf{s}_m \rangle]
+\]
+E notiamo che l'\textit{energia del segnale ricevuto} $\|\mathbf{r}\|^2$ 
+è \textbf{indipendente da} $m$. Questa osservazione, insieme al fatto che \textit{minimizzare una quantità}
+significa \textit{massimizzare il suo opposto}, possiamo \textbf{riscrivere il criterio MD} come segue:
+\[
+    \begin{aligned}
+        \hat{a}_0 &= \text{arg min}_m \left\{ \|\mathbf{r} - \mathbf{s}_m\|^2 \right\} \\ 
+                  &= \text{arg min}_m \left\{ \|\mathbf{s}_m\|^2 
+                  -2 \Re [\langle \mathbf{r}, \mathbf{s}_m \rangle] \right\} \\ 
+                  &= \text{arg max}_m \left\{ \Re [\langle \mathbf{r}, \mathbf{s}_m \rangle]
+                  - \frac{\|\mathbf{s}_m\|^2}{2} \right\} \\ 
+                  &= \text{arg max}_m \left\{ \Re [\langle \mathbf{r}, \mathbf{s}_m \rangle]
+                  - \frac{E_m}{2} \right\} \\ 
+    \end{aligned}
+\]
+
+Lo schema della prima forma (che era detto \textit{a correlazione}) può quindi essere implementato
+come mostrato in figura~\ref{fig:08_13_RicevitoreSecondaForma}. Questa \textit{schematizzazione}
+è detta a \textbf{filtro adattato} ed è composta da $M$ \textbf{rami} (mentre la prima forma ne aveva $I$).
+
+\begin{figure}[!ht]
+    \centering
+    \resizebox{\textwidth}{!}{
+        \begin{tikzpicture}[
+            >=Stealth,
+            thick,
+            % Stili ottimizzati
+            block/.style={draw=nord0, fill=nord14!30, rectangle,
+            minimum height=0.9cm, minimum width=2.2cm, align=center,
+            font=\small, text=nord0},
+            reblock/.style={draw=nord0, fill=nord14!30, rectangle,
+            minimum height=0.9cm, minimum width=1.2cm, align=center,
+            font=\small, text=nord0},
+            sum/.style={draw=nord0, circle, fill=white, inner sep=0pt,
+            minimum size=0.55cm, font=\small},
+            branch/.style={font=\small, text=nord0}
+            ]
+
+            % --- Nodo di Ingresso ---
+            \node (input) at (-1, 0) {\(r(t)\)};
+
+            % --- Linea di distribuzione ---
+            \draw (0, 2) -- (0, -2); 
+            \fill (0,0) circle (1pt);  
+            \draw[->] (input) -- (0,0);
+
+            % ==========================================
+            % RAMO 1 (Alto)
+            % ==========================================
+            \node[block] (f1) at (2, 2) {\(s_1^*(t_0 - t)\)};
+            \draw[->] (0, 2) -- (f1.west);
+
+            \node[reblock] (re1) at (4.2, 2) {Re[]};
+            \draw[->] (f1) -- (re1);
+
+            % Switch
+            \draw[->] (re1) -- (5.2, 2);
+            \fill (5.2, 2) circle (1pt);
+            \draw (5.2, 2) -- (5.5, 2.3) node[above, font=\scriptsize] {\(t_0\)};
+
+            % Sommatore
+            \node[sum] (add1) at (7, 2) {\(+\)};
+            \draw[->] (5.5, 2) -- (add1.west);
+            \draw[<-] (add1.south) -- ++(0,-0.5) node[below, font=\scriptsize] {\(-E_1/2\)};
+
+            % Uscita U1
+            \draw[->] (add1) -- (8.2, 2) node[below right] {\(U_1\)};
+
+            % ==========================================
+            % RAMO 2 (Centro)
+            % ==========================================
+            \node[block] (f2) at (2, 0) {\(s_2^*(t_0 - t)\)};
+            \draw[->] (0, 0) -- (f2.west);
+
+            \node[reblock] (re2) at (4.2, 0) {Re[]};
+            \draw[->] (f2) -- (re2);
+
+            % Switch
+            \draw[->] (re2) -- (5.2, 0);
+            \fill (5.2, 0) circle (1pt);
+            \draw (5.2, 0) -- (5.5, 0.3) node[above, font=\scriptsize] {\(t_0\)};
+
+            % Sommatore
+            \node[sum] (add2) at (7, 0) {\(+\)};
+            \draw[->] (5.5, 0) -- (add2.west);
+            \draw[<-] (add2.south) -- ++(0,-0.5) node[below, font=\scriptsize] {\(-E_2/2\)};
+
+            % Uscita U2
+            \draw[->] (add2) -- (8.2, 0) node[below right] {\(U_2\)};
+
+            % ==========================================
+            % RAMO M (Basso)
+            % ==========================================
+            \node[block] (fm) at (2, -2) {\(s_M^*(t_0 - t)\)};
+            \draw[->] (0, -2) -- (fm.west);
+
+            \node[reblock] (rem) at (4.2, -2) {Re[]};
+            \draw[->] (fm) -- (rem);
+
+            % Switch
+            \draw[->] (rem) -- (5.2, -2);
+            \fill (5.2, -2) circle (1pt);
+            \draw (5.2, -2) -- (5.5, -1.7) node[above, font=\scriptsize] {\(t_0\)};
+
+            % Sommatore
+            \node[sum] (addm) at (7, -2) {\(+\)};
+            \draw[->] (5.5, -2) -- (addm.west);
+            \draw[<-] (addm.south) -- ++(0,-0.5) node[below, font=\scriptsize] {\(-E_M/2\)};
+
+            % Uscita UM
+            \draw[->] (addm) -- (8.2, -2) node[below right] {\(U_M\)};
+
+            % ==========================================
+            % BLOCCO FINALE
+            % ==========================================
+            \node[block, minimum height=4.2cm, minimum width=2.5cm] (max) 
+                at (10.5, 0) {calcola il\\massimo\\[0.5ex] \(\hat{a}_0 = \arg\max\)};
+
+            % Frecce verso il blocco finale
+            \draw[->] (8.2, 2) -- (max.west |- {0,2});
+            \draw[->] (8.2, 0) -- (max.west);
+            \draw[->] (8.2, -2) -- (max.west |- {0,-2});
+
+            % Output finale
+            \draw[->] (max.east) -- ++(0.8,0) node[right] {\(\hat{a}_0\)};
+        \end{tikzpicture}
+    }
+    \caption{Ricevitore della seconda forma (a filtro adattato).}
+    \label{fig:08_13_RicevitoreSecondaForma}
+\end{figure}
+
+Chiaramente, i due sono \textbf{equivalenti in termini di prestazioni}: entrambi
+infatti \textit{implementano il criterio MD} e \textit{minimizzano la probabilità di errore}.
+
+In ogni caso, vale la pena sottolineare alcune differenze tra i due:
+\begin{itemize}
+    \item Il ricevitore della \textbf{prima forma} calcola la \textbf{correlazione}
+        (prodotto interno) tra il \textbf{segnale ricevuto} ed i \textbf{segnali della base}.
+    \item Il ricevitore della \textbf{seconda forma}, invece, utilizza dei \textbf{filtri}
+        la cui \textbf{risposta impulsiva} è \textbf{adattata} alla
+        \textbf{forma d'onda} che si vuole ricevere.
+\end{itemize}
+
+Conludiamo infine con una discussione sulla \textbf{scelta} di \textbf{usare uno o l'altro}.
+Questa dipende da considerazioni sull'hardware a disposizione e sui valori di $I$ ed $M$, come
+riassunto nella nota qui sotto:
+
+\begin{remark}[PRIMA FORMA VS SECONDA FORMA]
+    In generale, possiamo dire:
+    \begin{itemize}
+        \item \textbf{PRIMA FORMA} - Correlazione
+            \begin{enumerate}
+                \item \textbf{VANTAGGI} E' \textbf{più economica} quando le
+                    \textbf{dimensioni dello spazio vettoriale} sono
+                    \textbf{contenute} $I<M$.
+                \item \textbf{SVANTAGGI} Richiede la \textbf{conoscenza} e la
+                    \textbf{generazione locale} delle \textbf{funzioni di base} (per
+                    cui se il trasmettitore \textit{cambia la base}, il ricevitore deve
+                    essere \textit{riprogrammato}).
+                \item \textbf{USI TIPICI} \textit{Ricevitori digitali moderni}, in cui le funzioni
+                    di base sono facili da generare.
+            \end{enumerate}
+        \item \textbf{SECONDA FORMA} - Filtro adattato
+            \begin{enumerate}
+                \item \textbf{VANTAGGI} \textbf{Non} richiede la \textbf{conoscenza}
+                    esplicita delle \textbf{funzioni di base}.
+                \item \textbf{SVANTAGGI} E' \textbf{praticamente ingestible} per
+                    \textbf{costellazioni di grandi dimensioni} ($M\gg 1$).
+                \item \textbf{USI TIPICI} Sistemi \textit{radar}, in cui il \textit{numero di segnali
+                    da cercare è limitato} (per cui $M$ è piccolo).
+            \end{enumerate}
+    \end{itemize}
 \end{remark}

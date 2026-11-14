@@ -1,0 +1,400 @@
+% ------------------------------------------------------------------------------------
+%                           ESERCIZI TRASMISSIONE e MODULAZIONE
+% ------------------------------------------------------------------------------------
+
+\chapter{Esercizi in Aula - Trasmissione e Modulazione}
+
+\section{Modulazione PWM}
+
+Vediamo un esempio di modulazione di
+tipo \textbf{PWM}: \textbf{Pulse Width Modulation}.
+
+\begin{remark}[PWM]
+    In questo tipo di modulazione si utilizzano \textbf{onde quadre} con
+    \textbf{diverse larghezze degli impulsi}.
+
+    E' ampiementa utilizzata in \textbf{elettronica digitale} perchè
+    permette di \textit{controllare la potenza di motori elettrici}
+    usando \textit{segnali digitali}.
+\end{remark}
+
+Usiamo per esempio $M=4$ con i segnali seguenti, mostrati 
+anche in figura~\ref{fig:B_01_EsempioPWM}.
+\[
+    \begin{aligned}
+        s_{1}(t) &= \begin{cases}
+            A & 0 < t <\frac{T}{4} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        s_{2}(t) &= \begin{cases}
+            A & 0 < t <\frac{T}{2} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        s_{3}(t) &= \begin{cases}
+            A & 0 < t <\frac{3T}{4} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        s_{4}(t) &= \begin{cases}
+            A & 0 < t < T \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+    \end{aligned}
+\]
+
+\begin{figure}[!ht]
+    \centering
+    \pgfplotsset{
+        pwmStyle/.style={
+            width=6.5cm,
+            height=3.5cm,
+            axis lines=middle,
+            xmin=-0.05, xmax=1.15,
+            ymin=-0.1, ymax=1.3,
+            xtick={0, 0.25, 0.5, 0.75, 1},
+            xticklabels={\(0\), \(\frac{T}{4}\), \(\frac{T}{2}\), \(\frac{3T}{4}\), \(T\)},
+            ytick={0, 1},
+            yticklabels={\(0\), \(A\)},
+            ylabel style={at={(0,1)}, anchor=south east},
+            grid=major,
+            grid style={dashed, gray!20},
+            axis line style={-Stealth, thick},
+        }
+    }
+
+    \begin{tikzpicture}
+
+        % --- s1(t) ---
+        \begin{axis}[name=ax1, pwmStyle, ylabel={\(s_1(t)\)}]
+            \addplot[very thick, nord10] coordinates {(0,0) (0,1) (0.25,1) (0.25,0) (1,0)};
+        \end{axis}
+
+        % --- s2(t) ---
+        \begin{axis}[name=ax2, pwmStyle, at={(ax1.east)}, anchor=west, xshift=1cm, ylabel={\(s_2(t)\)}]
+            \addplot[very thick, nord10] coordinates {(0,0) (0,1) (0.5,1) (0.5,0) (1,0)};
+        \end{axis}
+
+        % --- s3(t) ---
+        \begin{axis}[name=ax3, pwmStyle, at={(ax1.south west)}, 
+            anchor=north west, yshift=-1cm, ylabel={\(s_3(t)\)}]
+            \addplot[very thick, nord10] coordinates {(0,0) (0,1) (0.75,1) (0.75,0) (1,0)};
+        \end{axis}
+
+        % --- s4(t) ---
+        \begin{axis}[name=ax4, pwmStyle, at={(ax2.south west)}, 
+            anchor=north west, yshift=-1cm, ylabel={\(s_4(t)\)}]
+            \addplot[very thick, nord10] coordinates {(0,0) (0,1) (1,1) (1,0)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Esempio di forme d'onda per modulazione PWM}
+    \label{fig:B_01_EsempioPWM}
+\end{figure}
+
+Supponiamo di voler \textit{ricavare una base ortonormale} per questi segnali.
+Notiamo subito che:
+
+\begin{remark}
+    I segnali sono tutti \textbf{linearmente indipendenti} (non siamo 
+    in grado di scrivere uno come combinazione lineare degli altri), 
+    tuttavia \textbf{non sono ortogonali}.
+\end{remark}
+
+Per ottenere una \textbf{base ortonormale} potremmo usare il
+procedimento di Gram-Schmidt, tuttavia risulta spesso particolarmente
+laborioso. Possiamo invece \textbf{scegliere intelligentemente} una base
+del tipo:
+\[
+    \begin{aligned}
+        \phi_{1}(t) &= \begin{cases}
+            A' & 0 < t <\frac{T}{4} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        \phi_{2}(t) &= \begin{cases}
+            A' & \frac{T}{4} < t <\frac{T}{2} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        \phi_{3}(t) &= \begin{cases}
+            A' & \frac{T}{2} < t <\frac{3T}{4} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        \phi_{4}(t) &= \begin{cases}
+            A' & \frac{3T}{4} < t < T \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+    \end{aligned}
+\]
+
+I segnali di questa base sono mostrati in figura~\ref{fig:B_02_EsempioPWMBaseOrto}.
+
+\begin{figure}[!ht]
+    \centering
+    \pgfplotsset{
+        basisStyle/.style={
+            width=6.5cm,
+            height=3.5cm,
+            axis lines=middle,
+            xmin=-0.05, xmax=1.05,
+            ymin=-0.1, ymax=1.3,
+            xtick={0, 0.25, 0.5, 0.75, 1},
+            xticklabels={\(0\), \(\frac{T}{4}\), \(\frac{T}{2}\), \(\frac{3T}{4}\), \(T\)},
+            ytick={0, 1},
+            yticklabels={\(0\), \(A'\)},
+            ylabel style={at={(0,1)}, anchor=south east},
+            grid=major,
+            grid style={dashed, gray!20},
+            axis line style={-Stealth, thick},
+        }
+    }
+
+    \begin{tikzpicture}
+
+        % --- phi_1(t) ---
+        \begin{axis}[name=ax5, basisStyle, ylabel={\(\phi_1(t)\)}]
+            \addplot[very thick, nord14] coordinates {(0,0) (0,1) (0.25,1) (0.25,0) (1,0)};
+        \end{axis}
+
+        % --- phi_2(t) ---
+        \begin{axis}[name=ax6, basisStyle, at={(ax5.east)}, anchor=west, xshift=1cm, ylabel={\(\phi_2(t)\)}]
+            \addplot[very thick, nord14] coordinates {(0,0) (0.25,0) (0.25,1) (0.5,1) (0.5,0) (1,0)};
+        \end{axis}
+
+        % --- phi_3(t) ---
+        \begin{axis}[name=ax7, basisStyle, at={(ax5.south west)}, 
+            anchor=north west, yshift=-1cm, ylabel={\(\phi_3(t)\)}]
+            \addplot[very thick, nord14] coordinates {(0,0) (0.5,0) (0.5,1) (0.75,1) (0.75,0) (1,0)};
+        \end{axis}
+
+        % --- phi_4(t) ---
+        \begin{axis}[name=ax8, basisStyle, at={(ax6.south west)}, 
+            anchor=north west, yshift=-1cm, ylabel={\(\phi_4(t)\)}]
+            \addplot[very thick, nord14] coordinates {(0,0) (0.75,0) (0.75,1) (1,1) (1,0)};
+        \end{axis}
+
+    \end{tikzpicture}
+    \caption{Base scelta per la PWM d'esempio}
+    \label{fig:B_02_EsempioPWMBaseOrto}
+\end{figure}
+
+Infine notiamo che i segnali sono tutti a \textbf{supporto disgiunto}, per cui il loro
+\textbf{prodotto interno} è \textbf{sicuramente nullo} e quindi \textbf{formano una base ortogonale}. 
+La scelta è stata intelligente perchè abbiamo banalmente:
+\[
+    \begin{aligned}
+        s_{1}(t) &= \alpha \phi_{1}(t) \\ 
+        s_{2}(t) &= \alpha \left[ \phi_{1}(t) + \phi_{2}(t) \right] \\ 
+        s_{3}(t) &= \alpha \left[ \phi_{1}(t) + \phi_{2}(t) + \phi_{3}(t) \right] \\ 
+        s_{4}(t) &= \alpha \left[ \phi_{1}(t) + \phi_{2}(t) + \phi_{3}(t) + \phi_{4}(t) \right] \\ 
+    \end{aligned}
+\]
+
+Ci resta infine solo da \textbf{determinare l'ampiezza} affinchè la norma dei vettori 
+sia unitaria. Per tutti e quattro i segnali l'energia risulta:
+\[
+    E_{\phi} = A'^2 \frac{T}{4}
+\]
+
+Per cui scegliamo:
+\[
+    A' = \frac{2}{\sqrt{T}} = \frac{2\sqrt{T}}{T}
+\]
+
+\section{Canale con attenuazione e ritardo}
+
+Consideriamo ora un esempio di canale che introduce sia \textbf{un'attenuazione} che
+\textbf{un ritardo} nel \textbf{segnale trasmesso}.
+Possiamo supporre che la trasformazione introdotta dal canale sia:
+\[
+    g_c(t) = \delta(t) + \frac{1}{2}\delta \left( t - \frac{T}{4} \right)
+\]
+
+\begin{remark}[ATTENUAZIONE E RITARDO]
+    Notiamo che la \textit{risposta} del canale è data da \textit{due termini}:
+    \begin{itemize}
+        \item Il primo ($\delta(t)$) corrisponde al \textbf{cammino diretto}: il segnale 
+            \textit{arriva diretto}, \textit{senza ritardo} e \textit{senza attenuazione}.
+        \item Il secondo ($0.5\delta(t - T/4)$) corrisponde ad un 
+            \textbf{cammino più lungo}: durante la trasmissione il segnale 
+            \textit{colpisce ostacoli} e \textit{viene riflesso più volte}.
+            Di conseguenza, \textbf{perde potenza} (fattore $1/2$) e arriva con un
+            certo \textbf{ritardo} ($t-T/4$).
+    \end{itemize}
+\end{remark}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth,
+        thick,
+        % Stile per le antenne/trasmettitori
+        antenna/.style={
+            draw=nord0, 
+            fill=nord14!30, 
+            rectangle, 
+            minimum width=1.5cm, 
+            minimum height=1cm, 
+            align=center, 
+            font=\bfseries,
+            text=nord0
+        },
+        % Stile per l'ostacolo
+        obstacle/.style={
+            draw=nord3, 
+            fill=nord3!20, 
+            rectangle, 
+            minimum width=2.5cm, 
+            minimum height=1.5cm, 
+            align=center, 
+            font=\small,
+            text=nord3,
+            rounded corners=2pt
+        }
+        ]
+
+        % --- Nodi (Tx, Rx, Ostacolo) ---
+        \node[antenna] (tx) at (0,0) {Tx};
+        \node[antenna] (rx) at (8,0) {Rx};
+        \node[obstacle] (obs) at (4, 3) {Ostacolo\\(Riflessione)};
+
+        % --- Cammino Diretto (LOS) ---
+        \draw[->, very thick, nord10] (tx.east) -- (rx.west) 
+            node[midway, below, font=\small] {Cammino Diretto};
+        % Etichetta matematica per il cammino diretto
+        \node[below=0.6cm of tx.east, xshift=1.5cm, font=\scriptsize, text=nord10] {Ampiezza: \(1\)};
+        \node[below=0.6cm of tx.east, xshift=3.5cm, font=\scriptsize, text=nord10] {Ritardo: \(0\)};
+
+        % --- Cammino Riflesso ---
+        \draw[->, thick, nord11, dashed] (tx.north) -- (obs.south west) -- (rx.north) 
+            node[pos=0.45, below, sloped, font=\small] {Cammino Riflesso};
+
+        % Etichette matematiche per il cammino riflesso
+        \node[right=0.1cm of obs.south east, font=\scriptsize, text=nord11, align=left] {
+                Attenuazione: \(\frac{1}{2}\)\\
+                Ritardo: \(\frac{T}{4}\)
+            };
+    \end{tikzpicture}
+    \caption{Rappresentazione del fenomeno di multicammino}
+    \label{fig:B_03_MultipathChannel}
+\end{figure}
+
+Immaginiamo di trasmettere il segnale usando una \textbf{modulazione} che porta ad 
+una \textbf{base ortonormale} $\mathcal{B} = \{\phi_{1}(t), \phi_{2}(t) , \phi_3(t), \phi_{4}(t)\}$, 
+come quella definita sotto:
+\[
+    \begin{aligned}
+        \phi_{1}(t) &= \begin{cases}
+            \frac{2}{\sqrt{T}} & 0 < t <\frac{T}{4} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        \phi_{2}(t) &= \begin{cases}
+            \frac{2}{\sqrt{T}} & 0 < t <\frac{T}{2} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        \phi_{3}(t) &= \begin{cases}
+            \frac{2}{\sqrt{T}} & 0 < t <\frac{3T}{4} \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+        \phi_{4}(t) &= \begin{cases}
+            \frac{2}{\sqrt{T}} & 0 < t < T \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ 
+    \end{aligned}
+\]
+
+Notiamo che è la stessa base che avevamo usato nell'esempio precedente, ed è
+mostrata in figura~\ref{fig:B_02_EsempioPWMBaseOrto}.
+
+Consideriamo ora la \textbf{trasmissione} di un \textbf{singolo simbolo} $s(t)$ 
+usando la base data:
+\[
+    s(t) = \sum_{i=1}^4 s_i \phi_i(t)
+\]
+
+Dove $s_{1},s_{2},s_{3},s_{4}$ sono le \textit{coordinate} di $s(t)$ rispetto alla base.
+
+Il \textbf{simbolo ricevuto} $y(t)$ sarà la \textit{convoluzione} tra il segnale e la
+\textit{risposta impulsiva del canale}:
+\[
+    y(t) = s(t) \ast g_c(t) = s(t) \ast 
+    \left[ \delta(t) + \frac{1}{2}\delta \left( t - \frac{T}{4} \right) \right]
+\]
+Per la \textit{proprietà rivelatrice} questo diventa semplicemente:
+\[
+    y(t) = s(t) + \frac{1}{2}s \left( t - \frac{T}{4} \right)
+\]
+
+\begin{remark}
+    Come ci aspettavamo alla luce dell'osservazione fatta sopra, riceviamo
+    il \textbf{segnale originale} ed una sua \textbf{copia ritardata e attenuata}.
+\end{remark}
+
+Per trovare la \textbf{rappresentazione vettoriale} del segnale ricevuto $r(t)$
+dobbiamo \textit{proiettare} $y(t)$ su \textit{ciascun elemento della base} $\phi_j(t)$:
+\[
+    \begin{aligned}
+        r_j &= \langle y(t), \phi_j(t) \rangle = 
+              \left\langle s(t) + \frac{1}{2}s\left( t - \frac{T}{4} \right), \phi_j (t) \right\rangle \\ 
+            &= \underbrace{ \langle s(t), \phi_j(t) \rangle }_{\text{componente diretta}}
+            + \frac{1}{2}\underbrace{\left\langle s \left( t - \frac{T}{4} \right), \phi_j(t) \right\rangle}_{
+            \text{componente riflessa}}
+    \end{aligned}
+\]
+
+Notiamo a questo punto che:
+\begin{itemize}
+    \item Il \textit{primo termine} è semplicemente $s_j$ (per l'ortogonalità della base)
+    \item Per il \textit{secondo termine}, dobbiamo capire su quale $\phi_j$ \textit{"cade"}
+        il \textbf{segnale ritardato}:
+        \begin{itemize}
+            \item $\phi_{1}(t)$ è \textit{"attivo"} per $t\in [0, T/4]$. Se lo ritardiamo
+                di $T/4$ diventa \textit{"attivo"} per $t\in[T/4, T/2]$ e
+                \textbf{coincide} con $\phi_{2}(t)$.
+            \item Similmente, $\phi_{2}(t)$ ritardato cade su $\phi_{3}(t)$.
+            \item E $\phi_{3}(t)$ ritardato cade su $\phi_{4}(t)$.
+            \item La questione su $\phi_{4}$ è \textit{più complessa} ed
+                è descritta sotto.
+        \end{itemize}
+\end{itemize}
+
+Tralasciando $\phi_{4}$, notiamo che ciascun \textbf{segnale ritardato} $\phi_i(t - T/4)$ è
+\textbf{coincidente} con l'\textbf{elemento successivo della base} $\phi_{i+1}(t)$.
+
+Possiamo quindi scrivere il \textbf{simbolo ricevuto} in \textbf{forma vettoriale}
+$\mathbf{r} = [ r_{1}, r_{2}, r_{3}, r_{4} ]^\top $ in funzione 
+del \textit{simbolo trasmesso} $s = [s_{1}, s_{2}, s_{3}, s_{4}]^\top$:
+\[
+    \begin{cases}
+        r_{1} = 1\cdot s_{1} + 0\cdot s_{2} + 0\cdot s_{3} + 0\cdot s_{4} \\
+        r_{2} = \frac{1}{2}\cdot s_{1} + 1\cdot s_{2} + 0\cdot s_{3} + 0\cdot s_{4} \\
+        r_{3} = 0\cdot s_{1} + \frac{1}{2}\cdot s_{2} + 1\cdot s_{3} + 0\cdot s_{4} \\
+        r_{1} = 0\cdot s_{1} + 0\cdot s_{2} + \frac{1}{2}\cdot s_{3} + 1\cdot s_{4} \\
+    \end{cases}
+\]
+
+O, in \textit{forma matriciale} (più compatta):
+\[
+    \mathbf{r} = H \mathbf{s} = 
+    \begin{bmatrix} 1 & 0 & 0 & 0 \\ 
+    \frac{1}{2} & 1 & 0 & 0 \\ 
+    0 & \frac{1}{2} & 1 & 0 \\ 
+    0 & 0 & \frac{1}{2} & 1
+    \end{bmatrix} \begin{bmatrix} s_{1} \\ s_{2} \\ s_{3} \\ s_{4} \end{bmatrix} 
+\]
+
+Detto ciò, dedichiamo una discussione a parte a ciò che succede con $\phi_{4}(t)$.
+Se ritardiamo $\phi_{4}(t)$ di $T/4$, otteniamo un segnale definito per
+$t\in [T, 5T/4]$: questo intervallo esce al di \textbf{fuori del periodo di simbolo corrente},
+andando a \textbf{sforare nel successivo} (in particolare, si sovrappone alla componente
+relativa a $\phi_{1}(t)$ del \textit{simbolo successivo}).
+
+\begin{remark}[ISI]
+    Questo fenomeno è il cuore di un \textbf{problema} molto importante
+    nelle telecomunicazioni: la \textbf{Inter-Symbol Interference} (\textbf{ISI}).
+\end{remark}
+
+Ciò significa che, se volessimo descrivere \textbf{l'intero flusso di dati} in modo completo, 
+dovremmo considerare che il segnale ricevuto al tempo $t \in [T,5T/4]$ non dipende solo 
+dal primo simbolo del nuovo blocco, ma è la \textbf{somma di}:
+\begin{itemize}
+    \item La \textbf{prima componente} del \textbf{nuovo simbolo trasmesso} $s_{1}^{(k)}$.
+    \item L'\textbf{"eco"} dell'\textbf{ultima componente} del 
+        \textbf{simbolo precedente} $\frac{1}{2}s_{4}^{(k-1)}$.
+\end{itemize}
