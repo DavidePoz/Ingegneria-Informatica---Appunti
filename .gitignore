@@ -1,2 +1,16 @@
-# Latex build directories
+# ----- Latex -----
+# Directory di build
 build/
+
+# ----- MSOD Lab Python -----
+
+# Virtual environment
+.venv/
+.direnv/
+.envrc
+
+# File .lp
+*.lp
+
+# Materiale esterno
+22_ModelliSoftwarePerOttimizzazioneDiscreta/LabPython/References/
