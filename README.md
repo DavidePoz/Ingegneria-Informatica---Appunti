@@ -47,6 +47,7 @@ che l'esportazione in pdf.
 
 ### SECONDO SEMESTRE
 - **Fondamenti di Controlli Automatici** (9 CFU) Testo di riferimento: Sistemi dinamici. Modellistica, analisi e controllo di Benvenuti, De Santis, Farina, 2009, McGraw-Hill.
+- **Elementi di Ingegneria del Software** (6 CFU - Solo progetto finale) Testo di riferimento: Sommerville, Ingegneria del software, 10a edizione, Pearson, 2016.
 
 ## TERZO ANNO
 ### PRIMO SEMESTRE
