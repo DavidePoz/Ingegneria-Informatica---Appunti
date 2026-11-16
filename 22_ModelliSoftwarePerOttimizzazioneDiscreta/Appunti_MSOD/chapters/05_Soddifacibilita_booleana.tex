@@ -1,0 +1,421 @@
+% ------------------------------------------------------------------------------------
+%                       SODDISFACIBILITÀ BOOLEANA
+% ------------------------------------------------------------------------------------
+
+\chapter{Soddisfacibilità Booleana}
+
+Abbiamo già incontrato brevemente i \textbf{problemi SAT} 
+(\textit{Boolean Satisfiability}) come esempio di classe di problemi \textbf{facili da 
+modellare} con il paradigma MIP, ma \textbf{difficili da risolvere} tramite rilassamenti 
+continui.
+
+In questo capitolo approfondiamo i \textbf{fondamenti teorici} della 
+\textbf{soddisfacibilità booleana} e i principali \textbf{algoritmi risolutivi} 
+dedicati a questa classe di problemi.
+
+\section{Logica delle proposizioni}
+
+La \textbf{logica delle proposizioni} è lo studio di \textbf{formule} la cui verità è 
+determinata dal \textbf{valore di verità delle loro parti}. Tali formule sono ottenute 
+combinando formule più piccole tramite \textbf{connettivi logici}, quali \textit{and} ($\land$), 
+\textit{or} ($\lor$) e \textit{not} ($\neg$).
+
+I componenti di base sono detti \textbf{proposizioni atomiche}. Una formula booleana 
+ottenuta combinando le proposizioni atomiche $x_1, \ldots, x_n$ può pertanto essere 
+vista come una \textbf{funzione booleana}:
+\[
+    f(x_1, \ldots, x_n) : \{T, F\}^n \to \{T, F\}
+\]
+Dove con $T$ e $F$ intendiamo i valori di verità \textit{True} e \textit{False} 
+(che, come abbiamo già visto, possiamo mappare rispettivamente nei valori $1$ e $0$).
+
+\begin{definition}[FORMULA LOGICA]
+    Più formalmente, le \textbf{formule logiche} possono essere definite 
+    \textbf{ricorsivamente} come:
+    \begin{itemize}
+        \item Una \textbf{formula \textit{vuota}} (per definizione \textit{falsa}).
+        \item Una \textbf{proposizione atomica} $x_j$, ovvero una formula \textit{"di base"} 
+            che può assumere valore vero o falso.
+        \item Un'\textbf{espressione \textit{composta}} del tipo $\neg(F)$, $(F) \lor (G)$ e 
+            $(F) \land (G)$, dove $F$ e $G$ sono a loro volta formule logiche.
+    \end{itemize}
+\end{definition}
+
+Chiaramente, il valore di \textbf{verità di una formula composta dipende} dal valore di 
+\textbf{verità delle formule costituenti} e dalle \textbf{tabelle di verità} associate 
+ai \textbf{connettivi utilizzati}.
+
+Oltre ai connettivi di base ($\land$, $\lor$, $\neg$), sono spesso usati i 
+connettivi di \textbf{implicazione} ($\to$) e di \textbf{equivalenza} ($\equiv$), 
+che risultano tuttavia \textbf{esprimibili tramite i connettivi base}:
+
+\begin{remark}[CONNETTIVI DERIVATI]
+    \[
+        \begin{aligned}
+            F \to G &\equiv \neg F \lor G \\
+            (F \equiv G) &\equiv (F \to G) \land (G \to F)
+        \end{aligned}
+    \]
+\end{remark}
+
+\section{Il problema SAT}
+
+Per poter trattare algoritmicamente le formule logiche, conviene restringersi a una 
+\textbf{struttura sintattica standardizzata}. Introduciamo quindi i concetti di 
+\textit{literal}, \textit{clausola} e \textit{forma congiuntiva normale}.
+
+\begin{definition}[LITERAL E CLAUSOLA]
+    Si definisce \textbf{literal} una \textbf{proposizione atomica} $x_j$ oppure la 
+    \textbf{sua negazione} $\neg x_j$.
+
+    Si definisce poi \textbf{clausola} (\textit{clause}) una \textbf{disgiunzione} ($\lor$) 
+    di \textit{literals}.
+\end{definition}
+
+\begin{definition}[FORMA CONGIUNTIVA NORMALE (CNF)]
+    Una formula logica si dice in \textbf{forma congiuntiva normale} 
+    (\textit{Conjunctive Normal Form}, \textbf{CNF}) se è espressa come una 
+    \textbf{congiunzione} ($\land$) di \textbf{clausole}.
+\end{definition}
+
+Per capire meglio questi concetti, consideriamo l'esempio seguente:
+
+\begin{exa}
+    L'espressione $x_1 \lor \neg x_2 \lor x_3$ è una \textbf{clausola} composta da tre 
+    \textit{literals}. 
+
+    Considerando altre due clausole arbitrarie, otteniamo (per esempio) la formula seguente, 
+    che è in \textbf{forma CNF}:
+    \[
+        (x_1 \lor \neg x_2 \lor x_3) \land (\neg x_1 \lor x_4) \land (x_2 \lor x_3)
+    \]
+\end{exa}
+
+Date queste definizioni, possiamo ora formalizzare il problema classico della soddisfacibilità booleana:
+
+\begin{definition}[PROBLEMA SAT]
+    Data una formula logica in \textbf{forma CNF}, il \textbf{problema della 
+    soddisfacibilità booleana} (\textbf{SAT}) consiste nel determinare se esiste 
+    un \textbf{assegnamento di verità} alle proposizioni atomiche tale che la 
+    \textbf{formula risulti vera} (ovvero che \textit{tutte le clausole} siano 
+    contemporaneamente soddisfatte).
+\end{definition}
+
+Le clausole godono di alcune importanti \textbf{proprietà strutturali} che ci permettono di
+giustificare l'uso esclusivo della forma CNF (invece che di altre forme):
+
+\begin{remark}[PROPRIETÀ DELLE CLAUSOLE]
+    Notiamo due fatti fondamentali:
+    \begin{enumerate}
+        \item \textbf{Assorbimento}: una clausola $F$ \textbf{implica} un'altra clausola $G$ 
+            se e solo se la \textbf{assorbe}, cioè se \textit{ogni literal} di $F$ è anche 
+            un \textit{literal} di $G$. Pertanto, due clausole sono \textbf{equivalenti} 
+            se e solo se sono \textbf{uguali}.
+        \item \textbf{Generalità della forma CNF}: \textbf{ogni formula logica} può 
+            essere trasformata in una formula equivalente in \textbf{forma CNF} e tale 
+            trasformazione ha \textbf{complessità polinomiale}. Possiamo quindi considerare 
+            formule in CNF \textit{senza perdita di generalità}.
+    \end{enumerate}
+\end{remark}
+
+\subsection{Clausole di Horn}
+
+Una particolare sottoclasse di clausole riveste un ruolo centrale sia dal punto di vista 
+modellistico che computazionale:
+
+\begin{definition}[CLAUSOLA DI HORN]
+    Una clausola si dice \textbf{clausola di Horn} se contiene \textbf{al più un literal 
+    positivo} (cioè non negato):
+    \[
+        x_k \lor \left(\bigvee_j \neg x_j\right)
+    \]
+\end{definition}
+
+Possiamo dare la seguente interpretazione a queste clausole
+
+\begin{remark}[INTERPRETAZIONE E APPLICAZIONI]
+    Applicando le equivalenze logiche viste in precedenza, una clausola di Horn può essere 
+    riscritta in forma di \textbf{implicazione}:
+    \[
+        x_k \lor \left(\bigvee_j \neg x_j\right) \equiv \left(\bigwedge_j x_j\right) \to x_k
+    \]
+    Grazie a questa struttura naturale di regola \textit{"se... allora..."}, le clausole 
+    di Horn sono ampiamente utilizzate per \textbf{modellare sistemi esperti}.
+\end{remark}
+
+\section{Algoritmi risolutivi per SAT}
+
+Esistono due famiglie principali di algoritmi per risolvere problemi SAT:
+\begin{enumerate}
+    \item La regola di inferenza di \textbf{risoluzione} (\textit{resolution}).
+    \item Un algoritmo \textbf{enumerativo ad albero}, detto \textbf{schema DPLL} 
+        (dagli inventori \textit{Davis-Putnam-Logemann-Loveland}).
+\end{enumerate}
+
+E' importante sottolinare che, essendo il problema SAT \textbf{NP-completo}, questi 
+algoritmi risolutivi presentano una \textbf{complessità esponenziale al caso pessimo}.
+
+Detto ciò, vediamoli più nel dettaglio di seguito.
+
+\subsection{Resolution}
+
+La \textbf{risoluzione} è una regola di inferenza logica che permette di derivare una 
+nuova clausola a partire da due clausole esistenti che contengono una coppia di 
+\textit{literals} complementari.
+
+\begin{definition}[REGOLA DI RISOLUZIONE]
+    Date due \textbf{clausole generatrici} tali che una contenga un literal $x_i$ e l'altra 
+    la sua negazione $\neg x_i$:
+    \[
+        C_1 = (x_i \lor A) \text{ , } \qquad C_2 = (\neg x_i \lor B)
+    \]
+    La \textbf{regola di risoluzione} permette di inferire una nuova clausola, detta 
+    \textbf{risolvente} (\textit{resolvent}), ottenuta unendo i restanti literals:
+    \[
+        R = (A \lor B)
+    \]
+\end{definition}
+
+\begin{exa}
+    Consideriamo le due clausole generatrici seguenti:
+    \[
+        \begin{aligned}
+            C_1 &: x_1 \lor x_2 \lor x_3 \\
+            C_2 &: \neg x_1 \lor x_2 \lor \neg x_4
+        \end{aligned}
+    \]
+    Applicando la regola di risoluzione rispetto alla variabile $x_1$, otteniamo il 
+    \textbf{risolvente}:
+    \[
+        R : x_2 \lor x_3 \lor \neg x_4
+    \]
+    Come mostrato nella figura~\ref{fig:06_01_RegolaRisoluzione}, i due literals 
+    complementari si elidono.
+\end{exa}
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[>=stealth, scale=1.1]
+        % Stile box clausole
+        \tikzstyle{clausebox} = [rectangle, draw=nord3, thick, rounded corners, 
+        fill=nord6, inner sep=8pt, font=\large]
+        \tikzstyle{resbox} = [rectangle, draw=nord14, ultra thick, rounded corners, 
+        fill=nord14!15, inner sep=8pt, font=\large]
+
+        % Clausole generatrici
+        \node[clausebox] (C1) at (-2.8, 1.8) 
+        {$C_1 : \;\; \textcolor{nord10}{\mathbf{x_1}} \lor x_2 \lor x_3$};
+        \node[clausebox] (C2) at (2.8, 1.8) 
+        {$C_2 : \;\; \textcolor{nord11}{\mathbf{\neg x_1}} \lor x_2 \lor \neg x_4$};
+
+        % Risolvente
+        \node[resbox] (R) at (0, -0.3) 
+        {$R : \;\; x_2 \lor x_3 \lor \neg x_4$};
+
+        % Frecce di inferenza
+        \draw[->, ultra thick, nord3] (C1.south) -- (R.north west);
+        \draw[->, ultra thick, nord3] (C2.south) -- (R.north east);
+    \end{tikzpicture}
+    \caption{Applicazione della regola di inferenza di risoluzione}
+    \label{fig:06_01_RegolaRisoluzione}
+\end{figure}
+
+L'intuizione alla base della regola è un semplice \textbf{ragionamento per casi}: 
+la proposizione atomica $x_1$ può essere solo \textit{vera} oppure \textit{falsa}.
+\begin{itemize}
+    \item Se $x_1$ è \textbf{vera}, affinché $C_2$ sia soddisfatta deve essere vera 
+        $x_2 \lor \neg x_4$.
+    \item Se $x_1$ è \textbf{falsa}, affinché $C_1$ sia soddisfatta deve essere vera 
+        $x_2 \lor x_3$.
+\end{itemize}
+In \textbf{entrambi i casi}, il risolvente $R = x_2 \lor x_3 \lor \neg x_4$ risulta 
+\textbf{necessariamente vero}.
+
+Detto questo, possiamo descrivere un \textbf{algoritmo risolutivo} per il problema SAT 
+basato sulla regola di risoluzione:
+
+\begin{definition}[ALGORITMO DI RISOLUZIONE]
+    Dato un insieme $S$ di clausole di partenza, poniamo $S' = S$ e procediamo come segue:
+    \begin{enumerate}
+        \item \textbf{Finché} $S'$ contiene due clausole con un \textbf{risolvente} $R$ 
+            \textit{non implicato} da alcuna clausola già presente in $S'$:
+            \begin{enumerate}
+                \item \textbf{Rimuoviamo} da $S'$ tutte le clausole \textit{implicate} da $R$ 
+                    (per assorbimento).
+                \item \textbf{Aggiungiamo} il nuovo risolvente all'insieme: $S' \leftarrow S' \cup \{R\}$.
+            \end{enumerate}
+        \item Al termine (quando non è più possibile derivare nulla di nuovo), l'insieme 
+            $S$ è \textbf{soddisfacibile se e solo se} $S'$ \textbf{non contiene la clausola vuota}.
+    \end{enumerate}
+\end{definition}
+
+\begin{remark}[ANALOGIA CON CUTTING PLANES]
+    L'algoritmo di risoluzione è un \textbf{metodo di inferenza puro} (non effettua alcuna 
+    enumerazione) e rappresenta l'\textbf{equivalente in ambito SAT} dell'approccio a 
+    \textbf{piani di taglio puri} (\textit{cutting planes}) visto per i problemi MIP.
+
+    Proprio come \textit{cutting planes}, \textbf{non} costituisce lo \textbf{stato dell'arte} per la 
+    risoluzione pratica dei problemi SAT.
+\end{remark}
+
+\subsubsection{Unit Resolution}
+
+Nella \textit{pratica}, i risolutori SAT implementano una \textbf{"versione ristretta"} ma 
+estremamente efficiente della regola di risoluzione:
+
+\begin{definition}[UNIT RESOLUTION]
+    Si parla di \textbf{unit resolution} (\textit{risoluzione unitaria}) quando 
+    \textbf{almeno una delle due clausole generatrici} è una \textbf{clausola unitaria}, 
+    ovvero una clausola costituita da un \textbf{solo literal} (es. $x_1$ oppure $\neg x_1$).
+\end{definition}
+
+Questa restrizione comporta due enormi \textbf{vantaggi computazionali}:
+\begin{enumerate}
+    \item \textbf{Complessità lineare}: può essere eseguita in tempo \textit{lineare} nel 
+        numero di clausole (sfruttando strutture dati efficienti come i \textit{watch literals}).
+    \item \textbf{Nessuna crescita del problema}: il risolvente $R$ implica sempre la 
+        clausola generatrice non unitaria (che viene quindi rimossa per assorbimento), 
+        pertanto il \textbf{numero complessivo di clausole non aumenta mai}.
+\end{enumerate}
+
+Tuttavia, questa efficienza ha un prezzo dal punto di vista teorico:
+
+\begin{remark}[INCOMPLETEZZA DI UNIT RESOLUTION]
+    A differenza della risoluzione generale, \textbf{unit resolution non è un metodo di 
+    inferenza completo}: potrebbe infatti \textit{non derivare la clausola vuota} anche 
+    quando il sistema di partenza è \textbf{insoddisfacibile}.
+\end{remark}
+
+\begin{exa}
+    Consideriamo il seguente sistema di quattro clausole sulle variabili $x_1, x_2$:
+    \[
+        \begin{aligned}
+            &x_1 \lor x_2 \\
+            &\neg x_1 \lor x_2 \\
+            &x_1 \lor \neg x_2 \\
+            &\neg x_1 \lor \neg x_2
+        \end{aligned}
+    \]
+    Il sistema è chiaramente \textbf{insoddisfacibile} (nessuna delle quattro combinazioni 
+    di verità soddisfa tutte le clausole), ma \textbf{unit resolution non deriva nulla}, 
+    in quanto \textit{nessuna clausola è unitaria}.
+\end{exa}
+
+Esistono però classi strutturate di problemi per cui \textit{unit resolution} torna ad 
+essere \textbf{completa}: 
+
+\begin{prop}[COMPLETEZZA SULLE CLAUSOLE DI HORN]
+    Un insieme di \textbf{clausole di Horn} è \textbf{insoddisfacibile se e solo se} 
+    \textit{unit resolution} genera la \textbf{clausola vuota}.
+\end{prop}
+
+Per capire meglio questo fatto, osserviamo che una \textit{clausola di Horn} può assumere
+soltanto \textbf{tre forme}:
+\begin{enumerate}
+    \item \textbf{Clausola unitaria}: $x_k$ oppure $\neg x_k$.
+    \item \textbf{Implicazione non unitaria}: $\neg x_{1} \lor \ldots \lor \neg x_m \lor x_k$,
+        con $m\ge 1$ e quindi lunghezza $\ge 2$.
+    \item \textbf{Puramente negativa non unitaria}: $\neg x_{1} \lor \ldots \lor \neg x_m$
+        con $m\ge 2$.
+\end{enumerate}
+
+Da questa osservazione derivano due \textbf{situazioni possibili}:
+\begin{enumerate}
+    \item Se nell'insieme \textbf{non} ci sono \textbf{clausole unitarie}, allora ogni
+        clausola rientra necessariamente nei \textbf{casi 2 o 3} e quindi
+        \textbf{contiene necessariamanete almeno un literal negato}.
+        Ma allora l'assegnamento banale in cui \textbf{poniamo tutte le variabili a falso}
+        rende \textbf{veri tutti i literals negati} e \textbf{soddisfa l'intera formula}.
+    \item Se con l'\textbf{assegnamento banale} sopra l'insieme è \textbf{insoddisfacibile},
+        allora doveva esserci \textit{almeno una clausola contentente solo literal non negati},
+        che devi quindi essere del \textbf{tipo 1}.
+\end{enumerate}
+
+\begin{remark}
+    Fatte queste osservazioni, è immediato capire che:
+    \begin{enumerate}
+        \item Nel primo caso, \textbf{unit resolution \textit{non fa niente}}, per cui
+            \textbf{non genera la clausola vuota}, ed il problema è \textbf{soddisfacibile}.
+        \item Nel secondo caso, \textbf{esiste una clausola unitaria} e quindi
+            \textbf{unit resolution può procedere}.
+    \end{enumerate}
+\end{remark}
+
+\subsection{Algoritmo DPLL}
+
+Così come per i problemi MIP abbiamo combinato piani di taglio e ricerca ad albero nel 
+\textit{Branch and Cut}, lo stato dell'arte per la risoluzione di problemi SAT si basa 
+sullo \textbf{schema DPLL} (\textit{Davis-Putnam-Logemann-Loveland}), un 
+\textbf{algoritmo enumerativo di ricerca ad albero}.
+
+Vediamolo descritto di seguito:
+
+\begin{definition}[SCHEMA DPLL]
+    L'algoritmo esplora uno spazio di ricerca ad albero operando come segue:
+    \begin{enumerate}
+        \item \textbf{Inferenza (semplificazione del nodo)}: ad ogni nodo dell'albero si 
+            applicano fino a convergenza due sole tecniche di inferenza:
+            \begin{enumerate}
+                \item \textbf{Unit resolution}: propaga i vincoli forzati dalle clausole unitarie.
+                \item \textbf{Pure literal elimination}: fissa direttamente il valore di verità 
+                    dei \textit{literals} che compaiono in tutte le clausole attive con lo 
+                    \textit{stesso segno} (sempre positivi o sempre negati).
+            \end{enumerate}
+        \item \textbf{Verifica di terminazione}:
+            \begin{enumerate}
+                \item Se \textbf{tutte le clausole sono soddisfatte}, abbiamo trovato un 
+                    assegnamento valido e \textbf{terminiamo}.
+                \item Se viene derivata la \textbf{clausola vuota}, il ramo 
+                    corrente è \textbf{inconsistente} e si effettua \textbf{backtracking}.
+            \end{enumerate}
+        \item \textbf{Branching}: se il problema non è ancora deciso, si sceglie una 
+            variabile $x_i$ non ancora assegnata e si generano \textbf{due sottoproblemi} 
+            fissandone il valore di verità (ovvero aggiungendo la clausola unitaria $x_i$ 
+            nel ramo sinistro e $\neg x_i$ nel ramo destro).
+    \end{enumerate}
+\end{definition}
+
+L'operazione di \textit{branching} dello schema DPLL (mostrata nella 
+figura~\ref{fig:06_02_DPLL_BranchTree}) è del tutto analoga al \textit{branching} 
+sulle variabili binarie visto nel Capitolo 4: aggiungere una clausola unitaria rende 
+inoltre \textit{unit resolution} immediatamente applicabile nel sottoproblema figlio.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[scale = 0.8]
+        % Stile dei nodi dell'albero (coerente con Cap. 4)
+        \tikzstyle{treenode} = [circle, draw=nord3, ultra thick, fill=nord6, minimum size=1.2cm]
+
+        % Nodo Radice (Formula corrente)
+        \node[treenode] (root) at (0, 0) {};
+
+        % Nodi Figli (Sottoproblemi con clausola unitaria aggiunta)
+        \node[treenode] (left) at (-1.8, -1.5) {};
+        \node[treenode] (right) at (1.8, -1.5) {};
+
+        % Rami (Operazione di Branching)
+        \draw[ultra thick, nord3] (root) -- (left);
+        \draw[ultra thick, nord3] (root) -- (right);
+
+        % Etichette dei vincoli aggiunti
+        \node[below=0.2cm, font=\large\bfseries, nord10, align=center] at (left.south) 
+        {$x_i = T$ \\ \footnotesize\textcolor{nord3}{(aggiungo $x_i$)}};
+        \node[below=0.2cm, font=\large\bfseries, nord11, align=center] at (right.south) 
+        {$x_i = F$ \\ \footnotesize\textcolor{nord3}{(aggiungo $\neg x_i$)}};
+    \end{tikzpicture}
+    \caption{Operazione di branching nello schema DPLL}
+    \label{fig:06_02_DPLL_BranchTree}
+\end{figure}
+
+\begin{remark}[GESTIONE DELLA MEMORIA E SOLVER MODERNI]
+    Concludiamo con due osservazioni fondamentali sulle implementazioni pratiche:
+    \begin{itemize}
+        \item \textbf{Occupazione di memoria lineare}: l'albero di ricerca DPLL viene 
+            visitato in \textbf{Depth-First Search (DFS)}, il che garantisce un'occupazione 
+            di memoria \textit{lineare} nella dimensione del problema.
+        \item \textbf{Estensioni stato dell'arte}: i moderni risolutori SAT (\textit{CDCL}, 
+            Conflict-Driven Clause Learning) potenziano lo schema DPLL con tecniche 
+            avanzate quali il \textbf{conflict learning} (apprendimento di nuove clausole 
+            dai conflitti incontrati per potare rami futuri) e i \textbf{restart} periodici.
+    \end{itemize}
+\end{remark}

@@ -1,11 +1,9 @@
 % ------------------------------------------------------------------------------------
-%                       PROGRAMMAZIONE LINEARE INTERA
+%                       PROBLEMI DI MODELLAZIONE CLASSICI
 % ------------------------------------------------------------------------------------
-\chapter{Modellazione}
+\chapter{Modellazione - Esempi classici}
 
-\section{Esempi classici}
-
-\subsection{Knapsack}
+\section{Knapsack}
 
 Il problema è il seguente:
 
@@ -42,7 +40,7 @@ Il problema puo quindi essere formalizzato come segue:
     \end{cases}
 \]
 
-\subsection{Facility location}
+\section{Facility location}
 
 Il problema è il seguente:
 
@@ -123,7 +121,7 @@ che però comporta un \textbf{problema pratico}:
     abbiamo scritto sarebbero stati \textbf{deducibili anche dai vincoli singoli}.
 \end{remark}
 
-\subsection{Set covering}
+\section{Set covering}
 
 Il problema è il seguente:
 
@@ -249,7 +247,7 @@ per formulare problemi più complessi.
     Chiaramente, questa formulazione risulta \textit{piu difficile da risolvere}.
 \end{remark}
 
-\subsection{Max Independent Set}
+\section{Max Independent Set}
 
 Partiamo da un \textbf{grafo} $G=(V,E)$ e consideriamo $S\subseteq V$.
 
@@ -347,7 +345,7 @@ Possiamo scrivere il modello come segue:
     \textbf{al più un nodo per ciascun arco}.
 \end{remark}
 
-\subsection{Vertex Coloring}
+\section{Vertex Coloring}
 
 Consideriamo un \textbf{grafo connesso} $G=(V,E)$ ed un \textbf{insieme di colori}
 (che \textit{mappiamo in un insieme di numeri}) $K=\{1,2,3,\ldots,k\}$.
@@ -493,7 +491,7 @@ Per \textit{monotonicità del problema} intendiamo il fatto che, se il
 \textit{problema è soddisfacibile} con un \textit{certo numero} $k$ di colori, 
 allora \textit{lo è anche per tutti i valori} $>k$.
 
-\subsection{Lot Sizing}
+\section{Lot Sizing}
 
 Consideriamo la \textbf{pianificazione della produzione} di un bene da parte di un'azienda
 nell'arco di $n$ \textbf{orizzonti temporali} $t_i \in T= \{ 1,\ldots ,n \}$.
@@ -556,75 +554,4 @@ Detto questo, resta solo da modellare il \textbf{soddisfacimento della domanda} 
     impone una \textbf{forma di conservazione}: la \textit{quantità precedentemente stoccata}
     e la \textit{quantità prodotta} devono essere \textit{uguali} alla \textit{somma}
     della \textit{domanda} e della \textit{quantità stoccata al nuovo orizzonte}.
-\end{remark}
-
-\section{Esercizi}
-
-\subsection{CUP}
-
-Immaginiamo di avere un \textbf{insieme di quartieri} $l\in L = \{1,\ldots , n\}$ ed 
-una \textbf{matrice} $L\times L$ che raccoglie i \textbf{tempi di percorrenza} 
-(\textit{previsti}) necessari per \textbf{raggiungere un CUP} 
-posto in un altro quartiere, come mostrato sotto:
-\[
-    \begin{matrix}
-        & | & 1 & 2 & 3 & 4 & 5 & 6 \\ 
-      - & | & - & - & - & - & - & - \\ 
-      1 & | & 0 & 10 & 20 & 30 & 30 & 20 \\ 
-      2 & | & 10 & 0 & 25 & 33 & 20 & 10 \\ 
-      3 & | & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\ 
-      4 & | & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\ 
-      5 & | & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\ 
-      6 & | & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\ 
-    \end{matrix}
-\]
-
-\begin{remark}
-    La matrice sarà \textbf{simmetrica}: andare \textit{da} $i$ a $j$ è
-    \textit{equivalente} ad andare da $j$ ad $i$.
-\end{remark}
-
-E chiamiamo $d_{ij}$ le \textit{entrate della matrice}, ovvero il \textbf{tempo di percorrenza}
-per \textbf{raggiunere un CUP} posto in $i$ \textbf{dal quartiere} $j$.
-L'obiettivo del problem è:
-
-\begin{exa}[PROBLEMA]
-    Vogliamo \textbf{posizionare i CUP nei quartieri} in modo che
-    il \textbf{tempo di percorrenza massimo} $T$ da \textit{qualsiasi quartiere}
-    sia di \textbf{15 minuti}.
-\end{exa}
-
-Per come è descritto il problema:
-
-\begin{remark}
-    Notiamo che il problema è essenzialmente un problema
-    di \textbf{set covering}: si tratta infatti di \textbf{soddisfare} 
-    dei \textbf{vincoli di copertura}.
-\end{remark}
-
-Per modellare il problema, cominciamo definendo le \textbf{variabili binarie}:
-\[
-    x_i = \begin{cases}
-        1 & \text{se posizioniamo un CUP in posizione } $i$ \\ 
-        0 & \text{altrimenti}
-    \end{cases}
-\]
-
-Abbiamo quindi:
-\[
-    \begin{cases}
-        \displaystyle\text{min } \sum_{i\in I} x_i \\ 
-        \displaystyle\sum_{i\in L : d_{ij} \le T} x_i \ge 1 & \forall j \in L \\
-        x_i \in \{0,1\} & \forall i \in L
-    \end{cases}
-\]
-
-Come nel caso di \textbf{set covering}, vogliamo usare il \textbf{minor numero di CUP}
-possibile (equivalente ad usare il minor numero di sottoinsiemi).
-Detto ciò, diamo una spiegazione del vincolo imposto:
-
-\begin{remark}
-    Per \textbf{ogni quartiere} $j\in L$ deve \textbf{esistere almeno un CUP}
-    posto in \textit{un qualche} $i\in L$ tale che il \textbf{tempo di percorrenza}
-    sia \textbf{inferiore alla soglia} richiesta.
 \end{remark}
