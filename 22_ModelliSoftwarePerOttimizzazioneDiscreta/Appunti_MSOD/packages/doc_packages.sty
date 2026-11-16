@@ -1,0 +1,57 @@
+\ProvidesPackage{doc_packages}
+
+% ------------------------------------------------------------------------------------
+%                               PACCHETTI DI BASE E LINGUA
+% ------------------------------------------------------------------------------------
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{textcomp}
+\RequirePackage[italian]{babel}
+\RequirePackage{url}
+
+% ------------------------------------------------------------------------------------
+%                               MATEMATICA E SIMBOLI
+% ------------------------------------------------------------------------------------
+\RequirePackage{amsmath, amsfonts, mathtools, amsthm, amssymb}
+\RequirePackage{mathrsfs}
+\RequirePackage{bm}
+\RequirePackage{braket}
+\RequirePackage{cancel}
+\RequirePackage{systeme}
+\RequirePackage{stmaryrd}
+
+% ------------------------------------------------------------------------------------
+%                               TABELLE, LISTE E FLOAT
+% ------------------------------------------------------------------------------------
+\RequirePackage{array}
+\RequirePackage{booktabs}
+\RequirePackage{enumitem}
+\RequirePackage{multicol}
+\RequirePackage{float}
+
+% ------------------------------------------------------------------------------------
+%                               GRAFICA E TIKZ
+% ------------------------------------------------------------------------------------
+\RequirePackage{tikz}
+\RequirePackage{graphicx}
+\graphicspath{{images/}}
+\usetikzlibrary{positioning, calc, fit} % Librerie di TikZ
+\RequirePackage{tikz-cd}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=1.16}
+
+% ------------------------------------------------------------------------------------
+%                               LINK E METADATI PDF
+% ------------------------------------------------------------------------------------
+\RequirePackage{hyperref}
+\hypersetup{
+    colorlinks,
+    linkcolor={black},
+    citecolor={black},
+    urlcolor={blue!80!black},
+    pdftitle={Modelli e Software per l'Ottimizzazione Discreta},
+    pdfauthor={Davide Pozzebon},
+    pdfsubject={Ingegneria Informatica UniPD}
+}
+
+\endinput

@@ -1,24 +1,21 @@
 \documentclass[12pt, a4paper]{report}
 
-% --- Impostazioni di stile ---
-\usepackage{document_style}
+% --- Pacchetti custom ---
+\usepackage{packages/doc_packages}      % Pacchetti tex
+\usepackage{packages/doc_style}         % Stile del documento
 
 % --- Tikz externalize
 \usetikzlibrary{external}
 \tikzexternalize[prefix=build_tikzexternal/]
 
-% ------------------------------------------------------------------------------------
-%                               INIZIO DOCUMENTO
-% ------------------------------------------------------------------------------------
-
+% --- Inizio documento ---
 \begin{document}
 \pagestyle{fancy}
 
-% --- Inizio documento ---
 \input{document_intro/0_Frontespizio}
 \input{document_intro/1_Colophon}
 
-% Indice
+% --- Indice
 \tableofcontents
 
 % --- Capitoli principali ---
@@ -27,5 +24,6 @@
 \input{chapters/03_Programmazione_lineare}
 \input{chapters/04_Programmazione_lineare_intera}
 \input{chapters/05_Problemi_modellazione}
+\input{chapters/06_Soddifacibilita_booleana}
 
 \end{document}
