@@ -1592,7 +1592,7 @@ Infine, \textbf{seleziona} il \textbf{valore} $D_m$ \textbf{più piccolo} per
 \textbf{determinare il simbolo trasmesso}.
 
 \begin{warning}
-    In generale si ha $I \ne M$.
+    In generale si ha $I \le M$.
 \end{warning}
 
 Vediamo ora un'\textbf{implementazione alternativa}, ovvero il ricevitore
@@ -1774,4 +1774,647 @@ riassunto nella nota qui sotto:
                     da cercare è limitato} (per cui $M$ è piccolo).
             \end{enumerate}
     \end{itemize}
+\end{remark}
+
+\section{Trasmissione binaria}
+
+Dedichiamoci ora più nel dettaglio all'analisi della \textbf{trasmissione binaria} ($M=2$).
+
+\subsection{Scelta della base}
+
+Per cominciare, vediamo come \textbf{scegliere una base ortonormale} che sia 
+\textbf{adatta} a questo tipo di trasmissione.
+
+Consideriamo due \textbf{forme d'onda} $s_{1}(t)$ ed $s_{2}(t)$ \textit{generiche}.
+
+\begin{remark}[SCELTA CONVENIENTE]
+    Conviene sempre scegliere come \textbf{primo elemento della base}
+    ortonormale la \textbf{differenza tra i due segnali}.
+\end{remark}
+
+Chiaramente, dovremo poi \textit{normalizzare questa differenza}; ed il 
+\textbf{secondo elemento della base} sarà poi \textit{ortogonale ad essa}.
+
+L'utilità di questa scelta sta nel seguente fatto:  
+
+\begin{prop}
+    Le \textbf{rappresentazioni vettoriali} delle due forme d'onda avranno 
+    \textbf{sempre una componente uguale} (quella \textit{ortogonale a} $s_{1}(t) - s_{2}(t)$).
+\end{prop}
+
+Per capire meglio, consideriamo un esempio pratico:
+\[
+    \begin{aligned}
+        s_{1}(t) &= \begin{cases}
+            10 & 0 < t \le \frac{T}{2} \\ 
+            -10 & \frac{T}{2} < t \le T \\ 
+            0 & \text{altrimenti}
+        \end{cases} \\ \\
+        s_{2}(t) &= \begin{cases}
+            5 & 0 < t < T \\ 
+            0 & \text{altrimenti}
+        \end{cases}
+    \end{aligned}
+\]
+
+Come detto sopra, scegliamo come \textbf{primo elemento della base} la 
+\textbf{differenza tra i due segnali}:
+\[
+    \phi_{1}'(t) = s_{1}(t) - s_{2}(t) = \begin{cases}
+        5 & 0 < t \le \frac{T}{2} \\ 
+        -15 & \frac{T}{2} < t \le T \\ 
+        0 & \text{altrimenti}
+    \end{cases}
+\]
+
+L'energia di questo segnale è:
+\[
+    E_{\phi_{1}'} = \frac{25T}{2} + 225\frac{T}{2} = 125T = 25\cdot 5T
+\]
+
+Per cui l'elemento \textbf{normalizzato} sarà:
+\[
+    \phi_{1}(t) = \frac{\phi_{1}'(t)}{\sqrt{E_{\phi_{1}'(t)}}} 
+    = \frac{\phi_{1}'(t)}{5\sqrt{5T}} = \begin{cases}
+        \frac{1}{\sqrt{5T}} & 0 < t \le \frac{T}{2} \\ 
+        -\frac{3}{\sqrt{5T}} & \frac{T}{2} < t \le T \\ 
+        0 & \text{altrimenti}
+    \end{cases}
+\]
+
+Determiniamo ora il \textbf{secondo elemento} della base usando la
+\textit{procedura di Gram-Schmidt}:
+\[
+    \phi_{2}'(t) = s_{2}(t) - \langle s_{2}(t) , \phi_{1}(t) \rangle \phi_{1}(t)
+\]
+
+
+\begin{remark}
+    Applicare la procedura su $s_{1}(t)$ sarebbe stato \textit{equivalente}.
+    Abbiamo scelto di partire da $s_{2}(t)$ per \textit{semplificare i conti}.
+\end{remark}
+
+Abbiamo:
+\[
+    \begin{aligned}
+        \langle s_{2}(t) , \phi_{1}(t) \rangle &= \int_{0}^{T} s_{2}(t) \phi_{1}(t) dt \\
+            &= \frac{5T}{\sqrt{5T}}\cdot \frac{1}{2} -3 \frac{5T}{\sqrt{5T}}\cdot \frac{1}{2} \\ 
+            &= -\sqrt{5T} 
+    \end{aligned}
+\]
+
+Per cui troviamo:
+\[
+    \begin{aligned}
+        \phi_{2}'(t) &= s_{2}(t) + \sqrt{5T}\phi_{1}(t) \\ 
+            &= \begin{cases}
+                6 & 0 < t < \frac{T}{2} \\ 
+                2 & \frac{T}{2} < t < T
+            \end{cases}
+    \end{aligned}
+\]
+
+L'energia di $\phi_{2}'(t)$ risulta essere:
+\[
+    E_{\phi_{2}'} = 36 \frac{T}{2} + 4 \frac{T}{2} = 20T
+\]
+
+E quindi:
+\[
+    \phi_{2}(t) = \frac{\phi_{2}'(t)}{\sqrt{E_{\phi_{2}'(t)}}} 
+    = \frac{\phi_{2}'(t)}{2\sqrt{5T}} = \begin{cases}
+        \frac{3}{\sqrt{5T}} & 0 < t \le \frac{T}{2} \\ 
+        \frac{1}{\sqrt{5T}} & \frac{T}{2} < t \le T \\ 
+        0 & \text{altrimenti}
+    \end{cases}
+\]
+
+Possiamo ora scrivere i \textbf{segnali} $s_{1}(t)$ ed $s_{2}(t)$ in \textbf{forma vettoriale}
+rispetto alla base $\mathcal{B}=\{\phi_{1}(t), \phi_{2}(t)\}$ come segue:
+\[
+    \begin{aligned}
+        s_{1}(t) &= 4\sqrt{5T}\phi_{1}(t) + 2\sqrt{5T}\phi_{2}(t) \\
+            &\implies \mathbf{s}_1 = \begin{bmatrix} 4\sqrt{5T} & 2\sqrt{5T} \end{bmatrix}  \\ \\
+        s_{2}(t) &= -\sqrt{5T}\phi_{1}(t) + 2\sqrt{5T}\phi_{2}(t) \\
+            &\implies \mathbf{s}_1 = \begin{bmatrix} -\sqrt{5T} & 2\sqrt{5T} \end{bmatrix}
+    \end{aligned}
+\]
+
+Notiamo che, come anticipato sopra, la \textbf{seconda componente} è \textbf{uguale} per
+\textbf{entrambe le rappresentazioni}.
+La \textbf{costellazione} e le \textbf{regioni di decisione} risultano pertanto 
+essere quelle mostrata in figura~\ref{fig:08_14_CostellazioneTrasmBinaria}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth,
+        thick,
+        % Stile per i punti
+        signal/.style={circle, fill=nord0, inner sep=2.5pt},
+        % Stile per i confini
+        border/.style={ultra thick, nord11},
+        % Stile per il segmento tra i punti
+        segment/.style={dashed, thick, gray}
+        ]
+
+        % --- Regioni di Decisione ---
+        % R1 (Blu): a destra del confine
+        \fill[nord10, opacity=0.15] (1.5, -1.5) rectangle (6, 4);
+        % R2 (Rosa): a sinistra del confine
+        \fill[nord11, opacity=0.15] (-3, -1.5) rectangle (1.5, 4);
+
+        % --- Griglia di sfondo (opzionale) ---
+        \draw[gray!20, step=1] (-3,-1) grid (6,4);
+
+        % --- Assi Cartesiani ---
+        \draw[->] (-3, 0) -- (6, 0) node[right] {\(\phi_1\)};
+        \draw[->] (0, -1.5) -- (0, 4) node[above] {\(\phi_2\)};
+
+        % --- Segmento tra i punti (orizzontale) ---
+        \draw[segment] (-1, 2) -- (4, 2);
+
+        % --- Confine di Decisione (verticale) ---
+        % Passa per il punto medio (1.5, 2)
+        \draw[border] (1.5, -1.5) -- (1.5, 4);
+
+        % --- Indicatore di angolo retto ---
+        \draw[thick, gray] (1.5, 2.2) -- (1.7, 2.2) -- (1.7, 2);
+
+        % --- Punti (Simboli) ---
+        \node[signal] (s1) at (4, 2) {};
+        \node[signal] (s2) at (-1, 2) {};
+
+        % Etichette
+        \node[above right=0.1cm] at (s1) {\(\mathbf{s}_1\)};
+        \node[above left=0.1cm] at (s2) {\(\mathbf{s}_2\)};
+
+        % --- Etichette delle Regioni ---
+        \node[font=\large, text=nord10] at (4, 1) {\(R_1\)};
+        \node[font=\large, text=nord11] at (-1.5, 1) {\(R_2\)};
+    \end{tikzpicture}
+    \caption{Regioni di decisione con elemento della base proporzionale 
+    alla differenza tra i segnali}
+    \label{fig:08_14_CostellazioneTrasmBinaria}
+\end{figure}
+
+\subsection{Probabilità di errore}
+
+La \textbf{scelta} della base descritta sopra \textbf{non è casuale}; ci permette infatti
+di determinare con molta più facilità la \textbf{probabilità di errore} del ricevitore:
+\[
+    P_e = P[\hat{a}_0 \ne a_{0}]
+\]
+Dove $\hat{a}_0$ è il \textbf{simbolo ricevuto} e $a_{0}$ è il \textbf{simbolo trasmesso}.
+
+Per capire come mai la scelta della base fatta sopra sia conveniente, vediamo 
+\textbf{come possiamo esprimere} $P_e$.
+Per cominciare, applichiamo la \textit{regola della probabilità totale}:
+\[
+    P_e = P[\hat{a}_0 \ne a_{0} \;|\; a_{0} = 1 ]\cdot P[a_{0} = 1] + 
+         P[\hat{a}_0 \ne a_{0} \;|\; a_{0} = 2 ]\cdot P[a_{0} = 2]
+\]
+
+Sotto l'ipotesi che i \textit{simboli siano equiprobabili} abbiamo:
+\[
+    P_e = \frac{1}{2} P[\hat{a}_0 \ne a_{0} \;|\; a_{0} = 1 ] + 
+         \frac{1}{2} P[\hat{a}_0 \ne a_{0} \;|\; a_{0} = 2 ]
+\]
+
+Sia ora $\mathbf{r}$ la \textbf{rappresentazione vettoriale} del \textbf{segnale ricevuto}:
+\[
+    \mathbf{r} = \mathbf{s}_m + \mathbf{w}
+\]
+
+Scriviamo le probabilità sopra \textit{in termini vettoriali}:
+\[
+    \begin{aligned}
+        P[\hat{a}_0 \ne a_{0} \;|\; a_{0} = 1 ] &= P[\mathbf{r} \not\in R_{1} \;|\; a_{0} = 1] \\
+        P[\hat{a}_0 \ne a_{0} \;|\; a_{0} = 2 ] &= P[\mathbf{r} \not\in R_{2} \;|\; a_{0} = 2]
+    \end{aligned}
+\]
+
+Per cui abbiamo:
+\[
+    \begin{aligned}
+        \mathbf{r} \not\in R_{1} \Longleftrightarrow \mathbf{s}_1 + \mathbf{w} \not\in R_{1} 
+        \Longleftrightarrow \begin{bmatrix} s_{11} & s_{12} \end{bmatrix} + 
+        \begin{bmatrix} w_{1} & w_{2} \end{bmatrix} \not\in R_{1} \\
+        \mathbf{r} \not\in R_{2} \Longleftrightarrow \mathbf{s}_2 + \mathbf{w} \not\in R_{2} 
+        \Longleftrightarrow \begin{bmatrix} s_{21} & s_{22} \end{bmatrix} + 
+        \begin{bmatrix} w_{1} & w_{2} \end{bmatrix} \not\in R_{2}
+    \end{aligned}
+\]
+
+A questo punto, grazie alla \textbf{scelta della base} che abbiamo fatto, notiamo che:
+
+\begin{remark}[COMPONENTI DEL RUMORE]
+    La \textbf{seconda componente} del \textbf{rumore} è del tutto \textbf{irrilevante}, 
+    in quanto è \textit{parallela al confine tra le regioni}.
+\end{remark}
+
+Per cui la \textbf{probabilità di errore dipende solo} dalla \textbf{prima componente} ($w_{1}$),
+e possiamo quindi darne una \textit{formulazione precisa}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth,
+        thick,
+        % Stili per i punti e i vettori
+        signal/.style={circle, fill=nord0, inner sep=2.5pt},
+        noisevec/.style={->, ultra thick, nord11, dashed},
+        componentvec/.style={->, thick, nord10}
+        ]
+
+        % --- Regioni di Decisione ---
+        % Confine a x = 1.5
+        \fill[nord10, opacity=0.15] (1.5, -1) rectangle (6, 4.5); % R1
+        \fill[nord11, opacity=0.15] (-3, -1) rectangle (1.5, 4.5); % R2
+
+        % --- Griglia (opzionale) ---
+        \draw[gray!20, step=1] (-3,-1) grid (6,4);
+
+        % --- Assi Cartesiani ---
+        \draw[->] (-3, 0) -- (6, 0) node[right] {\(\phi_1\)};
+        \draw[->] (0, -1) -- (0, 4.5) node[above] {\(\phi_2\)};
+
+        % --- Confine di Decisione (Verticale a x=1.5) ---
+        \draw[dashed, ultra thick, nord3] (1.5, -1) -- (1.5, 4.5);
+
+        % --- Punti (Simboli) ---
+        \node[signal] (s1) at (4, 2) {};
+        \node[signal] (s2) at (-1, 2) {};
+        \node[above right=0.1cm] at (s1) {\(\mathbf{s}_1\)};
+        \node[above left=0.1cm] at (s2) {\(\mathbf{s}_2\)};
+
+        % --- Vettore di Rumore e Componenti (partenza da s2) ---
+        % Punto ricevuto r = s2 + w (spinto oltre il confine a x=1.5)
+        \coordinate (r) at (2.5, 3.5);
+        \node[circle, fill=nord11, inner sep=2pt] (pt_r) at (r) {};
+        \node[above right] at (pt_r) {\(\mathbf{r}\)};
+
+        % Vettore rumore w (da s2 a r)
+        \draw[noisevec] (s2) -- (r) node[midway, above left, text=nord11] {\(\mathbf{w}\)};
+
+        % Componente w1 (orizzontale)
+        \draw[componentvec] (s2) -- (2.5, 2) node[midway, below] {\(w_1\)};
+        % Componente w2 (verticale)
+        \draw[componentvec] (2.5, 2) -- (r) node[midway, right] {\(w_2\)};
+
+        % --- Visualizzazione dell'irrilevanza di w2 ---
+        % Mostriamo un altro punto con lo stesso w1 ma diverso w2 (rimane in R1)
+        \coordinate (r2) at (2.5, 1.2);
+        \node[circle, fill=nord11, inner sep=1.5pt] (pt_r2) at (r2) {};
+        \node[below right] at (pt_r2) {\(\mathbf{r}'\)};
+        
+        % Vettore rumore w' (da s2 a r2)
+        \draw[noisevec] (s2) -- (r2) node[midway, below left, text=nord11] {\(\mathbf{w'}\)};
+        % Componente w2 (verticale)
+        \draw[componentvec] (2.5, 2) -- (r2) node[midway, right] {\(w'_2\)};
+    \end{tikzpicture}
+    \caption{La seconda componente del rumore è irrilevante}
+\end{figure}
+
+\begin{remark}
+    In figura mostriamo due casi in cui il \textit{rumore porta ad un errore in ricezione};
+    in \textbf{entrambi i casi}, tuttavia, l'errore \textbf{dipende solo} da $w_{1}$.
+\end{remark}
+
+A questo punto è intuitivo capire che ci basterà semplicemente determinare la \textbf{probabilità} 
+che la \textbf{prima componente del rumore} sia \textbf{inferiore a metà della distanza} 
+tra le rappresentazioni vettoriali dei \textbf{due segnali}.
+
+Chiamiamo $d\coloneqq \|\mathbf{s}_{1} - \mathbf{s}_{2}\|$ e osserviamo che:
+\[
+    \begin{aligned}
+        P_e &= \frac{1}{2} P[\mathbf{r} \not\in R_{1} \;|\; a_{0} = 1] + 
+            \frac{1}{2} P[\mathbf{r} \not\in R_{1} \;|\; a_{0} = 1] \\ 
+            &= \frac{1}{2} P \left[ w_{1} < -\frac{d}{2} \right] + 
+            \frac{1}{2} P \left[ w_{1} > \frac{d}{2} \right]
+    \end{aligned}
+\]
+
+Ma abbiamo già detto che noi consideriamo solo \textbf{rumore} di tipo \textbf{AWGN},
+per cui:
+\[
+    w_{1} \sim \mathcal{N}(0, \sigma^2)
+\]
+
+Abbiamo quindi:
+\[
+    P \left[ w_{1} < -\frac{d}{2} \right] = P \left[ w_{1} > \frac{d}{2} \right] 
+    \implies P_e = P \left[ w_{1} > \frac{d}{2} \right]
+\]
+
+Ora scriviamo come segue:
+\[
+    P_e = P \left[ \frac{w_{1}}{\sigma} > \frac{d}{2\sigma} \right] = P \left[ Z > \frac{d}{2\sigma} \right]
+\]
+
+Dove $Z = \frac{w_{1}}{\sigma}\sim \mathcal{N}(0,1)$ è una \textbf{gaussiana standard}.
+Concludiamo allora che:
+
+\begin{prop}[PROBABILITA' DI ERRORE]
+    \[
+        P_e = P \left[ Z > \frac{d}{2\sigma} \right] = Q \left( \frac{d}{2 \sigma} \right)
+    \] 
+\end{prop}
+
+Dove $Q(x)$ è la \textbf{funzione di ripartizione \textit{complementare}} di
+una distribuzione \textit{gaussiana standard}:
+\[
+    Q(x) \coloneqq \int_{x}^{+\infty} \frac{1}{\sqrt{2\pi} } e^{- \frac{t^2}{2}}dt 
+\]
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        declare function={
+            gauss(\x) = (1/sqrt(2*pi)) * exp(-(\x^2)/2);
+        }
+        ]
+        \begin{axis}[
+            width=0.8\textwidth,
+            height=6cm,
+            axis lines=middle,
+            xmin=-4, xmax=4,
+            ymin=0, ymax=0.45,
+            xtick={0, 1.5},
+            xticklabels={\(0\), \(x\)},
+            ytick=\empty,
+            xlabel={\(z\)},
+            axis line style={-Stealth, thick},
+            % Impostiamo i tick sull'asse x per mostrare solo 0 e x
+            extra x ticks={0, 1.5},
+            extra x tick labels={},
+            grid=none,
+            ]
+
+            % --- Curva Gaussiana Standard ---
+            \addplot[thick, nord10, domain=-4:4, samples=200] {gauss(x)};
+
+            % --- Area ombreggiata per Q(x) ---
+            % Coloriamo l'area sotto la curva da x a +infinito (nel nostro grafico fino a 4)
+            \addplot[
+                fill=nord11, 
+                fill opacity=0.3, 
+                draw=none,
+                domain=1.5:4
+                ] {gauss(x)} \closedcycle;
+
+            % --- Linea verticale tratteggiata in x ---
+            \draw[dashed, thick, nord3] (axis cs:1.5,0) -- (axis cs:1.5,{gauss(1.5)});
+
+            % --- Etichetta Q(x) ---
+            \node[font=\large, text=nord11] at (axis cs:2.8, 0.1) {\(Q(x)\)};
+
+            % --- Frecce che indicano l'integrale ---
+            \draw[->, thick, nord11] (axis cs:2, 0.04) -- (axis cs:3, 0.04);
+
+            % --- Etichetta della curva ---
+            \node[font=\small, text=nord10, anchor=south] at (axis cs:-1.5, 0.25) {\(\mathcal{N}(0,1)\)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Illustrazione visiva della funzione di ripartizione complementare}
+    %\label{fig:08_16_FunzioneQ}
+\end{figure}
+
+Chiaramente, i valori di $Q(x)$ sono \textit{tabulati} e \textit{non è necessario calcolarli ogni volta}.
+
+\subsection{Probabilità di errore ed energia}
+
+Osserviamo che:
+
+\begin{remark}[PROBABILITA' DI ERRORE DELLE MODULAZIONI BINARIE]
+    Di conseguenza, \textbf{tutte} le \textbf{modulazioni binarie} in cui i due
+    segnali hanno la \textbf{stessa distanza} hanno anche la 
+    \textbf{stessa probabilità di errore}.
+\end{remark}
+
+Per esempio, la figura~\ref{fig:08_17_ModulazioniBinarieEquivalenti} ci mostra
+\textbf{due modulazioni binarie equivalenti} dal punto di vista della
+\textbf{probabilità di errore}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth,
+        thick,
+        % Stile per i punti
+        signal/.style={circle, fill=nord0, inner sep=2.5pt},
+        % Stile per i vettori energia
+        vec/.style={->, very thick, nord10},
+        % Stile per la linea di distanza
+        distline/.style={thick, nord11}
+        ]
+
+        % ==========================================
+        % COSTELLAZIONE 1 (Sinistra - Vicina all'origine)
+        % ==========================================
+        \begin{scope}[xshift=-4cm]
+            % Assi
+            \draw[->, thick] (-1, 0) -- (5, 0) node[right] {\(\phi_1\)};
+            \draw[->, thick] (0, -1) -- (0, 4) node[above] {\(\phi_2\)};
+
+            % Punti
+            \coordinate (s1) at (1, 1.5);
+            \coordinate (s2) at (2, 0.5);
+
+            % Vettori dall'origine
+            \draw[vec] (0,0) -- (s1);
+            \draw[vec] (0,0) -- (s2);
+
+            % Linea che unisce i punti
+            \draw[distline, dashed] (s1) -- (s2);
+            \node[above right, text=nord11, font=\small] at (s2) {\(d\)};
+
+            % Nodi e etichette
+            \node[signal] at (s1) {}; \node[above left] at (s1) {\(s_1\)};
+            \node[signal] at (s2) {}; \node[below right] at (s2) {\(s_2\)};
+
+            % Titolo
+            \node[align=center] at (2, -1.5) {Costellazione 1\\ (Bassa Energia)};
+        \end{scope}
+
+        % ==========================================
+        % COSTELLAZIONE 2 (Destra - Lontana dall'origine)
+        % ==========================================
+        \begin{scope}[xshift=4cm]
+            % Assi
+            \draw[->, thick] (-1, 0) -- (5, 0) node[right] {\(\phi_1\)};
+            \draw[->, thick] (0, -1) -- (0, 4) node[above] {\(\phi_2\)};
+
+            % Punti (stessa distanza d = sqrt(2^2 + 2^2) = sqrt(8))
+            \coordinate (s3) at (3, 3.5);
+            \coordinate (s4) at (4, 2.5);
+
+            % Vettori dall'origine (visivamente molto più lunghi)
+            \draw[vec] (0,0) -- (s3);
+            \draw[vec] (0,0) -- (s4);
+
+            % Linea che unisce i punti
+            \draw[distline, dashed] (s3) -- (s4);
+            \node[above right, text=nord11, font=\small] at (s4) {\(d\)};
+
+            % Nodi e etichette
+            \node[signal] at (s3) {}; \node[above left] at (s3) {\(s_3\)};
+            \node[signal] at (s4) {}; \node[below right] at (s4) {\(s_4\)};
+
+            % Titolo
+            \node[align=center] at (2, -1.5) {Costellazione 2\\ (Alta Energia)};
+        \end{scope}
+    \end{tikzpicture}
+    \caption{Modulazioni binarie equivalenti dal punto di vista della probabilità di errore}
+    \label{fig:08_17_ModulazioniBinarieEquivalenti}
+\end{figure}
+
+Alla luce di questa equivalenza possiamo quindi fare una considerazione sul 
+\textbf{costo in termini di energia} spesa per \textbf{trasmettere i segnali}:
+
+\begin{remark}[ENERGIA "SPESA"]
+    Dato che la \textbf{probabilità di errore} è \textbf{uguale},
+    conviene \textbf{scegliere} la modulazione che richiede la \textbf{minor} 
+    quantità di \textbf{energia} per \textbf{trasmettere i segnali}, ovvero quella
+    in cui i \textbf{vettori} hanno \textbf{norma minore}.
+\end{remark}
+
+Detto ciò, vediamo \textit{come la probabilità di errore dipende dall'energia dei segnali}.
+
+Per cominciare, notiamo che possiamo scrivere $P_e$ in \textbf{funzione di SNR}. 
+Infatti abbiamo:
+\[
+    \frac{d}{2 \sigma} = \frac{1}{2} \sqrt{ \frac{d^2}{\sigma^2}} 
+\]
+
+Ma $\frac{d^2}{\sigma^2} \propto \Lambda$ (dove $\Lambda$ è il \textbf{SNR}).
+Per cui possiamo scrivere (con una opportuna costante $k$) la 
+\textbf{probabilità di errore} in termini del \textbf{signal to noise ratio}
+come segue:
+\[
+    P_e = Q(\sqrt{k \Lambda })
+\]
+
+\begin{remark}[PROBABILITA' DI ERRORE E SNR]
+    All'\textbf{aumentare di SNR} abbiamo una \textbf{diminuzione della probabilità di errore}.
+\end{remark}
+
+A questo punto ricordiamo che possiamo scrivere:
+\[
+    \begin{aligned}
+        d^2 &= E_{s_{1}-s_{2}} = d^2(s_{1}(t), s_{2}(t)) = d^2(\mathbf{s}_1, \mathbf{s}_2) \\ 
+            &= E_{s_{1}} + E_{s_{2}} -2 \Re[\rho ] \sqrt{E_{s_{1}} E_{s_{2}}}  
+    \end{aligned}
+\]
+Dove $\rho$ era il \textbf{coefficiente di correlazione}:
+\[
+    \rho = \frac{\langle \mathbf{s}_1, \mathbf{s}_2 \rangle}{\sqrt{E_{s_{1}} E_{s_{2}}}}
+\]
+
+Fatte queste osservazioni, possiamo vedere come esprimere la probabilità di errore $P_e$ 
+se i due segnali hanno la \textbf{stessa energia} ($E_{s_{1}} = E_{s_{2}} = E$) e sono:
+\begin{itemize}
+    \item \textbf{Antipodali}
+    \item \textbf{Ortogonali}
+\end{itemize}
+
+\paragraph{Segnali antipodali}
+Abbiamo $s_{1}(t) = -s_{2}(t)$, per cui in questo caso vale:
+\[
+    \rho = -\frac{E}{E} = -1 \implies d^2 = E + E -2(-1)E = 4E
+\]
+
+E troviamo allora:
+\[
+    P_e = Q \left( \sqrt{\frac{d^2}{4 \sigma^2}} \right) = Q \left( \sqrt{\frac{E}{\sigma^2}} \right)
+\]
+
+\paragraph{Segnali ortogonali}
+Abbiamo $s_{1}(t) \perp s_{2}(t)$, per cui in questo caso:
+\[
+    \rho = 0 \implies d^2 = E + E -0 = 2E
+\]
+
+E troviamo allora:
+\[
+    P_e = Q \left( \sqrt{\frac{d^2}{4 \sigma^2}} \right) = Q \left( \sqrt{\frac{E}{2\sigma^2}} \right)
+\]
+
+\paragraph{Confronto e considerazioni}
+La figura~\ref{fig:08_18_ConfrontoPe} mostra un confronto degli \textbf{andamenti}
+della \textbf{probabilità di errore in funzione di SNR} nei due casi discussi sopra,
+ricordando la considerazione fatta sulla possibilità di esprimere $P_e$ in
+funzione di $\Lambda $.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=stealth,
+        declare function={
+            % Approssimazione della Q-function usando solo operazioni base di pgfmath
+            % Formula di Zelen & Severo per la CDF normale
+            t(\x) = 1 / (1 + 0.2316419 * (\x));
+            Q(\x) = (1/sqrt(2*pi)) * exp(-(\x^2)/2) * (
+            0.319381530 * t(\x) +
+            -0.356563782 * t(\x)^2 +
+            1.781477937 * t(\x)^3 +
+            -1.821255978 * t(\x)^4 +
+            1.330274429 * t(\x)^5
+            );
+        }
+        ]
+        \begin{semilogyaxis}[
+            width=0.85\textwidth,
+            height=7.5cm,
+            xmin=0, xmax=18,
+            ymin=1e-6, ymax=1,
+            xlabel={SNR [dB]},
+            ylabel={\(P_e\)},
+            xtick={0,3,6,9,12,15,18},
+            ytick={1,1e-1,1e-2,1e-3,1e-4,1e-5,1e-6},
+            yticklabels={\(10^0\), \(10^{-1}\), \(10^{-2}\), \(10^{-3}\),
+            \(10^{-4}\), \(10^{-5}\), \(10^{-6}\)},
+            grid=major,
+            grid style={dashed, gray!30},
+            axis line style={-Stealth, thick},
+            tick style={thick},
+            ]
+
+            % --- Curva ORTOGONALE ---
+            % L'argomento è sqrt(SNR_linear / 2)
+            \addplot[very thick, nord11, domain=0:18, samples=150] {Q(sqrt(10^(x/10)/2))};
+            \addlegendentry{Ortogonale}
+
+            % --- Curva ANTIPODALE ---
+            % L'argomento è sqrt(SNR_linear)
+            \addplot[very thick, nord10, domain=0:18, samples=150] {Q(sqrt(10^(x/10)))};
+            \addlegendentry{Antipodale}
+
+            % --- Evidenziazione del gap di 3 dB a Pe = 10^-5 ---
+            \draw[<->, thick, nord11] (axis cs:12.6, 1e-5) -- (axis cs:15.55, 1e-5) 
+                node[midway, above, font=\small] {3 dB};
+
+            \draw[dashed, nord0, thick] (axis cs:12, 1e-6) -- (axis cs:12, 1e0)
+                node[pos=0.7, right, font=\small] {\( \Lambda^* \)};
+            \draw[dashed, nord0, thick] (axis cs:0, 1e-4) -- (axis cs:18, 1e-4)
+                node[midway, below, font=\small] {\(P_e\) obiettivo};
+
+            % --- Titolo in alto ---
+            \node[above, font=\bfseries] at (axis cs:9, 1) {\(P_e = P_{but} = BER\)};
+        \end{semilogyaxis}
+    \end{tikzpicture}
+    \caption{Confronto dell'andamento di $P_e$ nei due casi considerati}
+    \label{fig:08_18_ConfrontoPe}
+\end{figure}
+
+\begin{remark}[CONFRONTO]
+    Diamo \textit{due letture} al grafico:
+    \begin{enumerate}
+        \item Fissato un \textbf{determinato} valore \textbf{SNR} $\Lambda^*$, otteniamo
+            una \textbf{probabilità di errore più bassa} se usiamo una
+            modulazione \textbf{antipodale}.
+        \item Fissato una \textbf{probabilità di errore "obiettivo"}, una
+            \textbf{modulazione antipodale} richiede un \textbf{SNR minore},
+            quindi basterà trasmettere un \textbf{segnale a potenza minore}.
+    \end{enumerate}
 \end{remark}

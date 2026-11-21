@@ -398,3 +398,328 @@ dal primo simbolo del nuovo blocco, ma è la \textbf{somma di}:
     \item L'\textbf{"eco"} dell'\textbf{ultima componente} del 
         \textbf{simbolo precedente} $\frac{1}{2}s_{4}^{(k-1)}$.
 \end{itemize}
+
+\section{Ricevitore MD}
+
+Vogliamo trasmettere un segnale con un \textbf{bitrate} $R_b = 2 \text{Mbit/s}$ usando
+le seguenti \textbf{forme d'onda}:
+\[
+    \begin{aligned}
+        s_{1}(t) &= 5 \text{rect} \left( \frac{t - T/4}{T / 2} \right) \\ 
+        s_{2}(t) &= 10 \text{rect} \left( \frac{t - T/2}{T} \right) \\
+        s_{3}(t) &= -10 \text{rect} \left( \frac{t - T/2}{T} \right) \\
+        s_{4}(t) &= -5 \text{rect} \left( \frac{t - T/4}{T / 2} \right) \\
+    \end{aligned}
+\]
+
+Questi segnali sono mostrati in figura~\ref{fig:B_04_EsempioMD_FormeOnda}
+
+\begin{figure}[!ht]
+    \centering
+    \pgfplotsset{
+        waveformStyle/.style={
+            width=6.5cm,
+            height=4cm,
+            axis lines=middle,
+            xmin=-0.1, xmax=1.2,
+            ymin=-12, ymax=12,
+            xtick={0, 0.25, 0.5, 1},
+            xticklabels={\(0\), \(T/4\), \(T/2\), \(T\)},
+            ytick={-10, -5, 0, 5, 10},
+            grid=major,
+            grid style={dashed, gray!20},
+            xlabel={\(t\)},
+            xlabel style={at={(1,0.5)}, anchor=west},
+            ylabel style={at={(0.5,1)}, anchor=south},
+            axis line style={-Stealth, thick},
+            % Disegna un punto sull'origine per gli assi
+            extra x ticks={0}, extra x tick labels={}, 
+        }
+    }
+
+    \begin{tikzpicture}
+
+        % --- s1(t) ---
+        \begin{axis}[name=ax1, waveformStyle, ylabel={\(s_1(t)\)}]
+            \draw[dashed, nord3] (axis cs:0.5,0) -- (axis cs:0.5,5);
+            \addplot[very thick, nord10] coordinates {(-0.1,0) (0,0) (0,5) (0.5,5) (0.5,0) (1.2,0)};
+        \end{axis}
+
+        % --- s2(t) ---
+        \begin{axis}[name=ax2, waveformStyle, at={(ax1.east)}, anchor=west, xshift=1cm, ylabel={\(s_2(t)\)}]
+            \addplot[very thick, nord10] coordinates {(-0.1,0) (0,0) (0,10) (1,10) (1,0) (1.2,0)};
+        \end{axis}
+
+        % --- s3(t) ---
+        \begin{axis}[name=ax3, waveformStyle, at={(ax1.south west)}, 
+            anchor=north west, yshift=-1cm, ylabel={\(s_3(t)\)}]
+            \addplot[very thick, nord11] coordinates {(-0.1,0) (0,0) (0,-10) (1,-10) (1,0) (1.2,0)};
+        \end{axis}
+
+        % --- s4(t) ---
+        \begin{axis}[name=ax4, waveformStyle, at={(ax2.south west)}, 
+            anchor=north west, yshift=-1cm, ylabel={\(s_4(t)\)}]
+            \draw[dashed, nord3] (axis cs:0.5,0) -- (axis cs:0.5,-5);
+            \addplot[very thick, nord11] coordinates {(-0.1,0) (0,0) (0,-5) (0.5,-5) (0.5,0) (1.2,0)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Illustrazione delle forme d'onda impiegate nell'esempio}
+    \label{fig:B_04_EsempioMD_FormeOnda}
+\end{figure}
+
+\begin{exa}[ESERCIZIO]
+    Vogliamo determinare:
+    \begin{enumerate}
+        \item L'\textbf{energia} dei segnali $s_i(t)$.
+        \item Una \textbf{base ortonormale} da associare alla trasmissione.
+        \item La \textbf{costellazione}.
+        \item Le \textbf{regioni di decisione}.
+    \end{enumerate}
+\end{exa}
+
+\paragraph{Punto 1 - Energia}
+Cominciamo con il \textit{calcolo delle energie}. Notiamo che:
+\[
+    \begin{aligned}
+        s_{4}(t) = -s_{1}(t) \implies E_{s_{1}} = E_{s_{4}} \\
+        s_{3}(t) = -s_{2}(t) \implies E_{s_{2}} = E_{s_{3}} 
+    \end{aligned}
+\]
+
+E le energie risultano:
+\[
+    \begin{aligned}
+        E_{1} = E_{4} &= \int_{0}^{\frac{T}{2}} 5^2 dt = \frac{25}{2}T \\
+        E_{2} = E_{3} &= \int_{0}^{T} 10^2 dt = 100T
+    \end{aligned}
+\]
+
+Per completezza, possiamo calcolare anche l'\textbf{energia media} $E_s$ dei segnali:
+\[
+    E_s = P_{1} E_{1} + P_{2} E_{2} + P_{3} E_{3} + P_{4} E_{4}
+\]
+Dove $P_{1},P_{2},P_{3},P_{4}$ sono le \textbf{probabilità a priori dei simboli}.
+Assumendo che questi siano \textbf{equiprobabili} abbiamo:
+\[
+    E_s = \frac{1}{4} (E_{1} + E_{2} + E_{3} + E_{4}) = \frac{225}{4}T
+\]
+
+\paragraph{Punto 2 - Base}
+Nel punto precedente abbiamo già capito che $s_{1}$ ed $s_{4}$ sono \textbf{linearmente dipendenti},
+così come $s_{2}$ ed $s_{3}$.
+
+\textit{Potremmo} quindi applicare la \textit{procedura di Gram-Schmidt} ad $s_{1}$ ed $s_{2}$
+per trovare la nostra \textbf{base ortonormale}. Tuttavia risulta più semplice osservare
+che \textbf{tutti i segnali} $s_i(t)$ possono essere \textbf{ottenuti} come
+combinazioni dei segnali seguenti, mostrati anche in figura~\ref{fig:B_05_EsempioMD_SegnaliBase}:
+\[
+    \begin{aligned}
+        \phi_{1}(t) = \sqrt{\frac{2}{T}} \text{rect} \left( \frac{t - T /4}{T/2} \right) \\
+        \phi_{2}(t) = \sqrt{\frac{2}{T}} \text{rect} \left( \frac{t - 3T /4}{T/2} \right) 
+    \end{aligned}
+\]
+
+\begin{figure}[!ht]
+    \centering
+    \pgfplotsset{
+        % Stile per i grafici della base
+        basisFigStyle/.style={
+            width=6.5cm,
+            height=4cm,
+            axis lines=middle,
+            xmin=-0.1, xmax=1.2,
+            ymin=0, ymax=2, % L'ampiezza è sqrt(2) circa 1.414, quindi ymax=2 va bene
+            xtick={0, 0.5, 1},
+            xticklabels={\(0\), \(T/2\), \(T\)},
+            ytick={0, 1.414},
+            yticklabels={\(0\), \(\sqrt{\frac{2}{T}}\)},
+            grid=major,
+            grid style={dashed, gray!20},
+            xlabel={\(t\)},
+            xlabel style={at={(1,0.5)}, anchor=west},
+            ylabel style={at={(0.5,1)}, anchor=south},
+            axis line style={-Stealth, thick},
+        }
+    }
+
+    \begin{tikzpicture}
+        % --- phi_1(t) ---
+        \begin{axis}[name=ax1, basisFigStyle, ylabel={\(\phi_1(t)\)}]
+            % Linee tratteggiate per evidenziare i limiti
+            \draw[dashed, nord3] (axis cs:0,0) -- (axis cs:0,1.414);
+            \draw[dashed, nord3] (axis cs:0.5,0) -- (axis cs:0.5,1.414);
+            % Tracciamento dell'impulso rettangolare da 0 a 0.5
+            \addplot[very thick, nord10] coordinates {(-0.1,0) (0,0) (0,1.414) (0.5,1.414) (0.5,0) (1.2,0)};
+        \end{axis}
+
+        % --- phi_2(t) ---
+        \begin{axis}[name=ax2, basisFigStyle, at={(ax1.east)},
+            anchor=west, xshift=1.5cm, ylabel={\(\phi_2(t)\)}]
+            % Linee tratteggiate per evidenziare i limiti
+            \draw[dashed, nord3] (axis cs:0.5,0) -- (axis cs:0.5,1.414);
+            \draw[dashed, nord3] (axis cs:1,0) -- (axis cs:1,1.414);
+            % Tracciamento dell'impulso rettangolare da 0.5 a 1
+            \addplot[very thick, nord10] coordinates {(-0.1,0) (0.5,0) (0.5,1.414) (1,1.414) (1,0) (1.2,0)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Illustrazione dei segnali scelti per la base}
+    \label{fig:B_05_EsempioMD_SegnaliBase}
+\end{figure}
+
+\paragraph{Punto 3 - Costellazione}
+Per quanto riguarda la \textbf{costellazione}, dobbiamo prima determinare
+le \textbf{coordinate dei segnali} $s_i$ \textbf{rispetto alla nostra base}.
+
+Abbiamo molto semplicemente:
+\[
+    \begin{aligned}
+        s_{1}(t) &= s_{11}\phi_{1}(t) + s_{12}\phi_{2}(t) 
+        = 5 \sqrt{\frac{T}{2}} \phi_{1}(t) + 0 \phi_{2}(t) \\ \\
+        s_{2}(t) &= s_{21}\phi_{1}(t) + s_{22}\phi_{2}(t) 
+        = 10 \sqrt{\frac{T}{2}} \phi_{1}(t) + 10 \sqrt{\frac{T}{2}} \phi_{2}(t) \\ \\
+        s_{3}(t) &= s_{31}\phi_{1}(t) + s_{32}\phi_{2}(t) 
+        = -10 \sqrt{\frac{T}{2}} \phi_{1}(t) - 10 \sqrt{\frac{T}{2}} \phi_{2}(t) \\ \\
+        s_{4}(t) &= s_{41}\phi_{1}(t) + s_{42}\phi_{2}(t) 
+        = -5 \sqrt{\frac{T}{2}} \phi_{1}(t) + 0 \phi_{2}(t)
+    \end{aligned}
+\]
+
+Per cui le \textbf{rappresentazioni vettoriali} sono:
+\[
+    \begin{aligned}
+        \mathbf{s}_1 &= \begin{bmatrix} 5 \sqrt{\frac{T}{2}} & 0 \end{bmatrix} \\ \\
+        \mathbf{s}_2 &= \begin{bmatrix} 10 \sqrt{\frac{T}{2}} & 10 \sqrt{\frac{T}{2}} \end{bmatrix} \\ \\
+        \mathbf{s}_3 &= \begin{bmatrix} -10 \sqrt{\frac{T}{2}} & 10 \sqrt{\frac{T}{2}} \end{bmatrix} \\ \\
+        \mathbf{s}_4 &= \begin{bmatrix} -5 \sqrt{\frac{T}{2}} & 0 \end{bmatrix}
+    \end{aligned}
+\]
+E quindi otteniamo la \textbf{costellazione} mostrata in figura~\ref{fig:B_06_EsempioMD_Costellazione}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth,
+        thick,
+        % Stile per le punte dei vettori
+        signal/.style={circle, fill=nord0, inner sep=2pt},
+        % Stile per le frecce dei vettori
+        vec/.style={->, very thick, nord10}
+        ]
+
+        % --- Griglia di sfondo (opzionale, per aiutare la lettura) ---
+        \draw[gray!30, dashed] (-3,-3) grid (3,3);
+
+        % --- Assi Cartesiani ---
+        \draw[->] (-3.5, 0) -- (3.5, 0) node[right] {\(\phi_1\)};
+        \draw[->] (0, -3.5) -- (0, 3.5) node[above] {\(\phi_2\)};
+
+        % --- Vettori e Punti ---
+
+        % s1 = [1, 0]
+        \draw[vec] (0,0) -- (1,0);
+        \node[signal] at (1,0) {};
+        \node[below right] at (1,0) {\(\mathbf{s}_1\)};
+
+        % s2 = [2, 2]
+        \draw[vec, nord11] (0,0) -- (2,2);
+        \node[signal, fill=nord11] at (2,2) {};
+        \node[right] at (2,2) {\(\mathbf{s}_2\)};
+
+        % s3 = [-2, -2]
+        \draw[vec, nord11] (0,0) -- (-2,-2);
+        \node[signal, fill=nord11] at (-2,-2) {};
+        \node[left] at (-2,-2) {\(\mathbf{s}_3\)};
+
+        % s4 = [-1, 0]
+        \draw[vec] (0,0) -- (-1,0);
+        \node[signal] at (-1,0) {};
+        \node[below left] at (-1,0) {\(\mathbf{s}_4\)};
+    \end{tikzpicture}
+    \caption{Costellazione associata all'esempio}
+    \label{fig:B_06_EsempioMD_Costellazione}
+\end{figure}
+
+\paragraph{Punto 4 - Regioni di decisione}
+Per concludere l'esercizio, determiniamo le \textbf{regioni di decisione}
+ottenute dal \textbf{ricevitore MD}. Intuitivamente, conviene prima
+\textbf{determinare i confini}, ovvero le regioni in cui i \textbf{punti} sono
+\textbf{equidistanti da due segnali} (\textit{assi dei segmenti che uniscono i vettori}).
+Una volta determinati questi confini, risulta più semplice determinare le regioni
+di decisione, che mostriamo in figura~\ref{fig:B_07_EsempioMD_ConfiniRegioni}.
+
+\begin{figure}[!ht]
+    \centering
+    \begin{tikzpicture}[
+        >=Stealth,
+        thick,
+        % Stile per i punti
+        signal/.style={circle, fill=nord0, inner sep=2.5pt},
+        % Stile per i confini (assi dei segmenti)
+        border/.style={ultra thick, nord11},
+        % Stile per i segmenti che uniscono i punti
+        segment/.style={dashed, thick, nord3}
+    ]
+        
+        % --- Griglia di sfondo leggera ---
+        \draw[gray!20, step=1] (-4,-4) grid (4,4);
+        
+        % --- Regioni di Decisione (ombreggiate) ---
+        % R1 (Blu)
+        \fill[nord10, opacity=0.15] (0,1.75) -- (4,-0.25) -- (4,-4) -- (1.5,-4) -- (0,-1.75) -- cycle;
+        
+        % R4 (Rosa)
+        \fill[nord11, opacity=0.15] (0,1.75) -- (0,-1.75) -- (-4,0.25) -- (-4,4) -- (-1.5,4) -- cycle;
+
+        % R2 (Verde)
+        \fill[nord14, opacity=0.15] (-1.5,4) -- (0,1.75) -- (4,-0.25) -- (4,4) -- cycle;
+        
+        % R4 (Grigio)
+        \fill[nord3, opacity=0.15] (-4,0.25) -- (0,-1.75) -- (1.5,-4) -- (-4,-4) -- cycle;
+
+        % --- Assi Cartesiani ---
+        \draw[->] (-4.5, 0) -- (4.5, 0) node[right] {\(\phi_1\)};
+        \draw[->] (0, -4.5) -- (0, 4.5) node[above] {\(\phi_2\)};
+
+        % --- Segmenti tra i punti (Dashed) ---
+        \draw[segment] (1,0) -- (2,2);   % s1 - s2
+        \draw[segment] (2,2) -- (-2,-2); % s2 - s3
+        \draw[segment] (-2,-2) -- (-1,0); % s3 - s4
+        \draw[segment] (-1,0) -- (1,0);  % s4 - s1
+        \draw[segment] (1,0) -- (-2,-2); % s1 - s3
+        \draw[segment] (2,2) -- (-1,0);  % s2 - s4
+        
+        % --- Assi dei segmenti (Confini) ---
+        \draw[border] (0,-1.75) -- (0,1.75);        % Asse y (s1-s4)
+        \draw[border] (0,1.75) -- (4,-0.25);        % y = -0.5x + 1.75 (s1-s2)
+        \draw[border] (0,-1.75) -- (-4,0.25);       % y = -0.5x - 1.75 (s3-s4)
+        \draw[border] (0,-1.75) -- (1.5,-4);        % y = -1.5x - 1.75 (s1-s3) 
+        \draw[border] (0,1.75) -- (-1.5,4);         % y = -1.5x + 1.75 (s2-s4)
+        
+        % --- Punti (Simboli) ---
+        \node[signal] (s1) at (1,0) {};
+        \node[signal] (s2) at (2,2) {};
+        \node[signal] (s3) at (-2,-2) {};
+        \node[signal] (s4) at (-1,0) {};
+
+        % Etichette
+        \node[right=0.1cm] at (s1) {\(\mathbf{s}_1\)};
+        \node[above right=0.05cm] at (s2) {\(\mathbf{s}_2\)};
+        \node[below left=0.05cm] at (s3) {\(\mathbf{s}_3\)};
+        \node[above left=0.05cm] at (s4) {\(\mathbf{s}_4\)};
+
+        % --- Etichette delle Regioni ---
+        \node[font=\large, text=nord10] at (2, -2) {\(R_1\)};
+        \node[font=\large, text=nord14] at (3, 3) {\(R_2\)};
+        \node[font=\large, text=nord3] at (-3, -3) {\(R_3\)};
+        \node[font=\large, text=nord11] at (-2, 2) {\(R_4\)};
+
+        % --- Legenda ---
+        \node[anchor=south west, align=left, font=\small, draw=black, fill=white, rounded corners] 
+            at (-4.5, 3) {
+                \tikz\draw[segment] (0,0) -- (0.5,0); Segmenti tra simboli\\
+                \tikz\draw[border] (0,0) -- (0.5,0); Assi dei segmenti (confini)
+            };
+    \end{tikzpicture}
+    \caption{Determinazione dei confini tra le regioni di decisione}
+    \label{fig:B_07_EsempioMD_ConfiniRegioni}
+\end{figure}
